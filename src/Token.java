@@ -3,40 +3,40 @@ import java.util.Hashtable;
 public class Token {
 
     private int id;
-    private String lexema, descripcion;
-    private Hashtable<String,Object> atributos = new Hashtable<String,Object>();
+    private String lex, description;
+    private Hashtable<String, Object> attributes = new Hashtable<String, Object>();
 
-    public Token(int id, String lexema, String descripcion) {
+    public Token(int id, String lex, String description) {
         this.id = id;
-        this.lexema = lexema;
-        this.descripcion = descripcion;
+        this.lex = lex;
+        this.description = description;
     }
 
-    public void addAtributo(String caract, Object val) {
-        atributos.put(caract, val);
+    public void addAttr(String character, Object val) {
+        attributes.put(character, val);
     }
 
-    public String getAtributo(String caract) {
-        return (String)atributos.get(caract);
+    public String getAttr(String character) {
+        return (String) attributes.get(character);
     }
 
-    public int getIdentificador() {
+    public int getID() {
         return id;
     }
 
-    public void setLexema(String lexema) {
-        this.lexema = lexema;
+//    public void setLex(String lex) {
+//        this.lex = lex;
+//    }
+
+    public String getLex() {
+        return lex;
     }
 
-    public String getLexema() {
-        return lexema;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
+//    public String getDescription() {
+//        return description;
+//    }
 
     public String toString() {
-        return ("Token: " + id + "  | Lexema: " + lexema + "  | Descripci�n: " + descripcion);
+        return ("Token: " + id + "  | Lexema: " + lex + "  | Descripci�n: " + description);
     }
 }

@@ -1,18 +1,18 @@
-public class BufferLectura {
+public class Buffer {
 
     private StringBuffer buffer;
-    private int nroLinea;
+    private int lineNumber;
 
-    public BufferLectura(StringBuffer sb) {
+    public Buffer(StringBuffer sb) {
         this.buffer = sb;
-        this.nroLinea = 1;
+        this.lineNumber = 1;
     }
 
     public boolean eof() {
         return buffer.length() == 0;
     }
 
-    public int getCaracter() {
+    public int getChar() {
         int next = -1;
         if (! this.eof()) {
             next = buffer.charAt(0);
@@ -25,18 +25,18 @@ public class BufferLectura {
         return next;
     }
 
-    public void devolverCaracter(int caracter) {
-        if(caracter != 0) {
-            buffer.insert(0, (char) caracter);
+    public void returnChar(int character) {
+        if (character != 0) {
+            buffer.insert(0, (char) character);
         }
     }
 
-    public void sigLinea() {
-        nroLinea++;
+    public void nextLine() {
+        lineNumber++;
     }
 
-    public int getNroLinea() {
-        return nroLinea;
+    public int getLineNumber() {
+        return lineNumber;
     }
 
 }
