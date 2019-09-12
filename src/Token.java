@@ -37,6 +37,6 @@ public class Token {
 //    }
 
     public String toString() {
-        return ("Token: " + id + "  | Lexema: " + lex + "  | Descripci�n: " + description);
+        return ("Token: " + id + "  | Lexeme: " + lex + "  | Description: " + description);
     }
 }

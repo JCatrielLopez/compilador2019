@@ -31,8 +31,8 @@ public class Lexer {
         actions = new SemanticAction[10][15];
 
         SemanticAction AS1 = new AS1();
-        SemanticAction AS2 = new AS3();
-        SemanticAction AS3 = new AS2();
+        SemanticAction AS2 = new AS2();
+        SemanticAction AS3 = new AS3();
         SemanticAction AS4 = new AS4();
         SemanticAction AS5 = new AS5();
         SemanticAction AS6 = new AS6();
@@ -250,25 +250,32 @@ public class Lexer {
     public int yylex() {
         StringBuilder lex = new StringBuilder();
 
+        String COLOR = "\u001B[0m";
+
         int state = START;
+        boolean EOF = false;
         Token token = null;
         while (state != END) {
 
-            int new_char = 0; // caracter nulo
+            int new_char = 0; // EOF
             if(notEOF()) {
                 new_char = source.getChar();
-            }
+            } else
+                EOF = true;
+
+
+//            System.out.println("State: " + state + " -> COLUMN: " + getColumn(new_char) + " [" + (char) new_char + "]");
             SemanticAction as = actions[state][getColumn(new_char)];
             token = as.execute(source, lex, (char) new_char);
             state = states[state][getColumn(new_char)];
+
         }
 
         if (token != null) {
-            System.out.println("Linea " + source.getLineNumber() + ": (AL) " + token);
+            System.out.println(COLOR + "Line " + source.getLineNumber() + ": (AL) " + token + COLOR);
             return token.getID();
-        }
-
-//        System.out.println("Linea " + source.getLineNumber() + ": (AL) " + token);
+        } else if (EOF)
+            return 0;
 
         return INVALID_TOKEN; // error
     }

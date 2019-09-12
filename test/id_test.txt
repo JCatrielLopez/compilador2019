@@ -1,6 +1,4 @@
-val = 23
-
-short_id = val
+short_id = 23
 
 l_o_n_g__i_d_e_n_t_i_f_i_e_r = short_id
 
@@ -10,4 +8,4 @@ cAmElCaSe_id = 0
 camelcase_id = 1
 CAMELCASE_ID = 2
 
-_underscore_id = short_id + short_id
+_underscore_id = short_id + something

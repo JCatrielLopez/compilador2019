@@ -10,7 +10,8 @@ public class AS2 implements SemanticAction {
 
         Token token;
 
-        if (!SymbolTable.contains(lex.toString())) {
+        //TODO No deberiamos preguntar si lo contiene la Tabla de Simbolos???
+        if (!SymbolTable.isReserved(lex.toString())) {
             token = new Token(SymbolTable.getID("id"), lex.toString(), "ID");
             SymbolTable.add(token);
         } else {

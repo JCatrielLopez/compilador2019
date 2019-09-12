@@ -37,7 +37,7 @@ public final class SymbolTable {
         ids.put(">=", 272);
         ids.put("<=", 273);
         ids.put("<>", 274);
-        ids.put(":=", 275);
+        ids.put("==", 275);
     }
 
 
@@ -58,8 +58,8 @@ public final class SymbolTable {
 //        return symbols.keySet();
 //    }
 
-    public static boolean contains(String lex) {
-        return symbols.containsKey(lex);
+    public static boolean isReserved(String lex) {
+        return ids.containsKey(lex);
     }
 
     public static void remove(String lex) {

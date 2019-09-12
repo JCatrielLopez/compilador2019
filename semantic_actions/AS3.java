@@ -9,7 +9,10 @@ public class AS3 implements SemanticAction {
         long cte = Long.parseLong(lex.toString());
 
         if (cte > Math.pow(2, 32)) {
-            System.out.printf("LINE " + source.getLineNumber() + "(AL) ERROR Constant out of range.");
+            String COLOR = "\u001B[31m";
+            System.out.println(COLOR + "Line " + source.getLineNumber() + ": (AL) ERROR Constant out of range." + COLOR);
+
+            //TODO Que hacemos cuando se detecta una cte fuera de rango? Descartamos la linea?
         } else {
             Token token = new Token(SymbolTable.getID("cte"), Long.toString(cte), "CONSTANT");
             SymbolTable.add(token);

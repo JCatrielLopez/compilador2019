@@ -9,5 +9,5 @@ IF = 3
 
 if (IF == 3)
 begin
-    print("El lenguaje reconoce mayusculas y minusculas")
+    print(El lenguaje reconoce mayusculas y minusculas)
 end_if
