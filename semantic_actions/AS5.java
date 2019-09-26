@@ -4,14 +4,13 @@ public class AS5 implements SemanticAction {
     @Override
     public Token execute(Buffer source, StringBuilder lex, char last_char) {
 
-        String COLOR = "\u001B[31m";
 
 //        source.returnChar(last_char);
 
         if ((int) last_char != 0)
-            System.out.println(COLOR + "Line " + source.getLineNumber() + ": (AL) ERROR Invalid character: " + last_char + COLOR);
+            Printer.print("Line " + source.getLineNumber() + ": (AL) ERROR Invalid character: ", Color.RED);
         else
-            System.out.println(COLOR + "Line " + source.getLineNumber() + ": (AL) ERROR Invalid character: EOF" + COLOR);
+            Printer.print("Line " + source.getLineNumber() + ": (AL) ERROR Invalid character: EOF", Color.RED);
         lex.setLength(0);
 
         return null;
