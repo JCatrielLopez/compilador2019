@@ -13,27 +13,32 @@ public final class SymbolTable {
         ids.put("+", 43);
         ids.put(",", 44);
         ids.put("-", 45);
+        ids.put(".", 46);
         ids.put("/", 47);
         ids.put(":", 58);
         ids.put(";", 59);
         ids.put("<", 60);
-        ids.put("=", 61);
         ids.put(">", 62);
         ids.put("[", 91);
         ids.put("]", 93);
+        ids.put(":=", 200);
         ids.put("if", 257);
         ids.put("else", 258);
         ids.put("end_if", 259);
+        ids.put(":=", 200);
         ids.put("print", 260);
+        ids.put("cte", 270);
         ids.put("int", 261);
+        ids.put("ulong", 264);
+        ids.put("first", 270);
+        ids.put("last", 270);
+        ids.put("length", 270);
         ids.put("begin", 262);
         ids.put("end", 263);
-        ids.put("ulong", 264);
         ids.put("while", 265);
-        ids.put("cte", 270);
+        ids.put("do", 266);
         ids.put("id", 268);
         ids.put("cadena", 269);
-        ids.put("do", 266);
         ids.put(">=", 272);
         ids.put("<=", 273);
         ids.put("<>", 274);
@@ -66,18 +71,22 @@ public final class SymbolTable {
         symbols.remove(lex);
     }
 
+    public static void print() {
+
+    }
+
 //    public static boolean contains(String id) {
 //        return (ids.containsKey(id));
 //    }
 
-    public String toString() {
-        StringBuffer out = new StringBuffer();
-        for (String s : symbols.keySet()) {
-            Token t = getLex(s);
-            out.append(t + "\n");
-        }
-        return out.toString();
-    }
+//    public String toString() { //TODO Ver como imprimir de manera decente
+//        StringBuffer out = new StringBuffer();
+//        for (String s : symbols.keySet()) {
+//            Token t = getLex(s);
+//            out.append(t + "\n");
+//        }
+//        return out.toString();
+//    }
 
 //    public static void modificarLexema(String viejo, String nuevo) {
 //        Token t = getLexeme(viejo);

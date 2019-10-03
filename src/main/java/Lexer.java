@@ -216,7 +216,7 @@ public class Lexer {
             return 3;
         else if (ascii_code == 45 || ascii_code == 42 ||
                 ascii_code == 40 || ascii_code == 41 ||
-                ascii_code == 44 || ascii_code == 59 || ascii_code == 91 || ascii_code == 93) // - * ( ) , ;
+                ascii_code == 44 || ascii_code == 59 || ascii_code == 91 || ascii_code == 93 || ascii_code == 46) // - * ( ) , ; .
             return 8;
         else if (ascii_code == 61) // =
             return 5;
@@ -256,6 +256,7 @@ public class Lexer {
         int state = START;
         boolean EOF = false;
         Token token = null;
+
         while (state != END) {
 
             int new_char = 0; // EOF
@@ -265,7 +266,7 @@ public class Lexer {
                 EOF = true;
 
 
-//            System.out.println("State: " + state + " -> COLUMN: " + getColumn(new_char) + " [" + (char) new_char + "]");
+            //TODO El = esta tratado como un literal pero no deberia ser un caracter valido por si solo!
             SemanticAction as = actions[state][getColumn(new_char)];
             token = as.execute(source, lex, (char) new_char);
             state = states[state][getColumn(new_char)];
@@ -274,7 +275,7 @@ public class Lexer {
 
         if (token != null) {
             if (this.verbose) {
-                Printer.print("Line " + source.getLineNumber() + ": (AL) " + token, Color.RESET);
+                Printer.print(String.format("%5s %s %s", source.getLineNumber(), "|", token), Color.RESET);
             }
             return token.getID();
         } else if (EOF)

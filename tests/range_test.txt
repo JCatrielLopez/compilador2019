@@ -1,4 +1,4 @@
 value = 15
-wrong_value = 8589934592
+wrong_value := 8589934592
 
-value = value + wrong_value
+value := value + wrong_value

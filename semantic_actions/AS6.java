@@ -5,7 +5,7 @@ public class AS6 implements SemanticAction {
     public Token execute(Buffer source, StringBuilder lex, char last_char) {
 
         source.returnChar(last_char);
-//        System.out.println(lex.toString());
+        System.out.println(lex.toString());
         Token token = new Token(SymbolTable.getID(lex.toString()), lex.toString(), "LITERAL");
 
         return token;

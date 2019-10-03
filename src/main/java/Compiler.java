@@ -63,10 +63,21 @@ public class Compiler {
         Lexer al = new Lexer(sb, al_verbose);
 
         int out = 1;
+        if (al_verbose) {
+            System.out.println(String.format("%5s %s %5s %s %8s %10s %10s %s %10s", "Line ", "|", "Token",
+                    "|", " ", "Lexeme", " ", "|", "Description"));
+            System.out.println("------------------------------------------------------------");
+        } else {
+            System.out.println(String.format("%5s %s %5s %s %8s %10s %10s %s %10s", "Line ", "|", " ",
+                    "|", " ", "Error Description", " ", "|", " "));
+            System.out.println("------------------------------------------------------------");
+        }
         while (out != 0) { // 0 es EOF
             out = al.yylex();
         }
 
+        if (ts_verbose)
+            SymbolTable.print();
         AnsiConsole.systemUninstall();
     }
 
