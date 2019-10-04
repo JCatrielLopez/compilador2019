@@ -71,20 +71,20 @@ final class SymbolTable {
     }
 
     public static void print() {
+        System.out.println("=====================================================================");
+        System.out.println("                           SYMBOL TABLE                              ");
+        System.out.println("=====================================================================");
+        System.out.println(String.format("%5s %s %8s %10s %10s %s %10s %s %-45s", "Token",
+                "|", " ", "Lexeme", " ", "|", "Descr", "|", "Otros atributos"));
+        System.out.println("---------------------------------------------------------------------");
 
+        for (String entry : symbols.keySet()) {
+            Printer.print(String.format("%s %s %s", symbols.get(entry).toString(), "|", symbols.get(entry).getAttrs()), Color.RESET);
+        }
     }
 
 //    public static boolean contains(String id) {
 //        return (ids.containsKey(id));
-//    }
-
-//    public String toString() { //TODO Ver como imprimir de manera decente
-//        StringBuffer out = new StringBuffer();
-//        for (String s : symbols.keySet()) {
-//            Token t = getLex(s);
-//            out.append(t + "\n");
-//        }
-//        return out.toString();
 //    }
 
 //    public static void modificarLexema(String viejo, String nuevo) {

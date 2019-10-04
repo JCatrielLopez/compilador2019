@@ -37,10 +37,11 @@ public class Token {
 //        return description;
 //    }
 
-    //    public String toString() {
-//        return ("Token: " + id + "  | Lexeme: " + lex + "  | Description: " + description);
-//    }
     public String toString() {
         return String.format("%5s %s %30s %s %10s", id, "|", lex, "|", description);
+    }
+
+    public Object getAttrs() {
+        return this.attributes.clone();
     }
 }
