@@ -3,13 +3,12 @@ public class AS3 implements SemanticAction {
 
     // Constantes enteras: Verifica el limite superior y lo agrega  a la Tabla de Simbolos.
     @Override
-    public Token execute(Buffer source, StringBuilder lex, char last_char) {
+    public Token execute(Buffer source, StringBuilder lex, char last_char, boolean verbose) {
         source.returnChar(last_char);
 
         long cte = Long.parseLong(lex.toString());
 
-        if (cte > Math.pow(2, 32)) {
-//            Printer.print("Line " + source.getLineNumber() + ": (AL) ERROR Constant out of range.", Color.RED);
+        if ((cte > Math.pow(2, 32)) && verbose) {
             Printer.print(String.format("%5s %s %5s %s %30s %s %10s", source.getLineNumber(), "|", " ", "|",
                     "ERROR Constant out of range.", "|", " "), Color.RED);
 

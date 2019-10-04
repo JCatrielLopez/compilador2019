@@ -1,6 +1,6 @@
-public class Buffer {
+class Buffer {
 
-    private StringBuffer buffer;
+    private final StringBuffer buffer;
     private int lineNumber;
 
     public Buffer(StringBuffer sb) {
@@ -8,6 +8,7 @@ public class Buffer {
         this.lineNumber = 1;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean eof() {
         return buffer.length() == 0;
     }

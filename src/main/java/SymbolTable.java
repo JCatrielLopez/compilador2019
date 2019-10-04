@@ -1,10 +1,10 @@
 import java.util.Hashtable;
 
 
-public final class SymbolTable {
+final class SymbolTable {
 
-    private static Hashtable<String, Integer> ids = new Hashtable<String, Integer>();
-    private static Hashtable<String, Token> symbols = new Hashtable<String, Token>();
+    private static final Hashtable<String, Integer> ids = new Hashtable<>();
+    private static final Hashtable<String, Token> symbols = new Hashtable<>();
 
     public static void init() {
         ids.put("(", 40);
@@ -21,7 +21,6 @@ public final class SymbolTable {
         ids.put(">", 62);
         ids.put("[", 91);
         ids.put("]", 93);
-        ids.put(":=", 200);
         ids.put("if", 257);
         ids.put("else", 258);
         ids.put("end_if", 259);

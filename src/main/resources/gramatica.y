@@ -30,9 +30,9 @@
 
 %%
 
-programa 	:	lista_sentencias_declarativas
-			| 	bloque_sentencias_ejecutables
-			| 	lista_sentencias_declarativas bloque_sentencias_ejecutables
+programa 	                    :	lista_sentencias_declarativas
+			                    | 	bloque_sentencias_ejecutables
+			                    | 	lista_sentencias_declarativas bloque_sentencias_ejecutables
 ;
 
 lista_sentencias_declarativas	:	lista_sentencias_declarativas sentencia_declarativa
@@ -76,12 +76,12 @@ sentencia_ejecutable 			:	sentencia_asignacion
 								|	sentencia_impresion
 ;
 
-sentencia_impresion				: PRINT '(' CADENA ')' ';'
-                                | error '(' CADENA ')' ';'  {//TODO Falta la palabra clave PRINT}
-                                | PRINT  CADENA ')' ';'        {//TODO Falta el primer parentesis}
-                                | PRINT '(' error ')' ';'  {//TODO Falta la cadena}
-                                | PRINT '(' CADENA  ';'  {//TODO Falta el segundo parentesis}
-                                | PRINT '(' CADENA ')'  {//TODO Falta el ;}
+sentencia_impresion				:   PRINT '(' CADENA ')' ';'
+                                |   error '(' CADENA ')' ';'  {//TODO Falta la palabra clave PRINT}
+                                |   PRINT  CADENA ')' ';'        {//TODO Falta el primer parentesis}
+                                |   PRINT '(' error ')' ';'  {//TODO Falta la cadena}
+                                |   PRINT '(' CADENA  ';'  {//TODO Falta el segundo parentesis}
+                                |   PRINT '(' CADENA ')'  {//TODO Falta el ;}
 ;
 
 sentencia_control				:	WHILE condicion DO bloque_sentencias_ejecutables ';'
@@ -108,12 +108,12 @@ comparacion						:	expresion comparador expresion
                                 |   expresion comparador error    {//TODO Falta un operando}
 ;
 
-comparador		            	: '<'
-							  	| '>'
-							  	| '='
-							  	| MENOR_IGUAL
-							  	| MAYOR_IGUAL
-							  	| DISTINTO
+comparador		            	:   '<'
+							  	|   '>'
+							  	|   '='
+							  	|   MENOR_IGUAL
+							  	|   MAYOR_IGUAL
+							  	|   DISTINTO
 ;
 
 sentencia_asignacion 			:	id ASIGN expresion ';'

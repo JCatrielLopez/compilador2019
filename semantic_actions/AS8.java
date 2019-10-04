@@ -1,6 +1,6 @@
 public class AS8 implements SemanticAction {
     @Override
-    public Token execute(Buffer source, StringBuilder lex, char last_char) {
+    public Token execute(Buffer source, StringBuilder lex, char last_char, boolean verbose) {
 
         if (last_char == 0)
             Printer.print("END OF FILE", Color.YELLOW);

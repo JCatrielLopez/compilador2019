@@ -2,9 +2,10 @@ import java.util.Hashtable;
 
 public class Token {
 
-    private int id;
-    private String lex, description;
-    private Hashtable<String, Object> attributes = new Hashtable<String, Object>();
+    private final int id;
+    private final String lex;
+    private final String description;
+    private final Hashtable<String, Object> attributes = new Hashtable<>();
 
     public Token(int id, String lex, String description) {
         this.id = id;

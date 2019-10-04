@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-public class Compiler {
+class Compiler {
 
 
     public static void main(String[] args) throws Exception {
@@ -48,7 +48,7 @@ public class Compiler {
                     break;
                 default:
                     // Ignoramos los argumentos que no son validos.
-                    continue;
+                    System.out.println("Invalid argument.");
             }
         }
 
@@ -67,11 +67,9 @@ public class Compiler {
             System.out.println(String.format("%5s %s %5s %s %8s %10s %10s %s %10s", "Line ", "|", "Token",
                     "|", " ", "Lexeme", " ", "|", "Description"));
             System.out.println("------------------------------------------------------------");
-        } else {
-            System.out.println(String.format("%5s %s %5s %s %8s %10s %10s %s %10s", "Line ", "|", " ",
-                    "|", " ", "Error Description", " ", "|", " "));
-            System.out.println("------------------------------------------------------------");
         }
+
+        //TODO Hay que arreglar el camino del '='. No es un literal, es un caracter invalido!!!
         while (out != 0) { // 0 es EOF
             out = al.yylex();
         }

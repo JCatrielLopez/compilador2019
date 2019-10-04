@@ -1,12 +1,12 @@
-public class Lexer {
+class Lexer {
 
     private static final int INVALID_TOKEN = -1;
     private static final int START = 0;
     private static final int END = 10;
 
-    private Buffer source;
+    private final Buffer source;
 
-    private int[][] states = {
+    private final int[][] states = {
             {1, 2, 10, 3, 10, 4, 5, 4, 10, 6, 9, 0, 0, 10, 10},
             {1, 1, 1, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
             {10, 2, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
@@ -20,7 +20,7 @@ public class Lexer {
     };
 
     private SemanticAction[][] actions;
-    private boolean verbose;
+    private final boolean verbose;
 
     public Lexer(StringBuffer pf, boolean verbose) {
         this.source = new Buffer(pf);
@@ -241,12 +241,8 @@ public class Lexer {
 
     }
 
-    public boolean notEOF() {
+    private boolean notEOF() {
         return !source.eof();
-    }
-
-    public int getLineNumber() {
-        return source.getLineNumber();
     }
 
     public int yylex() {
@@ -266,9 +262,9 @@ public class Lexer {
                 EOF = true;
 
 
-            //TODO El = esta tratado como un literal pero no deberia ser un caracter valido por si solo!
+            //TODO El '=' esta tratado como un literal pero no deberia ser un caracter valido por si solo!
             SemanticAction as = actions[state][getColumn(new_char)];
-            token = as.execute(source, lex, (char) new_char);
+            token = as.execute(source, lex, (char) new_char, this.verbose);
             state = states[state][getColumn(new_char)];
 
         }
