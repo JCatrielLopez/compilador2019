@@ -36,7 +36,7 @@ lista_sentencias_declarativas	:	lista_sentencias_declarativas sentencia_declarat
 								|	sentencia_declarativa
 ;
 
-bloque_sentencias_ejecutables	:	BEGIN lista_sentencias_ejecutables END ';'
+bloque_sentencias_ejecutables	:	BEGIN lista_sentencias_ejecutables END ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "Sentencias ejecutables OK"), Color.YELLOW);}
                                 |   BEGIN lista_sentencias_ejecutables error ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: END"), Color.RED);}
                                 |   BEGIN lista_sentencias_ejecutables END error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
 ;
@@ -69,6 +69,7 @@ coleccion						:	ID '[' cte ']'
 sentencia_ejecutable 			:	sentencia_asignacion
 								| 	sentencia_seleccion
 								|	sentencia_control
+								|   sentencia_declarativa
 								|	sentencia_impresion
 ;
 
@@ -86,7 +87,7 @@ sentencia_control				:	WHILE condicion DO bloque_sentencias_ejecutables ';'
                                 |   WHILE condicion DO bloque_sentencias_ejecutables error    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
 ;
 
-sentencia_seleccion				:	IF condicion bloque_sentencias_ejecutables END_IF ';'
+sentencia_seleccion				:	IF condicion bloque_sentencias_ejecutables END_IF ';'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "Se reconocio un IF OK"), Color.YELLOW);}
                                 |   IF condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF ';'
                                 |   error condicion bloque_sentencias_ejecutables END_IF ';'    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: IF"), Color.RED);}
                                 |   IF condicion bloque_sentencias_ejecutables error ';'        {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: END_IF"), Color.RED);}
@@ -118,7 +119,7 @@ comparador		            	:   '<'
 							  	|   DISTINTO
 ;
 
-sentencia_asignacion 			:	id ASIGN expresion ';'
+sentencia_asignacion 			:	id ASIGN expresion ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "Se reconocio una asignacion OK"), Color.YELLOW);}
                                 |   error ASIGN expresion ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing ID on assign."), Color.RED);}
                                 //|   id expresion ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: :="), Color.RED);} //TODO Por que esta comentada esta regla?
                                 |   id ASIGN error ';'    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR right-hand term on assign."), Color.RED);}
