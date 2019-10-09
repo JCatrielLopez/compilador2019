@@ -193,5 +193,5 @@ public int yylex() {
 }
 
 public void yyerror(String s) {
-	//System.out.println("Linea " + al.getNroLinea() + ": (Parser) " + s);
+    System.out.println("Linea " + al.getNroLinea() + ": (Parser) " + s);
 }

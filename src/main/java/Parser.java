@@ -303,19 +303,11 @@ public class Parser {
      * Default constructor.  Turn off with -Jnoconstruct .
      *
      * @param al
-     * @param debugMe
+     * @param b
      */
-    public Parser(Lexer al, boolean debugMe) {
+    public Parser(Lexer al, boolean b) {
         this.al = al;
-        yydebug = debugMe;
-    }
-
-    public Parser(Lexer al) {
-        this.al = al;
-    }
-
-    public Parser() {
-        //nothing to do
+        yydebug = b;
     }
 
     /**
@@ -463,10 +455,6 @@ public class Parser {
         stateptr -= cnt;
     }
 
-//#line 176 "src/main/resources/gramatica.y"
-
-//TODO Codigo JAVA
-
     final int state_peek(int relative) {
         return statestk[stateptr - relative];
     }
@@ -479,6 +467,10 @@ public class Parser {
         val_init();
         return true;
     }
+
+//#line 176 "src/main/resources/gramatica.y"
+
+//TODO Codigo JAVA
 
     //###############################################################
 // method: dump_stacks : show n levels of the stacks
@@ -537,10 +529,6 @@ public class Parser {
         dup.obj = val.obj;
         return dup;
     }
-//## end of method parse() ######################################
-
-
-//## run() --- for Thread #######################################
 
     public int yylex() {
         if (al.notEOF()) {
@@ -555,14 +543,14 @@ public class Parser {
         }
         return 0;
     }
-//## end of method run() ########################################
-
-
-///## Constructors ###############################################
 
     public void yyerror(String s) {
-        //System.out.println("Linea " + al.getNroLinea() + ": (Parser) " + s);
+        System.out.println("Linea " + al.getLineNumber() + ": (Parser) " + s);
     }
+//## end of method parse() ######################################
+
+
+//## run() --- for Thread #######################################
 
     //#line 459 "Parser.java"
 //###############################################################
@@ -577,6 +565,10 @@ public class Parser {
             s = "illegal-symbol";
         debug("state " + state + ", reading " + ch + " (" + s + ")");
     }
+//## end of method run() ########################################
+
+
+//## Constructors ###############################################
 
     //###############################################################
 // method: yyparse : parse input and execute indicated items
