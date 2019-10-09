@@ -1,5 +1,4 @@
 import org.fusesource.jansi.AnsiConsole;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -67,11 +66,9 @@ class Compiler {
     }
 
     // TODO Hay que arreglar el camino del '='. No es un literal, es un caracter invalido!!!
-    while (out != 0) { // 0 es EOF
-      out = al.yylex();
-    }
 
-    Parser parser = new Parser(al, true);
+
+    Parser parser = new Parser(al);
     parser.run();
 
     if (ts_verbose) SymbolTable.print();

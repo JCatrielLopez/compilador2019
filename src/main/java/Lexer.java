@@ -278,8 +278,7 @@ class Lexer {
                 Printer.print(String.format("%5s %s %s", source.getLineNumber(), "|", token), Color.RESET);
             }
             return token.getID();
-        } else if (EOF)
-            return 0;
+        }
 
         return INVALID_TOKEN; // error
     }
