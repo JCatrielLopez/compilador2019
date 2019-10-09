@@ -38,7 +38,7 @@ public class Token {
 //    }
 
     public String toString() {
-        return String.format("%5s %s %30s %s %10s", id, "|", lex, "|", description);
+        return String.format("%5s %s %30s %s %-10s", id, "|", lex, "|", description);
     }
 
     public Object getAttrs() {

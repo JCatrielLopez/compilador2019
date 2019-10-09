@@ -1,7 +1,5 @@
-%{package analizadorSintactico;
-  import analizadorLexico.*;
-  import globales.*;
-  import java.util.Stack;
+%{package compilador2019;
+  import src.*;
 %}
 
 %token IF
@@ -40,8 +38,8 @@ lista_sentencias_declarativas	:	lista_sentencias_declarativas sentencia_declarat
 ;
 
 bloque_sentencias_ejecutables	:	BEGIN lista_sentencias_ejecutables END ';'
-                                |   BEGIN lista_sentencias_ejecutables error ';'  //{TODO Falta el END}
-                                |   BEGIN lista_sentencias_ejecutables END error //{TODO Falta el ;}
+                                |   BEGIN lista_sentencias_ejecutables error ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: END"), Color.RED);}
+                                |   BEGIN lista_sentencias_ejecutables END error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
 ;
 
 lista_sentencias_ejecutables	:	lista_sentencias_ejecutables sentencia_ejecutable
@@ -49,12 +47,13 @@ lista_sentencias_ejecutables	:	lista_sentencias_ejecutables sentencia_ejecutable
 ;
 
 sentencia_declarativa 			:	tipo lista_variables ';'
-                                |   lista_variables ';' //{TODO Falta el tipo}
-                                |   tipo lista_variables error  //{TODO Falta el ;}
+                                |   lista_variables ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Type not declared"), Color.RED);}
+                                |   tipo lista_variables error  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
+;
 
 tipo							: 	INT
 								|	ULONG
-								|   error   //{TODO Un tipo no definido?}
+								|   error   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Unknown type declared."), Color.RED);}
 ;
 
 lista_variables					:	lista_variables ',' ID
@@ -64,8 +63,8 @@ lista_variables					:	lista_variables ',' ID
 ;
 
 coleccion						:	ID '[' cte ']'
-                                |   ID cte ']'  //{TODO Falta el segundo corchete}
-                                |   ID '[' cte  //{TODO Falta el primer corchete}
+                                |   ID '[' cte   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ["), Color.RED);}
+                                |   ID cte ']'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ]"), Color.RED);}
 ;
 
 sentencia_ejecutable 			:	sentencia_asignacion
@@ -75,41 +74,41 @@ sentencia_ejecutable 			:	sentencia_asignacion
 ;
 
 sentencia_impresion				:   PRINT '(' CADENA ')' ';'
-                                |   error '(' CADENA ')' ';' //{TODO Falta la palabra clave PRINT}
-                                |   PRINT  CADENA ')' ';'  //{TODO Falta el primer parentesis}
-                                |   PRINT '(' error ')' ';' //{TODO Falta se esperaba uan cadena}
-                                |   PRINT '(' CADENA  ';'  //{TODO Falta el segundo parentesis}
-                                |   PRINT '(' CADENA ')' error //{TODO Falta el ;}
+                                |   error '(' CADENA ')' ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: PRINT"), Color.RED);}
+                                |   PRINT  CADENA ')' ';'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);}
+                                |   PRINT '(' CADENA  ';'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);}
+                                |   PRINT '(' CADENA ')' error  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
+                                |   PRINT '(' error ')' ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Character chain not declared."), Color.RED);}
 ;
 
 sentencia_control				:	WHILE condicion DO bloque_sentencias_ejecutables ';'
-                                |   error condicion DO bloque_sentencias_ejecutables ';' //{TODO falta el while}
-                                |   WHILE condicion error bloque_sentencias_ejecutables ';' //{TODO Falta el DO}
-                                |   WHILE condicion DO bloque_sentencias_ejecutables error    {TODO Falta el ;}
+                                |   error condicion DO bloque_sentencias_ejecutables ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: WHILE"), Color.RED);}
+                                |   WHILE condicion error bloque_sentencias_ejecutables ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: DO"), Color.RED);}
+                                |   WHILE condicion DO bloque_sentencias_ejecutables error    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
 ;
 
 sentencia_seleccion				:	IF condicion bloque_sentencias_ejecutables END_IF ';'
                                 |   IF condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF ';'
-                                |   error condicion bloque_sentencias_ejecutables END_IF ';' //{TODO falta el IF}
-                                |   IF condicion bloque_sentencias_ejecutables error ';'  //{TODO Falta el END_IF}
-                                |   IF condicion bloque_sentencias_ejecutables END_IF error //{TODO Falta el ;}
-                                |   error condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF ';' //{TODO Falta el IF}
-                                |   IF condicion bloque_sentencias_ejecutables error bloque_sentencias_ejecutables END_IF ';' //{TODO Falta el ELSE}
-                                |   IF condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables error ';' //{TODO Falta el END_IF}
-                                |   IF condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF error //{TODO Falta el ;}
+                                |   error condicion bloque_sentencias_ejecutables END_IF ';'    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: IF"), Color.RED);}
+                                |   IF condicion bloque_sentencias_ejecutables error ';'        {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: END_IF"), Color.RED);}
+                                |   IF condicion bloque_sentencias_ejecutables END_IF error     {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
+                                |   error condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: IF"), Color.RED);}
+                                |   IF condicion bloque_sentencias_ejecutables error bloque_sentencias_ejecutables END_IF ';'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: ELSE"), Color.RED);}
+                                |   IF condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables error ';'     {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: END_IF"), Color.RED);}
+                                |   IF condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF error  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
 ;
 
 condicion						:	'(' comparacion ')'
-                                |    comparacion ')' //{TODO Falta el primer parentesis}
-                                |   '(' comparacion  //{TODO Falta el segundo parentesis}
-                                |   comparacion //{TODO faltan ()}
-                                |   error //{TODO se esperaba una condicion}
+                                |    comparacion ')' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);}
+                                |   '(' comparacion  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);}
+                                |   comparacion {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing parenthesis in condition"), Color.RED);}
+                                |   error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Condition not declared."), Color.RED);}
 ;
 
 comparacion						:	expresion comparador expresion
-                                |   error comparador expresion    //{TODO Falta un operando}
-                                |   expresion error expresion //{TODO Falta el compradaor}
-                                |   expresion comparador error    //{TODO Falta un operando}
+                                |   error comparador expresion    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term in operation."), Color.RED);}
+                                |   expresion error expresion  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing comparator in operation."), Color.RED);}
+                                |   expresion comparador error     {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term in operation."), Color.RED);}
 ;
 
 comparador		            	:   '<'
@@ -121,25 +120,25 @@ comparador		            	:   '<'
 ;
 
 sentencia_asignacion 			:	id ASIGN expresion ';'
-                                |   error ASIGN expresion ';' //{TODO Falta el id}
-                                //|   id expresion ';' //{TODO falta el operador de asignacion}
-                                |   id ASIGN error ';'    //{TODO Falta una expresion}  
-                                |   id ASIGN expresion  error //{TODO Falta el ;}
+                                |   error ASIGN expresion ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing ID on assign."), Color.RED);}
+                                //|   id expresion ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: :="), Color.RED);} //TODO Por que esta comentada esta regla?
+                                |   id ASIGN error ';'    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR right-hand term on assign."), Color.RED);}
+                                |   id ASIGN expresion  error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
 ;
 
 expresion						:	expresion '+' termino
-                                |   error '+' termino //{TODO Falta el primer operando}
-                                |   expresion '+' error //{TODO Falta el segundo operando}
-                                |   error '-' termino //{TODO Falta el primer operando}
-                                |   expresion '-' error //{TODO Falta el segundo operando}
+                                |   error '+' termino {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '+' operation."), Color.RED);}
+                                |   expresion '+' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '+' operation."), Color.RED);}
+                                |   error '-' termino {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '-' operation."), Color.RED);}
+                                |   expresion '-' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '-' operation."), Color.RED);}
 								| 	termino
 ;
 
 termino							:	termino '*' factor
-                                |   error '*' factor //{TODO Falta el primer operando}
-                                |   termino '*' error //{TODO Falta el segundo operando}
-                                |   error '/' factor //{TODO Falta el primer operando}
-                                |   termino '/' error //{TODO Falta el segundo operando}
+                                |   error '*' factor {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '*' operation."), Color.RED);}
+                                |   termino '*' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '*' operation."), Color.RED);}
+                                |   error '/' factor {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '/' operation."), Color.RED);}
+                                |   termino '/' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '/' operation."), Color.RED);}
 								| 	factor
 ;
 
@@ -149,23 +148,23 @@ factor 							: 	id
 ;
 
 funcion							:	FIRST '(' ')'
-                                |   FIRST error ')' //{TODO Falta el primer parentesis}
-                                |   FIRST '(' error //{TODO Falta el segundo parentesis}
+                                |   FIRST error ')' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);}
+                                |   FIRST '(' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);}
                                 |   LAST '(' ')'
-                                |   LAST error ')' //{TODO Falta el primer parentesis}
-                                |   LAST '(' error //{TODO Falta el segundo parentesis}
+                                |   LAST error ')' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);}
+                                |   LAST '(' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);}
                                 |	LENGTH '(' ')'
-                                |   LENGTH error ')' //{TODO Falta el primer parentesis}
-                                |   LENGTH '(' error //{TODO Falta el segundo parentesis}
-                                |   error '(' ')' //{TODO funcion inexistente}
+                                |   LENGTH error ')' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);}
+                                |   LENGTH '(' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);}
+                                |   error '(' ')' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Unknown function."), Color.RED);}
 ;
 
 id 								:	ID
 								|	ID '[' ID ']'
-                                |	ID '[' ID error //{TODO Falta el segundo corchete}
-                                |	ID ID ']'   //{TODO Falta el primer corchete}
+                                |	ID ID ']'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ["), Color.RED);}
+                                |	ID '[' ID error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ]"), Color.RED);}
 								|	ID '[' cte ']'
-                                |   ID '[' error ']' //{TODO Falta el ID o cte}
+                                |   ID '[' error ']' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing index on array"), Color.RED);}
 ;
 
 cte 							:	CTE
@@ -174,3 +173,8 @@ cte 							:	CTE
 
 
 %%
+
+//TODO Codigo JAVA
+public void yyerror(String s) {
+	//System.out.println("Linea " + al.getNroLinea() + ": (Parser) " + s);
+}

@@ -245,6 +245,10 @@ class Lexer {
         return !source.eof();
     }
 
+    public int getLineNumber() {
+        return source.getLineNumber();
+    }
+
     public int yylex() {
         StringBuilder lex = new StringBuilder();
 
