@@ -1,11 +1,13 @@
-int short_id := 23
+int short_id;
+int int l_o_n_g__i_d_e_n_t_i_f_i_e_r, 23id, cAmElCaSe_id, camelcase_id, CAMELCASE_ID;
+int underscore_id;
 
-int l_o_n_g__i_d_e_n_t_i_f_i_e_r := short_id
-
-int 23id := 23
-
-int cAmElCaSe_id := 0
-int camelcase_id := 1
-int CAMELCASE_ID := 2
-
-int _underscore_id := short_id + something
+BEGIN
+    short_id := 23;
+    l_o_n_g__i_d_e_n_t_i_f_i_e_r := short_id;
+    23id := 23;
+    cAmElCaSe_id := 0;
+    camelcase_id := 1;
+    CAMELCASE_ID := 2;
+    underscore_id := short_id + something;
+END

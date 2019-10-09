@@ -1,5 +1,4 @@
 %{package compilador2019;
-  import src.*;
 %}
 
 %token IF
@@ -53,7 +52,7 @@ sentencia_declarativa 			:	tipo lista_variables ';'
 
 tipo							: 	INT
 								|	ULONG
-								|   error   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Unknown type declared."), Color.RED);}
+								//|   error   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Unknown type declared."), Color.RED);}
 ;
 
 lista_variables					:	lista_variables ',' ID
@@ -175,6 +174,23 @@ cte 							:	CTE
 %%
 
 //TODO Codigo JAVA
+
+private Lexer al;
+
+public int yylex() {
+	if (al.notEOF()) {
+		int valor = al.yylex();
+		if (valor != -1) // error
+			return valor;
+		while (al.notEOF()) {
+			valor = al.yylex();
+			if (valor != -1)
+				return valor;
+		}
+	}
+	return 0;
+}
+
 public void yyerror(String s) {
 	//System.out.println("Linea " + al.getNroLinea() + ": (Parser) " + s);
 }

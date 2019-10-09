@@ -241,7 +241,7 @@ class Lexer {
 
     }
 
-    private boolean notEOF() {
+    public boolean notEOF() {
         return !source.eof();
     }
 
