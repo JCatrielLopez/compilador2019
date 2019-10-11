@@ -1,3 +1,3 @@
-int value = 15;
+int value := 23;
 ulong wrong_value := 8589934592;
 value := value + wrong_value;
