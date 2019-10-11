@@ -166,7 +166,7 @@ class Lexer {
         actions[7][9] = AS8;
         actions[7][10] = AS8;
         actions[7][11] = AS8;
-        actions[7][12] = AS8;
+        actions[7][12] = AS9;
         actions[7][13] = AS8;
         actions[7][14] = AS5;
 
@@ -182,7 +182,7 @@ class Lexer {
         actions[8][9] = AS8;
         actions[8][10] = AS8;
         actions[8][11] = AS8;
-        actions[8][12] = AS8;
+        actions[8][12] = AS9;
         actions[8][13] = AS8;
         actions[8][14] = AS5;
 
