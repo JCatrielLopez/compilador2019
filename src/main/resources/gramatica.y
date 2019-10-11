@@ -168,7 +168,8 @@ id 								:	ID
 ;
 
 cte 							:	CTE
-								| 	'-' CTE
+								| 	'-' CTE {String cte = $2.sval;
+								             check_range(cte);}
 ;
 
 
@@ -194,4 +195,25 @@ public int yylex() {
 
 public void yyerror(String s) {
 	//System.out.println("Linea " + al.getNroLinea() + ": (Parser) " + s);
+}
+
+public void check_range(String cte){
+
+    int new_cte;
+
+    try{
+        new_cte = String.valueOf(cte);
+
+    catch (Exception e){
+        Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Constante fuera de rango: " + cte), Color.YELLOW);
+        Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Se va a reemplazar por el valor: -" + Math.pow(2,15)), Color.YELLOW);
+        new_cte = Math.pow(2,15);
+    }
+    
+    String new_lex = "-" + new_cte;
+    Token old_token = SymbolTable.getLex(new_cte);
+    if( !SymbolTable.contains(new_lex)){
+        Token t = new Token(old_token.getID(), new_lex, old_token.getDescription() + "CTE NEG");
+        SymbolTable.add(t);
+    }
 }

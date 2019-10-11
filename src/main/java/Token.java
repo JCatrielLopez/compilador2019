@@ -3,7 +3,7 @@ import java.util.Hashtable;
 public class Token {
 
     private final int id;
-    private final String lex;
+    private String lex;
     private final String description;
     private final Hashtable<String, Object> attributes = new Hashtable<>();
 
@@ -33,9 +33,9 @@ public class Token {
         return lex;
     }
 
-//    public String getDescription() {
-//        return description;
-//    }
+    public String getDescription() {
+        return description;
+    }
 
     public String toString() {
         return String.format("%5s %s %30s %s %-10s", id, "|", lex, "|", description);
@@ -43,5 +43,9 @@ public class Token {
 
     public Object getAttrs() {
         return this.attributes.clone();
+    }
+
+    public void setLex(String new_lex) {
+        lex = new_lex;
     }
 }
