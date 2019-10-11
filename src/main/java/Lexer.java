@@ -266,8 +266,6 @@ class Lexer {
             } else
                 EOF = true;
 
-
-            //TODO El '=' esta tratado como un literal pero no deberia ser un caracter valido por si solo!
             SemanticAction as = actions[state][getColumn(new_char)];
             token = as.execute(source, lex, (char) new_char, this.verbose);
             state = states[state][getColumn(new_char)];

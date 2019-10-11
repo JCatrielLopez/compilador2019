@@ -23,7 +23,12 @@ public class AS3 implements SemanticAction {
             Token token = new Token(SymbolTable.getID("cte"), Long.toString(cte), "CONSTANT");
             SymbolTable.add(token);
 
-            //TODO Contador de referencias ?
+            if (token.getAttr("contador") == null) {
+                token.addAttr("contador", "1");
+            } else {
+                int contador = Integer.parseInt(token.getAttr("contador")) + 1;
+                token.addAttr("contador", String.valueOf(contador));
+            }
 
             return token;
         }

@@ -107,22 +107,64 @@ int i;
 
 //########## SEMANTIC VALUES ##########
 //public class ParserVal is defined in ParserVal.java
-
-
-    static String yytext;//user variable to return contextual strings
-    static ParserVal yyval; //used to return semantic vals from action routines
-    static ParserVal yylval;//the 'lval' (result) I got from yylex()
-    final static short[] yylen = {2,
-            1, 1, 2, 2, 1, 4, 4, 4, 2, 1,
-            3, 2, 3, 1, 1, 3, 3, 1, 1, 4,
-            3, 3, 1, 1, 1, 1, 1, 5, 5, 4,
-            4, 5, 5, 5, 5, 5, 5, 5, 7, 5,
-            5, 5, 7, 7, 7, 7, 3, 2, 2, 1,
-            1, 3, 3, 3, 3, 1, 1, 1, 1, 1,
-            1, 4, 4, 4, 4, 3, 3, 3, 3, 3,
-            1, 3, 3, 3, 3, 3, 1, 1, 1, 3,
-            3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-            1, 4, 3, 4, 4, 4, 1, 2,
+final static short[] yylen = {2,
+        1, 1, 2, 2, 1, 4, 4, 4, 2, 1,
+        3, 2, 3, 1, 1, 3, 3, 1, 1, 4,
+        3, 3, 1, 1, 1, 1, 1, 5, 5, 4,
+        4, 5, 5, 5, 5, 5, 5, 5, 7, 5,
+        5, 5, 7, 7, 7, 7, 3, 2, 2, 1,
+        1, 3, 3, 3, 3, 1, 1, 1, 1, 1,
+        1, 4, 4, 4, 4, 3, 3, 3, 3, 3,
+        1, 3, 3, 3, 3, 3, 1, 1, 1, 3,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+        1, 4, 3, 4, 4, 4, 1, 2,
+};
+    final static short[] yydefred = {0,
+            14, 15, 0, 0, 0, 0, 2, 5, 0, 0,
+            19, 97, 0, 0, 0, 0, 0, 0, 0, 0,
+            26, 0, 10, 23, 24, 25, 27, 0, 3, 4,
+            0, 12, 0, 98, 0, 22, 0, 0, 0, 0,
+            79, 0, 0, 0, 78, 0, 77, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 9, 0, 13, 11,
+            0, 17, 20, 60, 59, 61, 0, 0, 0, 0,
+            56, 57, 58, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 48, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 93, 0, 0, 0,
+            7, 8, 6, 0, 0, 0, 0, 0, 73, 75,
+            0, 0, 0, 0, 0, 0, 80, 63, 0, 47,
+            0, 0, 0, 0, 0, 0, 70, 0, 0, 74,
+            72, 76, 0, 0, 0, 30, 0, 31, 0, 0,
+            0, 96, 94, 92, 0, 64, 65, 62, 95, 0,
+            0, 0, 0, 0, 0, 0, 29, 35, 0, 40,
+            41, 0, 0, 42, 38, 33, 32, 28, 36, 37,
+            34, 90, 82, 83, 81, 85, 86, 84, 88, 89,
+            87, 0, 0, 0, 0, 43, 44, 45, 46, 39,
+    };
+    final static short[] yydgoto = {5,
+            6, 7, 21, 22, 23, 9, 10, 11, 41, 24,
+            25, 26, 27, 42, 43, 44, 74, 45, 46, 47,
+            117,
+    };
+    final static short[] yysindex = {-69,
+            0, 0, 8, -55, 0, -69, 0, 0, -224, 37,
+            0, 0, -165, -13, 12, 42, 70, 2, 70, 58,
+            0, -79, 0, 0, 0, 0, 0, -160, 0, 0,
+            15, 0, -144, 0, 38, 0, 46, 18, 71, 45,
+            0, -172, 93, 52, 0, 26, 0, 74, -134, 109,
+            -195, -94, 60, 75, 35, -47, 0, 78, 0, 0,
+            8, 0, 0, 0, 0, 0, 88, 88, 85, 85,
+            0, 0, 0, 71, 75, -129, 324, 83, 46, 124,
+            127, -134, 59, 0, 71, 91, -71, 92, 95, -65,
+            -42, 139, 171, 11, -134, -134, 0, 125, -56, 150,
+            0, 0, 0, 116, 98, 157, 26, 26, 0, 0,
+            227, 153, 222, -37, -35, -32, 0, 0, 207, 0,
+            218, -134, 220, 227, 157, 26, 0, 324, 227, 0,
+            0, 0, -46, -134, -45, 0, 223, 0, -43, 225,
+            -36, 0, 0, 0, 0, 0, 0, 0, 0, 249,
+            254, -7, 256, -6, 258, 5, 0, 0, 44, 0,
+            0, 65, -158, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 245, 246, 260, 13, 0, 0, 0, 0, 0,
     };
 int valptr;
 //###############################################################
@@ -194,53 +236,6 @@ public final static short FIRST=274;
 public final static short LAST=275;
 public final static short LENGTH=276;
 public final static short YYERRCODE=256;
-    final static short[] yydefred = {0,
-            14, 15, 0, 0, 0, 0, 2, 5, 0, 0,
-            19, 97, 0, 0, 0, 0, 0, 0, 0, 0,
-            26, 0, 10, 23, 24, 25, 27, 0, 3, 4,
-            0, 12, 0, 98, 0, 22, 0, 0, 0, 0,
-            79, 0, 0, 0, 78, 0, 77, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 9, 0, 13, 11,
-            0, 17, 20, 60, 59, 61, 0, 0, 0, 0,
-            56, 57, 58, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 48, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 93, 0, 0, 0,
-            7, 8, 6, 0, 0, 0, 0, 0, 73, 75,
-            0, 0, 0, 0, 0, 0, 80, 63, 0, 47,
-            0, 0, 0, 0, 0, 0, 70, 0, 0, 74,
-            72, 76, 0, 0, 0, 30, 0, 31, 0, 0,
-            0, 96, 94, 92, 0, 64, 65, 62, 95, 0,
-            0, 0, 0, 0, 0, 0, 29, 35, 0, 40,
-            41, 0, 0, 42, 38, 33, 32, 28, 36, 37,
-            34, 90, 82, 83, 81, 85, 86, 84, 88, 89,
-            87, 0, 0, 0, 0, 43, 44, 45, 46, 39,
-    };
-    final static short[] yydgoto = {5,
-            6, 7, 21, 22, 23, 9, 10, 11, 41, 24,
-            25, 26, 27, 42, 43, 44, 74, 45, 46, 47,
-            117,
-    };
-    final static short[] yysindex = {-69,
-            0, 0, 8, -55, 0, -69, 0, 0, -224, 37,
-            0, 0, -165, -13, 12, 42, 70, 2, 70, 58,
-            0, -79, 0, 0, 0, 0, 0, -160, 0, 0,
-            15, 0, -144, 0, 38, 0, 46, 18, 71, 45,
-            0, -172, 93, 52, 0, 26, 0, 74, -134, 109,
-            -195, -94, 60, 75, 35, -47, 0, 78, 0, 0,
-            8, 0, 0, 0, 0, 0, 88, 88, 85, 85,
-            0, 0, 0, 71, 75, -129, 324, 83, 46, 124,
-            127, -134, 59, 0, 71, 91, -71, 92, 95, -65,
-            -42, 139, 171, 11, -134, -134, 0, 125, -56, 150,
-            0, 0, 0, 116, 98, 157, 26, 26, 0, 0,
-            227, 153, 222, -37, -35, -32, 0, 0, 207, 0,
-            218, -134, 220, 227, 157, 26, 0, 324, 227, 0,
-            0, 0, -46, -134, -45, 0, 223, 0, -43, 225,
-            -36, 0, 0, 0, 0, 0, 0, 0, 0, 249,
-            254, -7, 256, -6, 258, 5, 0, 0, 44, 0,
-            0, 65, -158, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 245, 246, 260, 13, 0, 0, 0, 0, 0,
-    };
     final static short[] yyrindex = {0,
             0, 0, 73, 0, 0, 328, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, -29,
@@ -269,6 +264,7 @@ public final static short YYERRCODE=256;
 };
     final static int YYTABLESIZE = 460;
     final static short YYFINAL = 5;
+    final static short YYMAXTOKEN = 276;
     final static String[] yyname = {
 "end-of-file",null,null,null,null,null,null,null,null,null,null,null,null,null,
 null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
@@ -391,21 +387,48 @@ null,null,null,null,null,null,null,"IF","ELSE","END_IF","PRINT","INT","ULONG",
 "cte : CTE",
 "cte : '-' CTE",
 };
+    static ParserVal yylval;//the 'lval' (result) I got from yylex()
+    static short[] yytable;
+    static short[] yycheck;
 
     static {
         yytable();
     }
-
-    static short[] yytable;
-    static short[] yycheck;
 
     static {
         yycheck();
     }
 
     int[] statestk = new int[YYSTACKSIZE]; //state stack
+    String yytext;//user variable to return contextual strings
+    ParserVal yyval; //used to return semantic vals from action routines
     ParserVal[] valstk;
-    final static short YYMAXTOKEN = 276;
+    //The following are now global, to aid in error reporting
+    int yyn;       //next next thing to do
+    int yym;       //
+
+//#line 177 "src/main/resources/gramatica.y"
+
+//TODO Codigo JAVA
+
+private Lexer al;
+
+public int yylex() {
+	if (al.notEOF()) {
+		int valor = al.yylex();
+		if (valor != -1) // error
+			return valor;
+		while (al.notEOF()) {
+			valor = al.yylex();
+			if (valor != -1)
+				return valor;
+		}
+	}
+	return 0;
+}
+
+    int yystate;   //current parsing state from state table
+    String yys;    //current token string
 
     /**
      * Default constructor.  Turn off with -Jnoconstruct .
@@ -465,26 +488,6 @@ null,null,null,null,null,null,null,"IF","ELSE","END_IF","PRINT","INT","ULONG",
                 0, 0, 0, 0, 0, 0, 0, 0, 162, 163,
         };
     }
-
-//#line 176 "src/main/resources/gramatica.y"
-
-//TODO Codigo JAVA
-
-private Lexer al;
-
-public int yylex() {
-	if (al.notEOF()) {
-		int valor = al.yylex();
-		if (valor != -1) // error
-			return valor;
-		while (al.notEOF()) {
-			valor = al.yylex();
-			if (valor != -1)
-				return valor;
-		}
-	}
-	return 0;
-}
 
     static void yycheck() {
         yycheck = new short[]{41,
@@ -554,20 +557,28 @@ public void yyerror(String s) {
 
         String new_lex = "-" + new_cte;
         Token old_token = SymbolTable.getLex(cte);
+
         if (!SymbolTable.contains(new_lex)) {
             Token t = new Token(old_token.getID(), new_lex, "CTE NEG");
             SymbolTable.add(t);
+
+            if (t.getAttr("contador") == null) {
+                t.addAttr("contador", "1");
+            } else {
+                int contador = Integer.parseInt(t.getAttr("contador")) + 1;
+                t.addAttr("contador", String.valueOf(contador));
+            }
+        }
+
+        int contador = Integer.parseInt(old_token.getAttr("contador")) - 1;
+        if (contador == 0) {
+            SymbolTable.remove(old_token.getLex());
+        } else {
+            old_token.addAttr("contador", String.valueOf(contador));
         }
     }
 
-
-    //The following are now global, to aid in error reporting
-    int yyn;       //next next thing to do
-    int yym;       //
-    int yystate;   //current parsing state from state table
-    String yys;    //current token string
-
-    //#line 480 "Parser.java"
+    //#line 486 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -584,20 +595,8 @@ String s=null;
 //## end of method parse() ######################################
 
 
+
 //## run() --- for Thread #######################################
-
-    /**
-     * A default run method, used for operating this parser
-     * object in the background.  It is intended for extending Thread
-     * or implementing Runnable.  Turn off with -Jnorun .
-     */
-    public void run() {
-        yyparse();
-    }
-//## end of method run() ########################################
-
-
-//## Constructors ###############################################
 
 //###############################################################
 // method: yyparse : parse input and execute indicated items
@@ -789,8 +788,9 @@ boolean doaction;
           break;
           case 32:
 //#line 80 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);
+          }
           break;
           case 33:
 //#line 81 "src/main/resources/gramatica.y"
@@ -818,8 +818,9 @@ boolean doaction;
           break;
           case 38:
 //#line 90 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "Se reconocio un IF OK"), Color.YELLOW);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "Se reconocio un IF OK"), Color.YELLOW);
+          }
           break;
           case 40:
 //#line 92 "src/main/resources/gramatica.y"
@@ -865,38 +866,45 @@ boolean doaction;
           break;
           case 48:
 //#line 102 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);
+          }
           break;
           case 49:
 //#line 103 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);
+          }
           break;
           case 50:
 //#line 104 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing parenthesis in condition"), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing parenthesis in condition"), Color.RED);
+          }
           break;
           case 51:
 //#line 105 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Condition not declared."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Condition not declared."), Color.RED);
+          }
           break;
           case 53:
 //#line 109 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term in operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term in operation."), Color.RED);
+          }
           break;
           case 54:
 //#line 110 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing comparator in operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing comparator in operation."), Color.RED);
+          }
           break;
           case 55:
 //#line 111 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term in operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term in operation."), Color.RED);
+          }
           break;
           case 62:
 //#line 122 "src/main/resources/gramatica.y"
@@ -906,93 +914,111 @@ boolean doaction;
           break;
           case 63:
 //#line 123 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing ID on assign."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing ID on assign."), Color.RED);
+          }
           break;
           case 64:
 //#line 125 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR right-hand term on assign."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR right-hand term on assign."), Color.RED);
+          }
           break;
           case 65:
 //#line 126 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);
+          }
           break;
           case 67:
 //#line 130 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '+' operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '+' operation."), Color.RED);
+          }
           break;
           case 68:
 //#line 131 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '+' operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '+' operation."), Color.RED);
+          }
           break;
           case 69:
 //#line 132 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '-' operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '-' operation."), Color.RED);
+          }
           break;
           case 70:
 //#line 133 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '-' operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '-' operation."), Color.RED);
+          }
           break;
           case 73:
 //#line 138 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '*' operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '*' operation."), Color.RED);
+          }
           break;
           case 74:
 //#line 139 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '*' operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '*' operation."), Color.RED);
+          }
           break;
           case 75:
 //#line 140 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '/' operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '/' operation."), Color.RED);
+          }
           break;
           case 76:
 //#line 141 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '/' operation."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '/' operation."), Color.RED);
+          }
           break;
           case 82:
 //#line 151 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);
+          }
           break;
           case 83:
 //#line 152 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);
+          }
           break;
           case 85:
 //#line 154 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);
+          }
           break;
           case 86:
 //#line 155 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);
+          }
           break;
           case 88:
 //#line 157 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);
+          }
           break;
           case 89:
 //#line 158 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);
+          }
           break;
           case 90:
 //#line 159 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Unknown function."), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Unknown function."), Color.RED);
+          }
           break;
           case 93:
 //#line 164 "src/main/resources/gramatica.y"
@@ -1008,16 +1034,18 @@ boolean doaction;
           break;
           case 96:
 //#line 167 "src/main/resources/gramatica.y"
-{Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing index on array"), Color.RED);
-}
+          {
+              Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing index on array"), Color.RED);
+          }
           break;
           case 98:
 //#line 171 "src/main/resources/gramatica.y"
           {
+              String cte = val_peek(0).sval;
               check_range(val_peek(0).sval);
           }
           break;
-//#line 841 "Parser.java"
+//#line 848 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
@@ -1057,10 +1085,23 @@ boolean doaction;
     }//main loop
   return 0;//yyaccept!!
 }
+//## end of method run() ########################################
 
 
-/**
- * Create a parser, setting the debug to true or false.
+//## Constructors ###############################################
+
+    /**
+     * A default run method, used for operating this parser
+     * object in the background.  It is intended for extending Thread
+     * or implementing Runnable.  Turn off with -Jnorun .
+     */
+    public void run() {
+        yyparse();
+    }
+
+
+    /**
+     * Create a parser, setting the debug to true or false.
  * @param debugMe true for debugging, false for no debug.
  */
 public Parser(boolean debugMe)

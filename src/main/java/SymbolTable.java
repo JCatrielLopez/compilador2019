@@ -79,7 +79,7 @@ final class SymbolTable {
         System.out.println("---------------------------------------------------------------------");
 
         for (String entry : symbols.keySet()) {
-            Printer.print(String.format("%s %s %s", symbols.get(entry).toString(), "|", symbols.get(entry).getAttrs()), Color.RESET);
+            Printer.print(String.format("%s %s %s", symbols.get(entry), "|", symbols.get(entry).getAttrs()), Color.RESET);
         }
     }
 
