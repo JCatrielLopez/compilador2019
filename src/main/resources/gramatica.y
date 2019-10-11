@@ -169,7 +169,7 @@ id 								:	ID
 
 cte 							:	CTE
 								| 	'-' CTE {String cte = $2.sval;
-								             check_range(cte);}
+								             check_range($2.sval);}
 ;
 
 
@@ -201,10 +201,7 @@ public void check_range(String cte){
 
     int new_cte;
 
-    try{
-        new_cte = String.valueOf(cte);
-
-    catch (Exception e){
+    if (Long.parseLong(cte) > Math.pow(2, 15)) {
         Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Constante fuera de rango: " + cte), Color.YELLOW);
         Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Se va a reemplazar por el valor: -" + Math.pow(2,15)), Color.YELLOW);
         new_cte = Math.pow(2,15);
