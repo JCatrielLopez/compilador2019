@@ -4,7 +4,7 @@ public class Token {
 
     private final int id;
     private String lex;
-    private final String description;
+    private String description;
     private final Hashtable<String, Object> attributes = new Hashtable<>();
 
     public Token(int id, String lex, String description) {
@@ -47,5 +47,9 @@ public class Token {
 
     public void setLex(String new_lex) {
         lex = new_lex;
+    }
+
+    public void setDescr(String descr) {
+        this.description = descr;
     }
 }

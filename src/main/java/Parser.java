@@ -109,9 +109,9 @@ int i;
 //public class ParserVal is defined in ParserVal.java
 
 
-String   yytext;//user variable to return contextual strings
-ParserVal yyval; //used to return semantic vals from action routines
-ParserVal yylval;//the 'lval' (result) I got from yylex()
+    static String yytext;//user variable to return contextual strings
+    static ParserVal yyval; //used to return semantic vals from action routines
+    static ParserVal yylval;//the 'lval' (result) I got from yylex()
     final static short[] yylen = {2,
             1, 1, 2, 2, 1, 4, 4, 4, 2, 1,
             3, 2, 3, 1, 1, 3, 3, 1, 1, 4,
@@ -555,7 +555,7 @@ public void yyerror(String s) {
         String new_lex = "-" + new_cte;
         Token old_token = SymbolTable.getLex(cte);
         if (!SymbolTable.contains(new_lex)) {
-            Token t = new Token(old_token.getID(), new_lex, old_token.getDescription() + "CTE NEG");
+            Token t = new Token(old_token.getID(), new_lex, "CTE NEG");
             SymbolTable.add(t);
         }
     }

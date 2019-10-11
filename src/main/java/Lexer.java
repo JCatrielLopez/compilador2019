@@ -278,6 +278,7 @@ class Lexer {
             if (this.verbose) {
                 Printer.print(String.format("%5s %s %s", source.getLineNumber(), "|", token), Color.RESET);
             }
+            Parser.yylval = new ParserVal(token.getLex());
             return token.getID();
         }
 
