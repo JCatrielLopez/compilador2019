@@ -7,7 +7,7 @@ class Lexer {
     private final Buffer source;
 
     private final int[][] states = {
-            {1, 2, 10, 3, 10, 4, 5, 4, 10, 6, 9, 0, 0, 10, 10},
+            {1, 2, 10, 3, 10, 3, 5, 4, 10, 6, 9, 0, 0, 10, 10},
             {1, 1, 1, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
             {10, 2, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
             {10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
@@ -41,6 +41,7 @@ class Lexer {
         SemanticAction AS7 = new AS7();
         SemanticAction AS8 = new AS8();
         SemanticAction AS9 = new AS9();
+        SemanticAction AS10 = new AS10();
 
         actions[0][0] = AS1;
         actions[0][1] = AS1;
@@ -90,21 +91,21 @@ class Lexer {
         actions[2][13] = AS3;
         actions[2][14] = AS3;
 
-        actions[3][0] = AS5;
-        actions[3][1] = AS5;
-        actions[3][2] = AS5;
-        actions[3][3] = AS5;
-        actions[3][4] = AS5;
+        actions[3][0] = AS10;
+        actions[3][1] = AS10;
+        actions[3][2] = AS10;
+        actions[3][3] = AS10;
+        actions[3][4] = AS10;
         actions[3][5] = AS4;
-        actions[3][6] = AS5;
-        actions[3][7] = AS5;
-        actions[3][8] = AS5;
-        actions[3][9] = AS5;
-        actions[3][10] = AS5;
-        actions[3][11] = AS5;
-        actions[3][12] = AS5;
-        actions[3][13] = AS5;
-        actions[3][14] = AS5;
+        actions[3][6] = AS10;
+        actions[3][7] = AS10;
+        actions[3][8] = AS10;
+        actions[3][9] = AS10;
+        actions[3][10] = AS10;
+        actions[3][11] = AS10;
+        actions[3][12] = AS10;
+        actions[3][13] = AS10;
+        actions[3][14] = AS10;
 
         actions[4][0] = AS6;
         actions[4][1] = AS6;
