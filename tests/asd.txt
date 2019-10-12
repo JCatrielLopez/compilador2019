@@ -1,8 +1,16 @@
-==
-:=
-:
-=
-<=
->=
-<>
-<
+
+/+begin
+    if(a<2)Æ
+        begin
+            x:=1;
+        end;
+    else
+        begin
+            a:=2;
+            print(%ASD%);
+        end;
+    end_if;
+end;
++/
+
+nit a;
