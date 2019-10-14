@@ -205,3 +205,39 @@ public int yylex() {
 public void yyerror(String s) {
     System.out.println("Linea " + al.getLineNumber() + ": (Parser) " + s);
 }
+
+
+public void check_range(String cte) {
+
+        int new_cte;
+        if (Long.parseLong(cte) < Math.pow(2, 15)) {
+            new_cte = Integer.valueOf(cte);
+        } else {
+            Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Constante fuera de rango: " + cte), Color.YELLOW);
+            Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Se va a reemplazar por el valor: -" + Math.pow(2, 15)), Color.YELLOW);
+            new_cte = (int) Math.pow(2, 15) - 1;
+        }
+
+        String new_lex = "-" + new_cte;
+        Token old_token = SymbolTable.getLex(cte);
+
+        if (!SymbolTable.contains(new_lex)) {
+            Token t = new Token(old_token.getID(), new_lex, "CTE NEG");
+            SymbolTable.add(t);
+
+            if (t.getAttr("contador") == null) {
+                t.addAttr("contador", "1");
+            }
+            else {
+                int contador = Integer.parseInt(t.getAttr("contador")) + 1 ;
+                t.addAttr("contador", String.valueOf(contador));
+            }
+        }
+
+        int contador = Integer.parseInt(old_token.getAttr("contador")) - 1 ;
+        if( contador == 0) {
+            SymbolTable.remove(old_token.getLex());
+        } else {
+            old_token.addAttr("contador", String.valueOf(contador));
+        }
+    }
