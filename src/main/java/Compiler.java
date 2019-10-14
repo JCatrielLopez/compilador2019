@@ -1,4 +1,5 @@
 import org.fusesource.jansi.AnsiConsole;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -64,9 +65,6 @@ class Compiler {
                       "Line ", "|", "Token", "|", " ", "Lexeme", " ", "|", "Description"));
       System.out.println("-----------------------------------------------------------------");
     }
-
-    // TODO Hay que arreglar el camino del '='. No es un literal, es un caracter invalido!!!
-
 
     Parser parser = new Parser(al);
     parser.run();

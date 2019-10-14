@@ -79,22 +79,22 @@ final class SymbolTable {
         System.out.println("---------------------------------------------------------------------");
 
         for (String entry : symbols.keySet()) {
-            Printer.print(String.format("%s %s %s", symbols.get(entry).toString(), "|", symbols.get(entry).getAttrs()), Color.RESET);
+            Printer.print(String.format("%s %s %s", symbols.get(entry), "|", symbols.get(entry).getAttrs()), Color.RESET);
         }
     }
 
-//    public static boolean contains(String id) {
-//        return (ids.containsKey(id));
-//    }
+    public static boolean contains(String id) {
+        return (ids.containsKey(id));
+    }
 
-//    public static void modificarLexema(String viejo, String nuevo) {
-//        Token t = getLexeme(viejo);
-//        if (t != null) {
-//            t.setLexema(nuevo);
-//            remove(viejo);
-//            add(t);
-//        }
-//    }
+    public static void modify(String old, String new_lex) {
+        Token t = getLex(old);
+        if (t != null) {
+            t.setLex(new_lex);
+            remove(old);
+            add(t);
+        }
+    }
 
 //    public static Set<String> iterator() {
 //        return new HashSet<String>(simbolos.keySet());
