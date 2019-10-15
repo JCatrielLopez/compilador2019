@@ -178,7 +178,8 @@ id 								:	ID
 ;
 
 cte 							:	CTE
-								| 	'-' CTE
+								| 	'-' CTE {String cte = $2.sval;
+								             check_range($2.sval);}
 ;
 
 
