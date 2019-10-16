@@ -54,13 +54,11 @@ class Compiler {
     Lexer al = new Lexer(sb, al_verbose);
 
     int out = 1;
-    if (al_verbose) {
       System.out.println(
               String.format(
                       "%5s %s %3s %s %s %-50s %s %s",
                       "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
       System.out.println("-----------------------------------------------------------------------");
-    }
 
     Parser parser = new Parser(al, as_verbose);
     parser.run();
