@@ -4,7 +4,7 @@ public class Token {
 
     private final int id;
     private String lex;
-    private String description;
+    private final String description;
     private final Hashtable<String, Object> attributes = new Hashtable<>();
 
     public Token(int id, String lex, String description) {
@@ -25,9 +25,9 @@ public class Token {
         return id;
     }
 
-//    public void setLex(String lex) {
-//        this.lex = lex;
-//    }
+    public void setLex(String lex) {
+        this.lex = lex;
+    }
 
     public String getLex() {
         return lex;
@@ -38,18 +38,10 @@ public class Token {
     }
 
     public String toString() {
-        return String.format("%5s %s %30s %s %-10s", id, "|", lex, "|", description);
+        return String.format("%5s %s %25s %s %-10s", "(" + id + ")", " ", lex, " ", "[" + description + "]");
     }
 
     public Object getAttrs() {
         return this.attributes.clone();
-    }
-
-    public void setLex(String new_lex) {
-        lex = new_lex;
-    }
-
-    public void setDescr(String descr) {
-        this.description = descr;
     }
 }

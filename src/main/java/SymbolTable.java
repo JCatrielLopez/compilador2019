@@ -71,15 +71,15 @@ final class SymbolTable {
     }
 
     public static void print() {
-        System.out.println("=====================================================================");
-        System.out.println("                           SYMBOL TABLE                              ");
-        System.out.println("=====================================================================");
-        System.out.println(String.format("%5s %s %8s %10s %10s %s %10s %s %-45s", "Token",
-                "|", " ", "Lexeme", " ", "|", "Descr", "|", "Otros atributos"));
-        System.out.println("---------------------------------------------------------------------");
+        System.out.println("\n--------------------------- TABLA DE SIMBOLOS ---------------------------------");
+        System.out.println(
+                String.format(
+                        "%-5s %s %25s %s %-10s %s %15s", "  id", " ", "Lexema", " ", "Tipo", " ", "Otros atributos"));
+        System.out.println("-------------------------------------------------------------------------------");
 
         for (String entry : symbols.keySet()) {
-            Printer.print(String.format("%s %s %s", symbols.get(entry), "|", symbols.get(entry).getAttrs()), Color.RESET);
+            Printer.print(String.format("%s %s %s", symbols.get(entry), " ",
+                    symbols.get(entry).getAttrs()), Color.RESET);
         }
     }
 

@@ -1,5 +1,3 @@
-%{package compilador2019;
-%}
 
 %token IF
 %token ELSE
@@ -27,18 +25,25 @@
 
 %%
 
-programa 	                    :	lista_sentencias_declarativas
-			                    | 	bloque_sentencias_ejecutables
-			                    | 	lista_sentencias_declarativas bloque_sentencias_ejecutables
+programa 	                    :	lista_sentencias_declarativas {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa OK"), Color.RESET);}
+			                    | 	bloque_sentencias_ejecutables {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa OK (E)"), Color.RESET);}
+			                    | 	lista_sentencias_declarativas bloque_sentencias_ejecutables {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa OK (D y E)"), Color.RESET);}
+                                |   error  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en programa"), Color.RED);}
 ;
 
 lista_sentencias_declarativas	:	lista_sentencias_declarativas sentencia_declarativa
 								|	sentencia_declarativa
 ;
 
-bloque_sentencias_ejecutables	:	BEGIN lista_sentencias_ejecutables END ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "Sentencias ejecutables OK"), Color.YELLOW);}
-                                |   BEGIN lista_sentencias_ejecutables error ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: END"), Color.RED);}
-                                |   BEGIN lista_sentencias_ejecutables END error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
+bloque_sentencias               :   bloque_sentencias_ejecutables
+                                |   sentencia_ejecutable
+;
+
+bloque_sentencias_ejecutables	:	BEGIN lista_sentencias_ejecutables END ';'
+                                |   error lista_sentencias_ejecutables END ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave BEGIN."), Color.RED);}
+                                |   BEGIN lista_sentencias_ejecutables error ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave END."), Color.RED);}
+                                |   error lista_sentencias_ejecutables error  ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan los delimitadores de bloque."), Color.RED);}
+                                |   BEGIN error END ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en bloque de ejecucion."), Color.RED);}
 ;
 
 lista_sentencias_ejecutables	:	lista_sentencias_ejecutables sentencia_ejecutable
@@ -46,13 +51,14 @@ lista_sentencias_ejecutables	:	lista_sentencias_ejecutables sentencia_ejecutable
 ;
 
 sentencia_declarativa 			:	tipo lista_variables ';'
-                                |   lista_variables ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Type not declared"), Color.RED);}
-                                |   tipo lista_variables error  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
+                                |   lista_variables ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Tipo no declarado."), Color.RED);}
+                                |   error lista_variables ';'{Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Tipo no reconocido."), Color.RED);}
+                                |   tipo error ';'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en lista de variables."), Color.RED);}
+                                |   error ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la sentencia declarativa."), Color.RED);}
 ;
 
 tipo							: 	INT
 								|	ULONG
-								//|   error   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Unknown type declared."), Color.RED);}
 ;
 
 lista_variables					:	lista_variables ',' ID
@@ -62,53 +68,60 @@ lista_variables					:	lista_variables ',' ID
 ;
 
 coleccion						:	ID '[' cte ']'
-                                |   ID '[' cte   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ["), Color.RED);}
-                                |   ID cte ']'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ]"), Color.RED);}
+                                |   ID '[' ']'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la declaracion de la coleccion."), Color.RED);}
+                                |   ID '[' error ']'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la declaracion de la coleccion."), Color.RED);}
 ;
 
 sentencia_ejecutable 			:	sentencia_asignacion
 								| 	sentencia_seleccion
 								|	sentencia_control
-								|   sentencia_declarativa
 								|	sentencia_impresion
 ;
 
-sentencia_impresion				:   PRINT '(' CADENA ')' ';'
-                                |   error '(' CADENA ')' ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: PRINT"), Color.RED);}
-                                |   PRINT  CADENA ')' ';'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);}
-                                |   PRINT '(' CADENA  ';'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);}
-                                |   PRINT '(' CADENA ')' error  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
-                                |   PRINT '(' error ')' ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Character chain not declared."), Color.RED);}
+sentencia_impresion				:   PRINT '(' CADENA ')' ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Sentencia PRINT OK."), Color.RESET);}
+                                |   error '(' CADENA ')' ';'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave PRINT."), Color.RED);}
+                                |   PRINT  CADENA ')' ';'   {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal '('."), Color.RED);}
+                                |   PRINT '(' CADENA  ';'   {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ')'."), Color.RED);}
+                                |   PRINT '(' ')' ';'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la cadena a imprimir."), Color.RED);}
+                                |   PRINT '(' error ')' ';'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la cadena a imprimir."), Color.RED);}
+                                |   PRINT '(' error ';'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la cadena a imprimir."), Color.RED);}
+                                |   PRINT error ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la sentencia PRINT."), Color.RED);}
 ;
 
-sentencia_control				:	WHILE condicion DO bloque_sentencias_ejecutables ';'
-                                |   error condicion DO bloque_sentencias_ejecutables ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: WHILE"), Color.RED);}
-                                |   WHILE condicion error bloque_sentencias_ejecutables ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: DO"), Color.RED);}
-                                |   WHILE condicion DO bloque_sentencias_ejecutables error    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
+sentencia_control				:	WHILE condicion DO bloque_sentencias ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Sentencia WHILE OK"), Color.RESET);}
+                                |   error condicion DO bloque_sentencias ';'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave WHILE."), Color.RED);}
+                                |   WHILE condicion error bloque_sentencias ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave DO."), Color.RED);}
+                                |   WHILE error DO bloque_sentencias ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion de WHILE."), Color.RED);}
+                                |   WHILE condicion DO error ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la sentencia WHILE."), Color.RED);}
+                                |   WHILE error ';' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la sentencia WHILE."), Color.RED);}
 ;
 
-sentencia_seleccion				:	IF condicion bloque_sentencias_ejecutables END_IF ';'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "Se reconocio un IF OK"), Color.YELLOW);}
-                                |   IF condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF ';'
-                                |   error condicion bloque_sentencias_ejecutables END_IF ';'    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: IF"), Color.RED);}
-                                |   IF condicion bloque_sentencias_ejecutables error ';'        {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: END_IF"), Color.RED);}
-                                |   IF condicion bloque_sentencias_ejecutables END_IF error     {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
-                                |   error condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: IF"), Color.RED);}
-                                |   IF condicion bloque_sentencias_ejecutables error bloque_sentencias_ejecutables END_IF ';'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: ELSE"), Color.RED);}
-                                |   IF condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables error ';'     {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: END_IF"), Color.RED);}
-                                |   IF condicion bloque_sentencias_ejecutables ELSE bloque_sentencias_ejecutables END_IF error  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
+sentencia_seleccion				:	IF condicion bloque_sentencias END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Sentencia IF OK."), Color.RESET);}
+                                |   IF condicion bloque_sentencias ELSE bloque_sentencias END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Sentencia IF-ELSE OK."), Color.RESET);}
+                                |   error condicion bloque_sentencias END_IF ';'    {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en sentencia IF."), Color.RED);}
+                                |   IF condicion bloque_sentencias error ';'        {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en sentencia IF."), Color.RED);}
+                                |   IF condicion error END_IF ';'       {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en bloque IF."), Color.RED);}
+                                |   IF error bloque_sentencias END_IF ';'       {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion de IF."), Color.RED);}
+                                |   error condicion bloque_sentencias ELSE bloque_sentencias END_IF ';'   {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave IF."), Color.RED);}
+                                |   IF condicion bloque_sentencias error bloque_sentencias END_IF ';'     {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave ELSE."), Color.RED);}
+                                |   IF condicion bloque_sentencias ELSE bloque_sentencias error ';'       {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave END_IF."), Color.RED);}
+                                |   IF condicion error ELSE bloque_sentencias END_IF ';'    {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en bloque IF."), Color.RED);}
+                                |   IF condicion bloque_sentencias ELSE error END_IF ';'    {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en bloque ELSE."), Color.RED);}
+                                |   IF error bloque_sentencias ELSE bloque_sentencias END_IF ';'    {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion."), Color.RED);}
+                                |   IF error ';'    {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en sentencia IF."), Color.RED);}
 ;
 
 condicion						:	'(' comparacion ')'
-                                |    comparacion ')' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);}
-                                |   '(' comparacion  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);}
-                                |   comparacion {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing parenthesis in condition"), Color.RED);}
-                                |   error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Condition not declared."), Color.RED);}
+                                |    comparacion ')' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el caracter ("), Color.RED);}
+                                |   '(' comparacion  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el caracter )"), Color.RED);}
+                                |   comparacion {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR faltan parentesis en la condicion"), Color.RED);}
+                                |   '(' ')' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion."), Color.RED);}
 ;
 
 comparacion						:	expresion comparador expresion
-                                |   error comparador expresion    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term in operation."), Color.RED);}
-                                |   expresion error expresion  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing comparator in operation."), Color.RED);}
-                                |   expresion comparador error     {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term in operation."), Color.RED);}
+                                |   error comparador expresion    {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la comparacion."), Color.RED);}
+                                |   expresion error expresion  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la comparacion."), Color.RED);}
+                                |   expresion comparador error     {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la comparacion."), Color.RED);}
 ;
 
 comparador		            	:   '<'
@@ -119,27 +132,27 @@ comparador		            	:   '<'
 							  	|   DISTINTO
 ;
 
-sentencia_asignacion 			:	id ASIGN expresion ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "Se reconocio una asignacion OK"), Color.YELLOW);}
-                                |   error ASIGN expresion ';'  {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing ID on assign."), Color.RED);}
-                                //|   id expresion ';' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing keyword: :="), Color.RED);} //TODO Por que esta comentada esta regla?
-                                |   id ASIGN error ';'    {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR right-hand term on assign."), Color.RED);}
-                                |   id ASIGN expresion  error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ;"), Color.RED);}
+sentencia_asignacion 			:	id ASIGN expresion ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Sentencia ASIGN OK."), Color.RESET);}
+                                |   error ASIGN expresion ';'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el ID de la asignacion."), Color.RED);}
+                                |   id ASIGN ';'    {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el lado derecho de la asignacion."), Color.RED);}
+                                |   id ASIGN error ';'    {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado derecho de la asignacion."), Color.RED);}
+
 ;
 
 expresion						:	expresion '+' termino
-                                |   error '+' termino {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '+' operation."), Color.RED);}
-                                |   expresion '+' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '+' operation."), Color.RED);}
-                                |   error '-' termino {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '-' operation."), Color.RED);}
-                                |   expresion '-' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '-' operation."), Color.RED);}
+                                |   expresion '-' termino
 								| 	termino
+                                |   expresion '+' error {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '+'"), Color.RED);}
+                                |   expresion '-' error {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '-'"), Color.RED);}
 ;
 
 termino							:	termino '*' factor
-                                |   error '*' factor {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '*' operation."), Color.RED);}
-                                |   termino '*' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '*' operation."), Color.RED);}
-                                |   error '/' factor {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '/' operation."), Color.RED);}
-                                |   termino '/' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing term on '/' operation."), Color.RED);}
+                                |   termino '/' factor
 								| 	factor
+                                |   error '*' factor {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '*'"), Color.RED);}
+                                |   termino '*' error {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '*"), Color.RED);}
+                                |   error '/' factor {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '/'"), Color.RED);}
+                                |   termino '/' error {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '/'"), Color.RED);}
 ;
 
 factor 							: 	id
@@ -148,23 +161,19 @@ factor 							: 	id
 ;
 
 funcion							:	FIRST '(' ')'
-                                |   FIRST error ')' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);}
-                                |   FIRST '(' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);}
+                                |   FIRST error {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan parentesis en funcion FIRST."), Color.RED);}
                                 |   LAST '(' ')'
-                                |   LAST error ')' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);}
-                                |   LAST '(' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);}
+                                |   LAST error {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan parentesis en funcion LAST."), Color.RED);}
                                 |	LENGTH '(' ')'
-                                |   LENGTH error ')' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ("), Color.RED);}
-                                |   LENGTH '(' error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: )"), Color.RED);}
-                                |   error '(' ')' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Unknown function."), Color.RED);}
+                                |   LENGTH error {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan parentesis en funcion LENGTH."), Color.RED);}
+                                |   error '(' ')' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Funcion desconocida."), Color.RED);}
+                                |   error {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Funcion desconocida."), Color.RED);}
 ;
 
 id 								:	ID
 								|	ID '[' ID ']'
-                                |	ID ID ']'   {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ["), Color.RED);}
-                                |	ID '[' ID error {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing character: ]"), Color.RED);}
 								|	ID '[' cte ']'
-                                |   ID '[' error ']' {Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR Missing index on array"), Color.RED);}
+                                |   ID '[' error ']' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el subindice de la coleccion."), Color.RED);}
 ;
 
 cte 							:	CTE
@@ -178,6 +187,7 @@ cte 							:	CTE
 //TODO Codigo JAVA
 
 private Lexer al;
+private boolean verbose;
 
 public int yylex() {
 	if (al.notEOF()) {
@@ -194,8 +204,9 @@ public int yylex() {
 }
 
 public void yyerror(String s) {
-	//System.out.println("Linea " + al.getNroLinea() + ": (Parser) " + s);
+      Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "P", "|", s), Color.RED);
 }
+
 
 public void check_range(String cte) {
 

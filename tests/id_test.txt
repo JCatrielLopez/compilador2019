@@ -1,11 +1,10 @@
 int short_id;
-int l_o_n_g__i_d_e_n_t_i_f_i_e_r, 23id, cAmElCaSe_id, camelcase_id, CAMELCASE_ID;
+int l_o_n_g__i_d_e_n_t_i_f_i_e_r;
 int underscore_id;
 
 begin
     short_id := 23;
     l_o_n_g__i_d_e_n_t_i_f_i_e_r := short_id;
-    23id := 23;
     cAmElCaSe_id := 0;
     camelcase_id := 1;
     CAMELCASE_ID := 2;

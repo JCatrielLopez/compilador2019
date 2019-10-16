@@ -266,6 +266,7 @@ class Lexer {
             } else
                 EOF = true;
 
+
             SemanticAction as = actions[state][getColumn(new_char)];
             token = as.execute(source, lex, (char) new_char, this.verbose);
             state = states[state][getColumn(new_char)];
@@ -274,9 +275,8 @@ class Lexer {
 
         if (token != null) {
             if (this.verbose) {
-                Printer.print(String.format("%5s %s %s", source.getLineNumber(), "|", token), Color.RESET);
+                Printer.print(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|", token), Color.RESET);
             }
-            Parser.yylval = new ParserVal(token.getLex());
             return token.getID();
         }
 

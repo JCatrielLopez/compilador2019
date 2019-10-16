@@ -1,4 +1,5 @@
 import org.fusesource.jansi.AnsiConsole;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,7 +39,7 @@ class Compiler {
           break;
         case "-h":
           if (!(al_verbose || as_verbose || gc_verbose || ts_verbose)) print_help();
-          break;
+          return;
         default:
           // Ignoramos los argumentos que no son validos.
       }
@@ -54,21 +55,14 @@ class Compiler {
 
     int out = 1;
     if (al_verbose) {
-      //TODO Los errores se tienen que imprimir igual, por mas que no este la opcion verbose. Definir el formato para estos casos.
-      System.out.println("=================================================================");
-      System.out.println("                             LEXER                               ");
-      System.out.println("=================================================================");
       System.out.println(
               String.format(
-                      "%5s %s %5s %s %8s %10s %10s %s %10s",
-                      "Line ", "|", "Token", "|", " ", "Lexeme", " ", "|", "Description"));
-      System.out.println("-----------------------------------------------------------------");
+                      "%5s %s %3s %s %s %-50s %s %s",
+                      "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
+      System.out.println("-----------------------------------------------------------------------");
     }
 
-    // TODO Hay que arreglar el camino del '='. No es un literal, es un caracter invalido!!!
-
-
-    Parser parser = new Parser(al);
+    Parser parser = new Parser(al, as_verbose);
     parser.run();
 
     if (ts_verbose) SymbolTable.print();
