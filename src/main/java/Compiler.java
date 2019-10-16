@@ -25,16 +25,16 @@ class Compiler {
             if (!tempFile.exists()) throw new IOException("Input file does not exist.");
           } else throw new Exception("Input file not found.");
           break;
-        case "-l":
+        case "-al":
           al_verbose = true;
           break;
-        case "-s":
+        case "-as":
           as_verbose = true;
           break;
         case "-g":
           gc_verbose = true;
           break;
-        case "-t":
+        case "-ts":
           ts_verbose = true;
           break;
         case "-h":
@@ -75,15 +75,15 @@ class Compiler {
     System.out.println(String.format("%6s %s %-30s", "Option", " ", "Description"));
     System.out.println(String.format("%6s %s %-30s", "-i", " ", "Input file."));
     System.out.println(
-            String.format("%6s %s %-30s", "-l", " ", "Print information from lexical analysis."));
+            String.format("%6s %s %-30s", "-al", " ", "Imprime informacion del analisis lexico."));
     System.out.println(
-            String.format("%6s %s %-30s", "-s", " ", "Print information from syntactic analysis."));
+            String.format("%6s %s %-30s", "-as", " ", "Imprime informacion del analisis sintactico."));
     System.out.println(
-            String.format("%6s %s %-30s", "-g", " ", "Print information from assembler generation"));
-    System.out.println(String.format("%6s %s %-30s", "-t", " ", "Print Symbol table"));
+            String.format("%6s %s %-30s", "-g", " ", "Imprime informacion de la generacion de assembler."));
+    System.out.println(String.format("%6s %s %-30s", "-ts", " ", "Imprime la tabla de simbolos."));
     System.out.println(
             String.format(
                     "%6s %s %-30s",
-                    "-h", " ", "Print help information. Fails if use with more arguments."));
+                    "-h", " ", "Imprime informacion de ayuda."));
   }
 }
