@@ -1,0 +1,9 @@
+int x;
+int y;
+
+begin
+    /+ Este comentario se va a ignorar +/
+    /* Este comentario va a producir errores */
+
+    /+ Este comentario no esta cerrado
+end;

@@ -20,19 +20,18 @@ public class AS3 implements SemanticAction {
                     "WARNING CTE fuera de rango, se le asigna el valor maximo."), Color.YELLOW);
             cte = (long) (Math.pow(2, 32) - 1);
 
-        } else {
-            Token token = new Token(SymbolTable.getID("cte"), Long.toString(cte), "CONSTANT");
-            SymbolTable.add(token);
-
-            if (token.getAttr("contador") == null) {
-                token.addAttr("contador", "1");
-            } else {
-                int contador = Integer.parseInt(token.getAttr("contador")) + 1;
-                token.addAttr("contador", String.valueOf(contador));
-            }
-
-            return token;
         }
-        return null;
+        Token token = new Token(SymbolTable.getID("cte"), Long.toString(cte), "CONSTANT");
+        SymbolTable.add(token);
+
+        if (token.getAttr("contador") == null) {
+            token.addAttr("contador", "1");
+        } else {
+            int contador = Integer.parseInt(token.getAttr("contador")) + 1;
+            token.addAttr("contador", String.valueOf(contador));
+        }
+
+        return token;
+//        return null;
     }
 }

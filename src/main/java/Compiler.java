@@ -2,7 +2,6 @@ import org.fusesource.jansi.AnsiConsole;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 
 class Compiler {
 
@@ -22,8 +21,14 @@ class Compiler {
           if (i + 1 < args.length) {
             source_path = args[i + 1];
             File tempFile = new File(source_path);
-            if (!tempFile.exists()) throw new IOException("Input file does not exist.");
-          } else throw new Exception("Input file not found.");
+              if (!tempFile.exists()) {
+                  Printer.print("El archivo ingresado no existe.", Color.RED);
+                  return;
+              }
+          } else {
+              Printer.print("No se ingreso ningun archivo.", Color.RED);
+              return;
+          }
           break;
         case "-al":
           al_verbose = true;
@@ -46,7 +51,8 @@ class Compiler {
     }
 
     FileInputStream source_file = new FileInputStream(source_path);
-    StringBuffer sb = new StringBuffer();
+
+      StringBuffer sb = new StringBuffer();
 
     while (source_file.available() != 0) sb.append((char) source_file.read());
     source_file.close();

@@ -1,5 +1,0 @@
-/+ Este es un comentario bien definido +/
-
-/* Este es un comentario mal definido */
-
-/+ Este comentario no esta cerrado

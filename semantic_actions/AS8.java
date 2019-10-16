@@ -4,8 +4,8 @@ public class AS8 implements SemanticAction {
     @Override
     public Token execute(Buffer source, StringBuilder lex, char last_char, boolean verbose) {
         if ((last_char == 0))
-            Printer.print(String.format("%5s %s %5s %s %30s %s %10s", source.getLineNumber(), "|", " ", "|",
-                    "END OF FILE", "|", " "), Color.YELLOW);
+            Printer.print(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|",
+                    "EOF"), Color.BLUE);
 
         lex.setLength(0);
 

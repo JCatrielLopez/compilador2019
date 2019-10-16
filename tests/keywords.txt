@@ -1,0 +1,22 @@
+int WHILE;
+int IF;
+
+begin
+    if (IF > 2)
+        print(%Se diferencia entre if e IF%);
+    end_if;
+
+    while (WHILE < 3) do
+        begin
+            print(%Se diferencia entre while y WHILE%);
+        end;
+    ;
+
+    whole (WHILE <> 2) do
+        print(%Esto no se va a imprimir nunca%);
+    ;
+
+    if condicion
+            print(IF)
+    end_if;
+end;

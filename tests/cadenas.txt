@@ -1,0 +1,5 @@
+begin
+    print(%cadena bien definida%);
+    print(+cadena mal definida+);
+    print %print mal definido% ;
+end;

@@ -1,0 +1,7 @@
+ulong short_id;
+ulong SHORT_ID;
+ulong sHoRt_iD;
+ulong l_o_n_g_i_d_e_n_t_i_f_i_e_r;
+
+int number_id2;
+int _underscoreID;

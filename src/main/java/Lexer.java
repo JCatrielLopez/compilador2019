@@ -217,7 +217,7 @@ class Lexer {
             return 3;
         else if (ascii_code == 45 || ascii_code == 42 ||
                 ascii_code == 40 || ascii_code == 41 ||
-                ascii_code == 44 || ascii_code == 59 || ascii_code == 91 || ascii_code == 93 || ascii_code == 46) // - * ( ) , ; .
+                ascii_code == 44 || ascii_code == 59 || ascii_code == 91 || ascii_code == 93 || ascii_code == 46) // - * ( ) , ; [ ] .
             return 8;
         else if (ascii_code == 61) // =
             return 5;
