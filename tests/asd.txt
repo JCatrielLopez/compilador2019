@@ -1,12 +1,8 @@
-* Constantes con el primer y último valor dentro del rango.
-* Constantes con el primer y último valor fuera del rango.
-* Para números reales, además, mantisa con y sin parte decimal, con y sin exponente, con exponente
-    positivo y negativo.
-* Identificadores de menos y más de 25 caracteres.
-* Identificadores con letras, dígitos y "_".
-* Identificadores que empiecen "_".
-* Palabras reservadas escritas en minúsculas y mayúsculas.
-* Comentarios bien y mal definidos.
-* Cadenas bien y mal definidas.
-* Casos de prueba que contemplen todas las estructuras válidas del lenguaje, así como errores
-    sintácticos en cada una de ellas.
+==
+:=
+:
+=
+<=
+>=
+<>
+<
