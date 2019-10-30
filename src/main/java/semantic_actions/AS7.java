@@ -1,3 +1,9 @@
+package semantic_actions;
+
+import globals.SymbolTable;
+import lexer.Buffer;
+import lexer.Token;
+
 public class AS7 implements SemanticAction {
 
     // Cadena de una linea

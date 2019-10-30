@@ -1,6 +1,8 @@
+package globals;
+
 import static org.fusesource.jansi.Ansi.ansi;
 
-class Printer {
+public class Printer {
 
     public static void print(String message, Color color) {
         String TOKEN_END = "|@";

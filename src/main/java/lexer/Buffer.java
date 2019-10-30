@@ -1,4 +1,6 @@
-class Buffer {
+package lexer;
+
+public class Buffer {
 
     private final StringBuffer buffer;
     private int lineNumber;

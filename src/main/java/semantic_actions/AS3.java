@@ -1,3 +1,11 @@
+package semantic_actions;
+
+import globals.Color;
+import globals.Printer;
+import globals.SymbolTable;
+import lexer.Buffer;
+import lexer.Token;
+
 public class AS3 implements SemanticAction {
 
 

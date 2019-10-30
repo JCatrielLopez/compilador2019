@@ -1,3 +1,5 @@
+package lexer;
+
 import java.util.Hashtable;
 
 public class Token {

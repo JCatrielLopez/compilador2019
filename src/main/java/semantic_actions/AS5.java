@@ -1,3 +1,10 @@
+package semantic_actions;
+
+import globals.Color;
+import globals.Printer;
+import lexer.Buffer;
+import lexer.Token;
+
 public class AS5 implements SemanticAction {
 
     // Caracter invalido

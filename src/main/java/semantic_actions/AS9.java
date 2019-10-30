@@ -1,3 +1,8 @@
+package semantic_actions;
+
+import lexer.Buffer;
+import lexer.Token;
+
 public class AS9 implements SemanticAction {
 
     // Salto de linea

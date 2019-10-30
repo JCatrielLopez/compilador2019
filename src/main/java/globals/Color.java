@@ -1,3 +1,5 @@
+package globals;
+
 public enum Color {
 
     BLACK,

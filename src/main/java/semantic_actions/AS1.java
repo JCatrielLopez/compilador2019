@@ -1,3 +1,8 @@
+package semantic_actions;
+
+import lexer.Buffer;
+import lexer.Token;
+
 public class AS1 implements SemanticAction {
     @Override
 

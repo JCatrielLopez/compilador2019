@@ -1,4 +1,9 @@
+import globals.Color;
+import globals.Printer;
+import globals.SymbolTable;
+import lexer.Lexer;
 import org.fusesource.jansi.AnsiConsole;
+import parser.Parser;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,13 +26,13 @@ class Compiler {
           if (i + 1 < args.length) {
             source_path = args[i + 1];
             File tempFile = new File(source_path);
-              if (!tempFile.exists()) {
-                  Printer.print("El archivo ingresado no existe.", Color.RED);
-                  return;
-              }
-          } else {
-              Printer.print("No se ingreso ningun archivo.", Color.RED);
+            if (!tempFile.exists()) {
+              Printer.print("El archivo ingresado no existe.", Color.RED);
               return;
+            }
+          } else {
+            Printer.print("No se ingreso ningun archivo.", Color.RED);
+            return;
           }
           break;
         case "-al":
@@ -52,19 +57,18 @@ class Compiler {
 
     FileInputStream source_file = new FileInputStream(source_path);
 
-      StringBuffer sb = new StringBuffer();
+    StringBuffer sb = new StringBuffer();
 
     while (source_file.available() != 0) sb.append((char) source_file.read());
     source_file.close();
 
     Lexer al = new Lexer(sb, al_verbose);
 
-    int out = 1;
-      System.out.println(
-              String.format(
-                      "%5s %s %3s %s %s %-50s %s %s",
-                      "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
-      System.out.println("-----------------------------------------------------------------------");
+    System.out.println(
+            String.format(
+                    "%5s %s %3s %s %s %-50s %s %s",
+                    "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
+    System.out.println("-----------------------------------------------------------------------");
 
     Parser parser = new Parser(al, as_verbose);
     parser.run();

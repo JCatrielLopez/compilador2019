@@ -1,4 +1,10 @@
-class Lexer {
+package lexer;
+
+import globals.Color;
+import globals.Printer;
+import semantic_actions.*;
+
+public class Lexer {
 
     private static final int INVALID_TOKEN = -1;
     private static final int START = 0;

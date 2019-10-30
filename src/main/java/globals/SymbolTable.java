@@ -1,7 +1,11 @@
+package globals;
+
+import lexer.Token;
+
 import java.util.Hashtable;
 
 
-final class SymbolTable {
+public final class SymbolTable {
 
     private static final Hashtable<String, Integer> ids = new Hashtable<>();
     private static final Hashtable<String, Token> symbols = new Hashtable<>();
