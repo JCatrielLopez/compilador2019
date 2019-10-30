@@ -9,7 +9,8 @@ import java.io.File;
 import java.io.FileInputStream;
 
 class Compiler {
-
+  //TODO Crear una clase Error que contenga los mensajes de error de todo el proceso, para mostrarlos por separado?
+  //TODO Crear una opcion para mandar los resultados  a un archivo.
   public static void main(String[] args) throws Exception {
     AnsiConsole.systemInstall();
     SymbolTable.init();
