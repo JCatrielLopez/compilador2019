@@ -20,7 +20,7 @@ public class AS2 implements SemanticAction {
 
         Token token;
 
-        if (!SymbolTable.isReserved(lex.toString())) {
+        if (!SymbolTable.isReserved(lex.toString()) || lex.toString().equals("cadena")) {
             token = new Token(SymbolTable.getID("id"), lex.toString(), "ID");
             SymbolTable.add(token);
         } else {

@@ -28,7 +28,7 @@ public class Lexer {
     private SemanticAction[][] actions;
     private final boolean verbose;
 
-    public Lexer(StringBuffer pf, boolean verbose) {
+    public Lexer(StringBuilder pf, boolean verbose) {
         this.source = new Buffer(pf);
         this.declare_semantic_actions();
         this.verbose = verbose;
@@ -258,7 +258,6 @@ public class Lexer {
 
     public int yylex() {
         StringBuilder lex = new StringBuilder();
-
 
         int state = START;
         boolean EOF = false;

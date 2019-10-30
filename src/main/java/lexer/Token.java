@@ -1,6 +1,7 @@
 package lexer;
 
 import java.util.Hashtable;
+import java.util.Objects;
 
 public class Token {
 
@@ -45,5 +46,18 @@ public class Token {
 
     public Object getAttrs() {
         return this.attributes.clone();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Token token = (Token) o;
+        return id == token.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
