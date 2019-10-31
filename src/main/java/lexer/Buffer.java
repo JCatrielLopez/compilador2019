@@ -2,10 +2,10 @@ package lexer;
 
 public class Buffer {
 
-    private final StringBuffer buffer;
+    private final StringBuilder buffer;
     private int lineNumber;
 
-    public Buffer(StringBuffer sb) {
+    public Buffer(StringBuilder sb) {
         this.buffer = sb;
         this.lineNumber = 1;
     }

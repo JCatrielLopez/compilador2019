@@ -76,17 +76,20 @@ lista_variables					:	lista_variables ',' ID          {addVariable($3.sval);}
 								|	coleccion                       {addVariable($1.sval);}
 ;
 
+//TODO Size de la coleccion en la TS.
 coleccion						:	ID '[' cte ']'
                                 |   ID '[' ']'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la declaracion de la coleccion."), globals.Color.RED);}
                                 |   ID '[' error ']'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la declaracion de la coleccion."), globals.Color.RED);}
 ;
 
+//TODO Recuerden agregar el error de que falta “;” al final de una sentencia.
 sentencia_ejecutable 			:	sentencia_asignacion
 								| 	sentencia_seleccion
 								|	sentencia_control
 								|	sentencia_impresion
 ;
 
+//TODO   Recuerden agregar el print para id y constante.
 sentencia_impresion				:   PRINT '(' CADENA ')' ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Sentencia PRINT OK."), globals.Color.RESET);}
                                 |   error '(' CADENA ')' ';'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave PRINT."), globals.Color.RED);}
                                 |   PRINT  CADENA ')' ';'   {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal '('."), globals.Color.RED);}
@@ -141,6 +144,7 @@ comparador		            	:   '<'
 							  	|   DISTINTO
 ;
 
+//TODO Rowing para las colecciones.
 sentencia_asignacion 			:	id ASIGN expresion ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Sentencia ASIGN OK."), globals.Color.RESET);}
                                 |   error ASIGN expresion ';'  {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el ID de la asignacion."), globals.Color.RED);}
                                 |   id ASIGN ';'    {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el lado derecho de la asignacion."), globals.Color.RED);}
@@ -169,6 +173,7 @@ factor 							: 	id
 								|	ID '.' funcion
 ;
 
+//TODO Generar codigo para las funciones.
 funcion							:	FIRST '(' ')'
                                 |   FIRST error {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan parentesis en funcion FIRST."), globals.Color.RED);}
                                 |   LAST '(' ')'
@@ -179,8 +184,10 @@ funcion							:	FIRST '(' ')'
                                 |   error {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Funcion desconocida."), globals.Color.RED);}
 ;
 
+//TODO Verificar si esta declarada.
+//TODO Como acceder a un elemento de una coleccion.
 id 								:	ID
-								|	ID '[' ID ']'
+								|	ID '[' ID ']' //TODO Verificar que sea de tipo int.
 								|	ID '[' cte ']'
                                 |   ID '[' error ']' {Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el subindice de la coleccion."), globals.Color.RED);}
 ;
@@ -223,7 +230,7 @@ public void yyerror(String s) {
 public void check_range(String cte) {
 
         int new_cte;
-        if (Long.parseLong(cte) < Math.pow(2, 15)) {
+        if (Long.parseLong(cte) <= Math.pow(2, 15)) {
             new_cte = Integer.valueOf(cte);
         } else {
             Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Constante fuera de rango: " + cte), globals.Color.YELLOW);
@@ -263,5 +270,5 @@ public void addVariable(String lex){
         SymbolTable.add(token);
     }
     else{}
-        //TODO Nueva accion semantica? Permitimos redeclarar variables?
+        //TODO Se informa como error
 }

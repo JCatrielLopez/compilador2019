@@ -2,13 +2,13 @@ package globals;
 
 import lexer.Token;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 
 public final class SymbolTable {
 
-    private static final Hashtable<String, Integer> ids = new Hashtable<>();
-    private static final Hashtable<String, Token> symbols = new Hashtable<>();
+    private static final HashMap<String, Integer> ids = new HashMap<>();
+    private static final HashMap<String, Token> symbols = new HashMap<>();
 
     public static void init() {
         ids.put("(", 40);
@@ -91,14 +91,6 @@ public final class SymbolTable {
         return (ids.containsKey(id));
     }
 
-    public static void modify(String old, String new_lex) {
-        Token t = getLex(old);
-        if (t != null) {
-            t.setLex(new_lex);
-            remove(old);
-            add(t);
-        }
-    }
 
 //    public static Set<String> iterator() {
 //        return new HashSet<String>(simbolos.keySet());

@@ -1,15 +1,14 @@
-import globals.Color;
-import globals.Printer;
 import globals.SymbolTable;
 import lexer.Lexer;
+import org.apache.commons.cli.*;
 import org.fusesource.jansi.AnsiConsole;
 import parser.Parser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 class Compiler {
-  //TODO Crear una clase Error que contenga los mensajes de error de todo el proceso, para mostrarlos por separado?
   //TODO Crear una opcion para mandar los resultados  a un archivo.
   public static void main(String[] args) throws Exception {
     AnsiConsole.systemInstall();
@@ -18,48 +17,43 @@ class Compiler {
     String source_path = "";
     boolean al_verbose = false;
     boolean as_verbose = false;
-    boolean gc_verbose = false;
     boolean ts_verbose = false;
 
-    for (int i = 0; i < args.length; i++) {
-      switch (args[i]) {
-        case "-i":
-          if (i + 1 < args.length) {
-            source_path = args[i + 1];
-            File tempFile = new File(source_path);
-            if (!tempFile.exists()) {
-              Printer.print("El archivo ingresado no existe.", Color.RED);
-              return;
-            }
-          } else {
-            Printer.print("No se ingreso ningun archivo.", Color.RED);
-            return;
-          }
-          break;
-        case "-al":
-          al_verbose = true;
-          break;
-        case "-as":
-          as_verbose = true;
-          break;
-        case "-g":
-          gc_verbose = true;
-          break;
-        case "-ts":
-          ts_verbose = true;
-          break;
-        case "-h":
-          if (!(al_verbose || as_verbose || gc_verbose || ts_verbose)) print_help();
-          return;
-        default:
-          // Ignoramos los argumentos que no son validos.
-      }
+    Options options = new Options();
+    options.addOption("i", true, "Direccion del archivo a compilar.");
+    options.addOption("al", false, "Imprime informacion del analisis lexico.");
+    options.addOption("as", false, "Imprime informacion del analisis sintactico.");
+    options.addOption("ts", false, "Imprime informacion de la tabla de simbolos.");
+    options.addOption("h", false, "Imprime informacion de ayuda.");
+
+    CommandLineParser cmdparser = new DefaultParser();
+    CommandLine cmd = cmdparser.parse(options, args);
+
+    if (cmd.hasOption("h")) {
+      HelpFormatter formatter = new HelpFormatter();
+      formatter.printHelp("compiler", options);
+      return;
     }
+
+    if (cmd.hasOption("i")) {
+      source_path = cmd.getOptionValue("i");
+      File tempFile = new File(source_path);
+      if (!tempFile.exists()) throw new IOException("No existe el .");
+    } else
+      return;
+
+    if (cmd.hasOption("al"))
+      al_verbose = true;
+    if (cmd.hasOption("as"))
+      as_verbose = true;
+    if (cmd.hasOption("ts"))
+      ts_verbose = true;
 
     FileInputStream source_file = new FileInputStream(source_path);
 
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
+    //TODO  Leer en el lexico?
     while (source_file.available() != 0) sb.append((char) source_file.read());
     source_file.close();
 
@@ -77,24 +71,5 @@ class Compiler {
     if (ts_verbose) SymbolTable.print();
 
     AnsiConsole.systemUninstall();
-  }
-
-  private static void print_help() {
-    System.out.println("Usage: java -jar COMPILADOR [OPTIONS] (-i SOURCE_FILE | -h)\n");
-    System.out.println("Compilador para Diseño de Compiladores 2019");
-    System.out.println("Velez, Ezequiel\nLopez, Catriel\n");
-    System.out.println(String.format("%6s %s %-30s", "Option", " ", "Description"));
-    System.out.println(String.format("%6s %s %-30s", "-i", " ", "Input file."));
-    System.out.println(
-            String.format("%6s %s %-30s", "-al", " ", "Imprime informacion del analisis lexico."));
-    System.out.println(
-            String.format("%6s %s %-30s", "-as", " ", "Imprime informacion del analisis sintactico."));
-    System.out.println(
-            String.format("%6s %s %-30s", "-g", " ", "Imprime informacion de la generacion de assembler."));
-    System.out.println(String.format("%6s %s %-30s", "-ts", " ", "Imprime la tabla de simbolos."));
-    System.out.println(
-            String.format(
-                    "%6s %s %-30s",
-                    "-h", " ", "Imprime informacion de ayuda."));
   }
 }
