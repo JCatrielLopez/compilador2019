@@ -50,7 +50,6 @@ public class Terceto {
 
     public String toString() {
         StringBuilder out = new StringBuilder();
-
         out.append(this.id)
                 .append(": ")
                 .append("(")
