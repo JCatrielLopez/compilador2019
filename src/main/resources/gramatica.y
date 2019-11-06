@@ -34,6 +34,8 @@
 
 %%
 
+
+
 programa 	                    :	lista_sentencias_declarativas {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa OK"), globals.Color.RESET);}
 			                    | 	bloque_sentencias_ejecutables {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa OK (E)"), globals.Color.RESET);}
 			                    | 	lista_sentencias_declarativas bloque_sentencias_ejecutables {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa OK (D y E)"), globals.Color.RESET);}
@@ -202,6 +204,11 @@ cte 							:	CTE
 
 private Lexer al;
 private boolean verbose;
+
+public Parser(Lexer al, boolean as_verbose) {
+  this.al = al;
+  this.verbose = verbose;
+}
 
 // Analisis sintactico
 public StringBuffer estructuras_sintacticas = new StringBuffer(); //TODO Para que se usa?

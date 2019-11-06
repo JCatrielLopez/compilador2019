@@ -1,5 +1,4 @@
 package globals;
-
 import java.util.ArrayList;
 
 public class Error {
