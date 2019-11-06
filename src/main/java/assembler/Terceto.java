@@ -1,4 +1,4 @@
-package parser;
+package assembler;
 
 public class Terceto {
 

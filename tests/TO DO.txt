@@ -1,0 +1,13 @@
+TODO: Agregar estos casos de prueba:
+
+- Variables y colecciones no declaradas.
+- Variables y colecciones redeclaradas.
+- Sentencias con tipos compatibles y tipos no compatibles, según los chequeos de tipos que cada grupo deba efectuar.
+- Conversiones válidas e inválidas.
+- Para los ejemplos correspondientes a sentencias de control (selecciones e iteraciones), agregar en cada bloque una
+  impresión para mostrar el comportamiento.
+- Para los ejemplos que contemplen métodos, agregar impresiones en los cuerpos de los mismos. (First, Last y Length)
+- Para los ejemplos que incluyan asignaciones con expresiones aritméticas y/o conversiones, colocar luego una selección
+  para verificar el resultado de las expresiones y conversiones.
+- Pérdida de información en conversiones.
+- Chequeo de subíndices en referencias a elementos de colección.
