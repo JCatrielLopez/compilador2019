@@ -1,6 +1,5 @@
 package lexer;
 
-import globals.Color;
 import globals.Printer;
 import semantic_actions.*;
 
@@ -280,7 +279,7 @@ public class Lexer {
 
         if (token != null) {
             if (this.verbose) {
-                Printer.print(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|", token), Color.RESET);
+                Printer.print(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|", token));
             }
             return token.getID();
         }

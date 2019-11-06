@@ -83,7 +83,7 @@ public final class SymbolTable {
 
         for (String entry : symbols.keySet()) {
             Printer.print(String.format("%s %s %s", symbols.get(entry), " ",
-                    symbols.get(entry).getAttrs()), Color.RESET);
+                    symbols.get(entry).getAttrs()));
         }
     }
 

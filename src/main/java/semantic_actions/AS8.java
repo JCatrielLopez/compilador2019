@@ -1,6 +1,5 @@
 package semantic_actions;
 
-import globals.Color;
 import globals.Printer;
 import lexer.Buffer;
 import lexer.Token;
@@ -12,7 +11,7 @@ public class AS8 implements SemanticAction {
     public Token execute(Buffer source, StringBuilder lex, char last_char, boolean verbose) {
         if ((last_char == 0))
             Printer.print(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|",
-                    "EOF"), Color.BLUE);
+                    "EOF"));
 
         lex.setLength(0);
 

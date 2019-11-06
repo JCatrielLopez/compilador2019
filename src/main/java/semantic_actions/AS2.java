@@ -1,7 +1,6 @@
 package semantic_actions;
 
-import globals.Color;
-import globals.Printer;
+import globals.Error;
 import globals.SymbolTable;
 import lexer.Buffer;
 import lexer.Token;
@@ -14,8 +13,8 @@ public class AS2 implements SemanticAction {
         // Se trunca el identificador a un maximo de 25 caracteres.
         if (lex.length() > 25) {
             lex = new StringBuilder(lex.substring(0, 25));
-            Printer.print(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|",
-                    "WARNING Largo de ID fuera de rango, se lo trunca a 25 caracteres."), Color.YELLOW);
+            Error.add(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|",
+                    "WARNING Largo de ID fuera de rango, se lo trunca a 25 caracteres."));
         }
 
         Token token;

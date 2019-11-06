@@ -1,7 +1,6 @@
 package semantic_actions;
 
-import globals.Color;
-import globals.Printer;
+import globals.Error;
 import globals.SymbolTable;
 import lexer.Buffer;
 import lexer.Token;
@@ -18,14 +17,14 @@ public class AS3 implements SemanticAction {
         try {
             cte = Long.parseLong(lex.toString());
         } catch (java.lang.NumberFormatException e) {
-            Printer.print(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|",
-                    "WARNING CTE fuera de rango, se le asigna el valor maximo."), Color.YELLOW);
+            Error.add(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|",
+                    "WARNING CTE fuera de rango, se le asigna el valor maximo."));
             cte = (long) (Math.pow(2, 32) - 1);
         }
 
         if ((cte > Math.pow(2, 32))) {
-            Printer.print(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|",
-                    "WARNING CTE fuera de rango, se le asigna el valor maximo."), Color.YELLOW);
+            Error.add(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|",
+                    "WARNING CTE fuera de rango, se le asigna el valor maximo."));
             cte = (long) (Math.pow(2, 32) - 1);
 
         }
