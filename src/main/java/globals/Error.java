@@ -11,7 +11,7 @@ public class Error {
 
     public static void print() {
         for (String msg : errores) {
-            Printer.print(msg, Color.RED);
+            Printer.print(msg);
         }
     }
 

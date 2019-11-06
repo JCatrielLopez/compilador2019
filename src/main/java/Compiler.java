@@ -1,4 +1,3 @@
-import globals.Color;
 import globals.Printer;
 import globals.SymbolTable;
 import lexer.Lexer;
@@ -27,11 +26,11 @@ class Compiler {
             source_path = args[i + 1];
             File tempFile = new File(source_path);
             if (!tempFile.exists()) {
-              Printer.print("El archivo ingresado no existe.", Color.RED);
+              Printer.print("El archivo ingresado no existe.");
               return;
             }
           } else {
-            Printer.print("No se ingreso ningun archivo.", Color.RED);
+            Printer.print("No se ingreso ningun archivo.");
             return;
           }
           break;
