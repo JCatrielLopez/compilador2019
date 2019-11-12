@@ -77,8 +77,22 @@ lista_variables					:	lista_variables ',' ID          {addVariable($3.sval);}
 								|	coleccion                       {addVariable($1.sval);}
 ;
 
-//TODO Size de la coleccion en la TS.
-coleccion						:	ID '[' cte ']'
+//TODO Verificar que esto este bien. El ID seria el de cte? O deberiamos agregar uno que sea collecion?
+coleccion						:	ID '[' cte ']' {
+                                                        if (!SymbolTable.contains($1.sval){
+                                                            Token t = new Token(SymbolTable.getID("id"), $1.sval, "coleccion");
+                                                            t.addAttr("size", $2.sval);
+                                                            t.addAttr("Use", "VARIABLE");
+                                                            t.addAttr("Type", type);
+                                                            SymbolTable.add(t);
+                                                        }
+                                                        else
+                                                            Error.add(
+                                                                    String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR La variable " + lex + " ya se encuentra declarada.")
+                                                            )
+
+                                                    }
+}
                                 |   ID '[' ']'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el tamaño de la declaracion."));}
                                 |   ID '[' error ']'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la declaracion del tamaño de la coleccion."));}
 ;
@@ -146,6 +160,7 @@ comparador		            	:   '<'
 ;
 
 //TODO Rowing para las colecciones.
+//TODO Habria que hacer $$ = $2.sval? Y en expresion hacer $$ = (resultado de la operacion)
 sentencia_asignacion 			:	id ASIGN expresion ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Asign."));}
                                 |   error ASIGN expresion ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el ID de la asignacion."));}
                                 |   id ASIGN ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el lado derecho de la asignacion."));}
@@ -185,11 +200,44 @@ funcion							:	FIRST '(' ')'
                                 |   error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Funcion desconocida."));}
 ;
 
-//TODO Verificar si esta declarada.
 //TODO Como acceder a un elemento de una coleccion.
-id 								:	ID
-								|	ID '[' ID ']' //TODO Verificar que sea de tipo int.
-								|	ID '[' cte ']'
+id 								:	ID {
+                                            if(SymbolTable.contains($1.sval)
+                                                $$ = $1.sval;
+                                            else
+                                               Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
+                                       }
+}
+								|	ID '[' ID ']'{
+                                                     if(SymbolTable.contains($1.sval){
+                                                        if (SymbolTable.contains($2.sval){
+                                                            Token t = SymbolTable.getLex($2.sval)
+                                                            if (t.getAttr("type", "INT")
+                                                                $$ = $1.sval;
+                                                            else
+                                                                Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no es de tipo INT."));
+                                                        }
+                                                        else
+                                                            Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no declarada."));
+                                                     }
+                                                     else
+                                                        Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
+                                                }
+								|	ID '[' cte ']'{
+                                                       if(SymbolTable.contains($1.sval){
+                                                          if (SymbolTable.contains($2.sval){
+                                                              Token t = SymbolTable.getLex($2.sval)
+                                                              if (t.getAttr("type", "INT")
+                                                                  $$ = $1.sval;
+                                                              else
+                                                                  Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no es de tipo INT."));
+                                                          }
+                                                          else
+                                                              Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no declarada."));
+                                                       }
+                                                       else
+                                                          Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
+                                                  }
                                 |   ID '[' error ']' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el subindice de la coleccion. Se esperaba un INT."));}
 ;
 
