@@ -81,7 +81,7 @@ lista_variables					:	lista_variables ',' ID          {addVariable($3.sval);}
 coleccion						:	ID '[' cte ']' {
                                                         if (!SymbolTable.contains($1.sval){
                                                             Token t = new Token(SymbolTable.getID("id"), $1.sval, "coleccion");
-                                                            t.addAttr("size", $2.sval);
+                                                            t.addAttr("size", $3.sval);
                                                             t.addAttr("Use", "VARIABLE");
                                                             t.addAttr("Type", type);
                                                             SymbolTable.add(t);
@@ -168,15 +168,16 @@ sentencia_asignacion 			:	id ASIGN expresion ';' {if (this.verbose) Printer.prin
 
 ;
 
-expresion						:	expresion '+' termino
-                                |   expresion '-' termino
+
+expresion						:	expresion '+' termino { $$ = new ParserVal(crearTercetoOperacion("+", $1.sval, $3.sval)); }
+                                |   expresion '-' termino { $$ = new ParserVal(crearTercetoOperacion("-", $1.sval, $3.sval)); }
 								| 	termino
                                 |   expresion '+' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '+'"));}
                                 |   expresion '-' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '-'"));}
 ;
 
-termino							:	termino '*' factor
-                                |   termino '/' factor
+termino							:	termino '*' factor { $$ = new ParserVal(crearTercetoOperacion("*", $1.sval, $3.sval)); }
+                                |   termino '/' factor { $$ = new ParserVal(crearTercetoOperacion("/", $1.sval, $3.sval)); }
 								| 	factor
                                 |   error '*' factor {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '*'"));}
                                 |   termino '*' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '*"));}
@@ -210,30 +211,30 @@ id 								:	ID {
 }
 								|	ID '[' ID ']'{
                                                      if(SymbolTable.contains($1.sval){
-                                                        if (SymbolTable.contains($2.sval){
-                                                            Token t = SymbolTable.getLex($2.sval)
+                                                        if (SymbolTable.contains($3.sval){
+                                                            Token t = SymbolTable.getLex($3.sval)
                                                             if (t.getAttr("type", "INT")
-                                                                $$ = $1.sval;
+                                                                //TODO Acceder al elemento.
                                                             else
-                                                                Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no es de tipo INT."));
+                                                                Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no es de tipo INT."));
                                                         }
                                                         else
-                                                            Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no declarada."));
+                                                            Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no declarada."));
                                                      }
                                                      else
                                                         Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
                                                 }
 								|	ID '[' cte ']'{
                                                        if(SymbolTable.contains($1.sval){
-                                                          if (SymbolTable.contains($2.sval){
-                                                              Token t = SymbolTable.getLex($2.sval)
+                                                          if (SymbolTable.contains($3.sval){
+                                                              Token t = SymbolTable.getLex($3.sval)
                                                               if (t.getAttr("type", "INT")
-                                                                  $$ = $1.sval;
+                                                                  //TODO Acceder al elemento.
                                                               else
-                                                                  Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no es de tipo INT."));
+                                                                  Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no es de tipo INT."));
                                                           }
                                                           else
-                                                              Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no declarada."));
+                                                              Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no declarada."));
                                                        }
                                                        else
                                                           Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
@@ -241,9 +242,19 @@ id 								:	ID {
                                 |   ID '[' error ']' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el subindice de la coleccion. Se esperaba un INT."));}
 ;
 
-cte 							:	CTE
-								| 	'-' CTE {String cte = $2.sval;
-								             check_range($2.sval);}
+cte 							:	CTE {
+                                            String cte = $1.sval;
+                                            check_range(cte);
+                                            $$ = $1;
+                                            tipos.push(type);
+                                        }
+}
+								| 	'-' CTE {
+                                                String cte = $2.sval;
+								                check_range(cte);
+								                $$ = new ParserVal("-" + cte);
+                                                tipos.push(type);
+                                             }
 ;
 
 
@@ -328,4 +339,41 @@ public void addVariable(String lex){
             String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR La variable " + lex + " ya se encuentra declarada.")
         )
     }
+}
+
+public Integer checkTypes(String exp1, String exp2) {
+        String tipo1 = "", tipo2 = "";
+        if (!tiposArrojados.isEmpty())
+            tipo1 = tipos.pop();
+        if (!tiposArrojados.isEmpty())
+            tipo2 = tipos.pop();
+
+        if (tipo1 != tipo2)
+        {
+            tipos.push("ULONG");
+
+            if (tipo1 == "INT") { //TODO _CONV no es un nombre muy descriptivo. Cambiarlo? INT -> ULONG es la unica conversion posible.
+                AdministradorTerceto.crearTerceto("_CONV", exp2, "null");
+                return 2; //Indice del argumento a convertir.
+            }
+            else {
+                AdministradorTerceto.crearTerceto("_CONV", exp1, "null");
+                return 1;
+            }
+        } else
+            tipos.push(tipo1);
+        return 0;
+}
+
+public String crearTercetoOperacion(String op, String arg1, String arg2){
+		Integer conv = checkTypes(arg1, arg2);
+		String t = tipos.pop();
+
+		if (conv == 1)
+			arg1 = AdministradorTerceto.get(AdministradorTerceto.getUltimoTerceto()).getId();
+		if (conv == 2)
+			arg2 = AdministradorTerceto.get(AdministradorTerceto.getUltimoTerceto()).getId();
+
+		tipos.push(t);
+		return AdministradorTerceto.crearTerceto(op,arg1, arg2,t);
 }
