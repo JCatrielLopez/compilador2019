@@ -77,7 +77,7 @@ lista_variables					:	lista_variables ',' ID          {addVariable($3.sval);}
 								|	coleccion                       {addVariable($1.sval);}
 ;
 
-//TODO Verificar que esto este bien. El ID seria el de cte? O deberiamos agregar uno que sea collecion?
+//TODO Verificar que esto este bien. El id seria el de cte? SymbolTable.getID("id") o SymbolTable.getID("coleccion")?
 coleccion						:	ID '[' cte ']' {
                                                         if (!SymbolTable.contains($1.sval){
                                                             Token t = new Token(SymbolTable.getID("id"), $1.sval, "coleccion");
@@ -115,6 +115,7 @@ sentencia_impresion				:   PRINT '(' CADENA ')' ';' {if (this.verbose) Printer.p
                                 |   PRINT error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la sentencia PRINT."));}
 ;
 
+//TODO Generar tercetos para sentencia WHILE
 sentencia_control				:	WHILE condicion DO bloque_sentencias ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia While."));}
                                 |   error condicion DO bloque_sentencias ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave WHILE."));}
                                 |   WHILE condicion error bloque_sentencias ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave DO."));}
@@ -122,7 +123,7 @@ sentencia_control				:	WHILE condicion DO bloque_sentencias ';' {if (this.verbos
                                 |   WHILE condicion DO error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el bloque de sentencias WHILE."));}
                                 |   WHILE error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la sentencia WHILE."));}
 ;
-
+//TODO Generar tercetos para sentencia IF
 sentencia_seleccion				:	IF condicion bloque_sentencias END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If.."));}
                                 |   IF condicion bloque_sentencias ELSE bloque_sentencias END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If-Else."));}
                                 |   error condicion bloque_sentencias END_IF ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR al comienzo de la sentencia If."));}
@@ -138,6 +139,7 @@ sentencia_seleccion				:	IF condicion bloque_sentencias END_IF ';' {if (this.ver
                                 |   IF error ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en sentencia IF."));}
 ;
 
+
 condicion						:	'(' comparacion ')'
                                 |    comparacion ')' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el caracter ("));}
                                 |   '(' comparacion  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el caracter )"));}
@@ -145,22 +147,23 @@ condicion						:	'(' comparacion ')'
                                 |   '(' ')' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion."));}
 ;
 
+//TODO Crear terceto para la comparacion.
 comparacion						:	expresion comparador expresion
                                 |   error comparador expresion    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado izquierdo de la comparacion."));}
                                 |   expresion error expresion  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el comparador de la comparacion."));}
                                 |   expresion comparador error     {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado derecho de la comparacion."));}
 ;
 
-comparador		            	:   '<'
-							  	|   '>'
-							  	|   '='
+comparador		            	:   '<' { $$ = new ParserVal("<");}
+							  	|   '>' { $$ = new ParserVal(">");}
+							  	|   '=' { $$ = new ParserVal("=");}
 							  	|   MENOR_IGUAL
 							  	|   MAYOR_IGUAL
 							  	|   DISTINTO
 ;
 
 //TODO Rowing para las colecciones.
-//TODO Habria que hacer $$ = $2.sval? Y en expresion hacer $$ = (resultado de la operacion)
+//TODO Habria que hacer $$ = $2.sval?
 sentencia_asignacion 			:	id ASIGN expresion ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Asign."));}
                                 |   error ASIGN expresion ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el ID de la asignacion."));}
                                 |   id ASIGN ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el lado derecho de la asignacion."));}
@@ -201,7 +204,7 @@ funcion							:	FIRST '(' ')'
                                 |   error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Funcion desconocida."));}
 ;
 
-//TODO Como acceder a un elemento de una coleccion.
+//TODO Como acceder a un elemento de una coleccion?
 id 								:	ID {
                                             if(SymbolTable.contains($1.sval)
                                                 $$ = $1.sval;
