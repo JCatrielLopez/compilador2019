@@ -1,21 +1,24 @@
 package assembler;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class AdminTercetos {
 
-    public static LinkedHashMap<String, Terceto> tercetos = new LinkedHashMap<>();
+    public static ArrayList<Terceto> tercetos = new ArrayList<>();
     public static Stack<String> pila = new Stack<>();
 
 
-    public static Terceto getTerceto(String id) {
-        return tercetos.get(id);
+//    public static Terceto getTerceto(String id) {
+//        return tercetos.get(id);
+//    }
+
+    public static Terceto last() {
+        return tercetos.get(tercetos.size() - 1);
     }
 
-    public static void addTerceto(Terceto t) {
-        tercetos.put(t.getId(), t);
+    public static void add(Terceto t) {
+        tercetos.add(t);
     }
 
     public static void push(String id) {
@@ -34,8 +37,9 @@ public class AdminTercetos {
 
     public String toString() {
         StringBuilder out = new StringBuilder();
-        for (Map.Entry<String, Terceto> entry : tercetos.entrySet())
-            out.append(entry.getValue() + "\n"); // entry: (k, V)
+        for (Terceto t : tercetos) {
+            out.append(t.toString() + "\n");
+        }
 
         return out.toString();
     }

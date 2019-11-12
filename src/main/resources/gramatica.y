@@ -77,13 +77,14 @@ lista_variables					:	lista_variables ',' ID          {addVariable($3.sval);}
 								|	coleccion                       {addVariable($1.sval);}
 ;
 
-//TODO Verificar que esto este bien. El ID seria el de cte? O deberiamos agregar uno que sea collecion?
+//TODO Agregamos la estructura de la coleccion asi?
 coleccion						:	ID '[' cte ']' {
                                                         if (!SymbolTable.contains($1.sval){
                                                             Token t = new Token(SymbolTable.getID("id"), $1.sval, "coleccion");
-                                                            t.addAttr("size", $2.sval);
+                                                            t.addAttr("size", $3.sval);
                                                             t.addAttr("Use", "VARIABLE");
                                                             t.addAttr("Type", type);
+                                                            t.addAttr("Elements", new Arraylist<>());
                                                             SymbolTable.add(t);
                                                         }
                                                         else
@@ -97,7 +98,7 @@ coleccion						:	ID '[' cte ']' {
                                 |   ID '[' error ']'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la declaracion del tamaño de la coleccion."));}
 ;
 
-//TODO Recuerden agregar el error de que falta “;” al final de una sentencia.
+
 sentencia_ejecutable 			:	sentencia_asignacion
 								| 	sentencia_seleccion
 								|	sentencia_control
@@ -115,6 +116,7 @@ sentencia_impresion				:   PRINT '(' CADENA ')' ';' {if (this.verbose) Printer.p
                                 |   PRINT error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la sentencia PRINT."));}
 ;
 
+//TODO Generar tercetos para sentencia WHILE
 sentencia_control				:	WHILE condicion DO bloque_sentencias ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia While."));}
                                 |   error condicion DO bloque_sentencias ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave WHILE."));}
                                 |   WHILE condicion error bloque_sentencias ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave DO."));}
@@ -122,7 +124,7 @@ sentencia_control				:	WHILE condicion DO bloque_sentencias ';' {if (this.verbos
                                 |   WHILE condicion DO error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el bloque de sentencias WHILE."));}
                                 |   WHILE error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la sentencia WHILE."));}
 ;
-
+//TODO Generar tercetos para sentencia IF
 sentencia_seleccion				:	IF condicion bloque_sentencias END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If.."));}
                                 |   IF condicion bloque_sentencias ELSE bloque_sentencias END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If-Else."));}
                                 |   error condicion bloque_sentencias END_IF ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR al comienzo de la sentencia If."));}
@@ -138,6 +140,7 @@ sentencia_seleccion				:	IF condicion bloque_sentencias END_IF ';' {if (this.ver
                                 |   IF error ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en sentencia IF."));}
 ;
 
+
 condicion						:	'(' comparacion ')'
                                 |    comparacion ')' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el caracter ("));}
                                 |   '(' comparacion  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el caracter )"));}
@@ -145,38 +148,46 @@ condicion						:	'(' comparacion ')'
                                 |   '(' ')' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion."));}
 ;
 
+//TODO Crear terceto para la comparacion.
 comparacion						:	expresion comparador expresion
                                 |   error comparador expresion    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado izquierdo de la comparacion."));}
                                 |   expresion error expresion  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el comparador de la comparacion."));}
                                 |   expresion comparador error     {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado derecho de la comparacion."));}
 ;
 
-comparador		            	:   '<'
-							  	|   '>'
-							  	|   '='
+comparador		            	:   '<' { $$ = new ParserVal("<");}
+							  	|   '>' { $$ = new ParserVal(">");}
+							  	|   '=' { $$ = new ParserVal("=");}
 							  	|   MENOR_IGUAL
 							  	|   MAYOR_IGUAL
 							  	|   DISTINTO
 ;
 
 //TODO Rowing para las colecciones.
-//TODO Habria que hacer $$ = $2.sval? Y en expresion hacer $$ = (resultado de la operacion)
-sentencia_asignacion 			:	id ASIGN expresion ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Asign."));}
+//TODO Habria que hacer $$ = $3.sval?
+sentencia_asignacion 			:	id ASIGN expresion ';' {
+
+
+
+                                            if (this.verbose)
+                                                Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Asign."));
+                                    }
                                 |   error ASIGN expresion ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el ID de la asignacion."));}
                                 |   id ASIGN ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el lado derecho de la asignacion."));}
                                 |   id ASIGN error ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado derecho de la asignacion."));}
 
 ;
 
-expresion						:	expresion '+' termino
-                                |   expresion '-' termino
+
+expresion						:	expresion '+' termino { $$ = new ParserVal(crearTercetoOperacion("+", $1.sval, $3.sval)); }
+                                |   expresion '-' termino { $$ = new ParserVal(crearTercetoOperacion("-", $1.sval, $3.sval)); }
 								| 	termino
                                 |   expresion '+' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '+'"));}
                                 |   expresion '-' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '-'"));}
 ;
 
-termino							:	termino '*' factor
-                                |   termino '/' factor
+termino							:	termino '*' factor { $$ = new ParserVal(crearTercetoOperacion("*", $1.sval, $3.sval)); }
+                                |   termino '/' factor { $$ = new ParserVal(crearTercetoOperacion("/", $1.sval, $3.sval)); }
 								| 	factor
                                 |   error '*' factor {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '*'"));}
                                 |   termino '*' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '*"));}
@@ -200,7 +211,7 @@ funcion							:	FIRST '(' ')'
                                 |   error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Funcion desconocida."));}
 ;
 
-//TODO Como acceder a un elemento de una coleccion.
+//TODO Como acceder a un elemento de una coleccion?
 id 								:	ID {
                                             if(SymbolTable.contains($1.sval)
                                                 $$ = $1.sval;
@@ -210,30 +221,30 @@ id 								:	ID {
 }
 								|	ID '[' ID ']'{
                                                      if(SymbolTable.contains($1.sval){
-                                                        if (SymbolTable.contains($2.sval){
-                                                            Token t = SymbolTable.getLex($2.sval)
+                                                        if (SymbolTable.contains($3.sval){
+                                                            Token t = SymbolTable.getLex($3.sval)
                                                             if (t.getAttr("type", "INT")
-                                                                $$ = $1.sval;
+                                                                //TODO Acceder al elemento.
                                                             else
-                                                                Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no es de tipo INT."));
+                                                                Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no es de tipo INT."));
                                                         }
                                                         else
-                                                            Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no declarada."));
+                                                            Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no declarada."));
                                                      }
                                                      else
                                                         Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
                                                 }
 								|	ID '[' cte ']'{
                                                        if(SymbolTable.contains($1.sval){
-                                                          if (SymbolTable.contains($2.sval){
-                                                              Token t = SymbolTable.getLex($2.sval)
+                                                          if (SymbolTable.contains($3.sval){
+                                                              Token t = SymbolTable.getLex($3.sval)
                                                               if (t.getAttr("type", "INT")
-                                                                  $$ = $1.sval;
+                                                                  //TODO Acceder al elemento.
                                                               else
-                                                                  Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no es de tipo INT."));
+                                                                  Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no es de tipo INT."));
                                                           }
                                                           else
-                                                              Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $2.sval + " no declarada."));
+                                                              Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no declarada."));
                                                        }
                                                        else
                                                           Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
@@ -241,9 +252,19 @@ id 								:	ID {
                                 |   ID '[' error ']' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el subindice de la coleccion. Se esperaba un INT."));}
 ;
 
-cte 							:	CTE
-								| 	'-' CTE {String cte = $2.sval;
-								             check_range($2.sval);}
+cte 							:	CTE {
+                                            String cte = $1.sval;
+                                            check_range(cte);
+                                            $$ = $1;
+                                            tipos.push(type);
+                                        }
+}
+								| 	'-' CTE {
+                                                String cte = $2.sval;
+								                check_range(cte);
+								                $$ = new ParserVal("-" + cte);
+                                                tipos.push(type);
+                                             }
 ;
 
 
@@ -328,4 +349,45 @@ public void addVariable(String lex){
             String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR La variable " + lex + " ya se encuentra declarada.")
         )
     }
+}
+
+public Integer checkTypes(String exp1, String exp2) {
+        String tipo1 = "", tipo2 = "";
+        if (!tiposArrojados.isEmpty())
+            tipo1 = tipos.pop();
+        if (!tiposArrojados.isEmpty())
+            tipo2 = tipos.pop();
+
+        if (tipo1 != tipo2)
+        {
+            tipos.push("ULONG");
+
+            if (tipo1 == "INT") { //TODO _CONV no es un nombre muy descriptivo. Cambiarlo? INT -> ULONG es la unica conversion posible.
+                Terceto t = new Terceto("_CONV", exp2, "null");
+                AdministradorTerceto.add(t);
+                return 2; //Indice del argumento a convertir.
+            }
+            else {
+                Terceto t = new Terceto("_CONV", exp1, "null");
+                AdministradorTerceto.add(t);
+                return 1;
+            }
+        } else
+            tipos.push(tipo1);
+        return 0;
+}
+
+public String crearTercetoOperacion(String op, String arg1, String arg2){
+		Integer conv = checkTypes(arg1, arg2);
+		String t = tipos.pop();
+
+		if (conv == 1)
+			arg1 = AdministradorTerceto.last().getId();
+		if (conv == 2)
+			arg2 = AdministradorTerceto.last().getId();
+		tipos.push(t);
+
+		Terceto terceto = new Terceto(op, arg1, arg2);
+		AdministradorTerceto.add(terceto);
+		return terceto.getId();
 }
