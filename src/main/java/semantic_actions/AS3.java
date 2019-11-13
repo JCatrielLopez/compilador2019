@@ -27,7 +27,7 @@ public class AS3 implements SemanticAction {
                     "WARNING CTE fuera de rango, se le asigna el valor maximo."));
             cte = (long) (Math.pow(2, 32) - 1);
 
-        }
+        }//TODO cambiar los controles apra q si es menor a 2'15 es int
         Token token = new Token(SymbolTable.getID("cte"), Long.toString(cte), "CONSTANT");
         SymbolTable.add(token);
 
