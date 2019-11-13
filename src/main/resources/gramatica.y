@@ -217,19 +217,22 @@ funcion							:	FIRST '(' ')'
 ;
 
 //TODO Como acceder a un elemento de una coleccion?
+//TODO Verificar esto. Deberiamos agregar el campo "value" para mantener el valor que referencia un id o una cte?
 id 								:	ID {
                                             if(SymbolTable.contains($1.sval)
                                                 $$ = $1.sval;
                                             else
                                                Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
                                        }
-}
 								|	ID '[' ID ']'{
                                                      if(SymbolTable.contains($1.sval){
                                                         if (SymbolTable.contains($3.sval){
+                                                            Token col_t = SymbolTable.getLex($3.sval);
                                                             Token t = SymbolTable.getLex($3.sval)
-                                                            if (t.getAttr("type", "INT")
-                                                                //TODO Acceder al elemento.
+                                                            if (t.getAttr("type", "INT"){
+                                                                ArrayList<> elementos = col_t.getAttr("Elements");
+                                                                $$ = new ParserVal(elementos.get(t.getAttr("value")));
+                                                            }
                                                             else
                                                                 Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no es de tipo INT."));
                                                         }
