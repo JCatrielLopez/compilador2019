@@ -77,13 +77,14 @@ lista_variables					:	lista_variables ',' ID          {addVariable($3.sval);}
 								|	coleccion                       {addVariable($1.sval);}
 ;
 
-//TODO Verificar que esto este bien. El id seria el de cte? SymbolTable.getID("id") o SymbolTable.getID("coleccion")?
+//TODO Agregamos la estructura de la coleccion asi?
 coleccion						:	ID '[' cte ']' {
                                                         if (!SymbolTable.contains($1.sval){
                                                             Token t = new Token(SymbolTable.getID("id"), $1.sval, "coleccion");
                                                             t.addAttr("size", $3.sval);
                                                             t.addAttr("Use", "VARIABLE");
                                                             t.addAttr("Type", type);
+                                                            t.addAttr("Elements", new Arraylist<>());
                                                             SymbolTable.add(t);
                                                         }
                                                         else
@@ -97,7 +98,7 @@ coleccion						:	ID '[' cte ']' {
                                 |   ID '[' error ']'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la declaracion del tamaño de la coleccion."));}
 ;
 
-//TODO Recuerden agregar el error de que falta “;” al final de una sentencia.
+
 sentencia_ejecutable 			:	sentencia_asignacion
 								| 	sentencia_seleccion
 								|	sentencia_control
@@ -163,8 +164,14 @@ comparador		            	:   '<' { $$ = new ParserVal("<");}
 ;
 
 //TODO Rowing para las colecciones.
-//TODO Habria que hacer $$ = $2.sval?
-sentencia_asignacion 			:	id ASIGN expresion ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Asign."));}
+//TODO Habria que hacer $$ = $3.sval?
+sentencia_asignacion 			:	id ASIGN expresion ';' {
+
+
+
+                                            if (this.verbose)
+                                                Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Asign."));
+                                    }
                                 |   error ASIGN expresion ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el ID de la asignacion."));}
                                 |   id ASIGN ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el lado derecho de la asignacion."));}
                                 |   id ASIGN error ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado derecho de la asignacion."));}
@@ -356,11 +363,13 @@ public Integer checkTypes(String exp1, String exp2) {
             tipos.push("ULONG");
 
             if (tipo1 == "INT") { //TODO _CONV no es un nombre muy descriptivo. Cambiarlo? INT -> ULONG es la unica conversion posible.
-                AdministradorTerceto.crearTerceto("_CONV", exp2, "null");
+                Terceto t = new Terceto("_CONV", exp2, "null");
+                AdministradorTerceto.add(t);
                 return 2; //Indice del argumento a convertir.
             }
             else {
-                AdministradorTerceto.crearTerceto("_CONV", exp1, "null");
+                Terceto t = new Terceto("_CONV", exp1, "null");
+                AdministradorTerceto.add(t);
                 return 1;
             }
         } else
@@ -373,10 +382,12 @@ public String crearTercetoOperacion(String op, String arg1, String arg2){
 		String t = tipos.pop();
 
 		if (conv == 1)
-			arg1 = AdministradorTerceto.get(AdministradorTerceto.getUltimoTerceto()).getId();
+			arg1 = AdministradorTerceto.last().getId();
 		if (conv == 2)
-			arg2 = AdministradorTerceto.get(AdministradorTerceto.getUltimoTerceto()).getId();
-
+			arg2 = AdministradorTerceto.last().getId();
 		tipos.push(t);
-		return AdministradorTerceto.crearTerceto(op,arg1, arg2,t);
+
+		Terceto terceto = new Terceto(op, arg1, arg2);
+		AdministradorTerceto.add(terceto);
+		return terceto.getId();
 }
