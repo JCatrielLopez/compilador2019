@@ -164,10 +164,15 @@ comparador		            	:   '<' { $$ = new ParserVal("<");}
 ;
 
 //TODO Rowing para las colecciones.
-//TODO Habria que hacer $$ = $3.sval?
+//TODO Verificar esto.
 sentencia_asignacion 			:	id ASIGN expresion ';' {
-
-
+                                            String old_id = $1.sval;
+                                            if (!SymbolTable.contains(old_id)){
+                                                Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
+                                            }
+                                            else{
+                                               crearTercetoOperacion("ASIGN", $1.sval, $3.sval);
+                                            }
 
                                             if (this.verbose)
                                                 Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Asign."));
