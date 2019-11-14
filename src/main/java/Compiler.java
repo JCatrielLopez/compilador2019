@@ -1,3 +1,4 @@
+import assembler.AdminTercetos;
 import globals.Printer;
 import globals.SymbolTable;
 import lexer.Lexer;
@@ -18,6 +19,7 @@ class Compiler {
     boolean as_verbose = false;
     boolean gc_verbose = false;
     boolean ts_verbose = false;
+    boolean tercetos_verbose = false;
 
     for (int i = 0; i < args.length; i++) {
       switch (args[i]) {
@@ -46,8 +48,11 @@ class Compiler {
         case "-ts":
           ts_verbose = true;
           break;
+        case "-t":
+          tercetos_verbose = true;
+          break;
         case "-h":
-          if (!(al_verbose || as_verbose || gc_verbose || ts_verbose)) print_help();
+          if (!(al_verbose || as_verbose || gc_verbose || ts_verbose || tercetos_verbose)) print_help();
           return;
         default:
           // Ignoramos los argumentos que no son validos.
@@ -73,6 +78,9 @@ class Compiler {
     parser.run();
 
     if (ts_verbose) SymbolTable.print();
+
+    //Tuve que ponerle string() en vez de toString() porque no me deja hacer static a toString.
+    if (tercetos_verbose) System.out.println(AdminTercetos.string());
 
     AnsiConsole.systemUninstall();
   }
