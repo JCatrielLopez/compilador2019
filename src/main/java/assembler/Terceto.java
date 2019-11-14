@@ -28,12 +28,9 @@ public class Terceto {
         return id;
     }
 
-    public void setOperador(int pos, String operador) {
-        if (pos == 1)
-            if (this.operando1 == null) //Para no pisar tercetos ya definidos. Sacarlo si hace falta en el futuro.
-                this.operando1 = operador;
-            else if (this.operando2 == null)
-                this.operando2 = operador;
+    public void completar(String operador) {
+            if (this.operando2 == "")
+                this.operando2 = "["+operador+"]";
     }
 
     public String getOperando1() {

@@ -9,9 +9,9 @@ public class AdminTercetos {
     public static Stack<String> pila = new Stack<>();
 
 
-//    public static Terceto getTerceto(String id) {
-//        return tercetos.get(id);
-//    }
+    public static Terceto get(String id) {
+        return tercetos.get(id);//TODO Parsear para sacar corchetes
+    }
 
     public static Terceto last() {
         return tercetos.get(tercetos.size() - 1);
