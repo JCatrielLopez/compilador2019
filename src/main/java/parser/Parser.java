@@ -125,7 +125,7 @@ int i;
 
 
 String   yytext;//user variable to return contextual strings
-ParserVal yyval; //used to return semantic vals from action routines
+    public static ParserVal yyval; //used to return semantic vals from action routines
   final static short[] yylen = {2,
           1, 1, 2, 1, 2, 1, 4, 4, 4, 4,
           4, 3, 1, 1, 2, 1, 3, 2, 3, 3,
