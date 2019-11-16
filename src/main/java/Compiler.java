@@ -1,10 +1,10 @@
 import assembler.AdminTercetos;
+import globals.Error;
 import globals.Printer;
 import globals.SymbolTable;
 import lexer.Lexer;
 import org.fusesource.jansi.AnsiConsole;
 import parser.Parser;
-import globals.Error;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,14 +95,14 @@ class Compiler {
 
     if (ts_verbose) SymbolTable.print();
 
-    //Tuve que ponerle string() en vez de toString() porque no me deja hacer static a toString.
     if (tercetos_verbose) {
       System.out.println("-----------------------------------------------------------------------");
       System.out.println("-------------------------------TERCETOS--------------------------------");
       System.out.println("-----------------------------------------------------------------------");
-      System.out.println(AdminTercetos.string());
+      System.out.println(AdminTercetos.print());
     }
 
+    System.out.println();
     AnsiConsole.systemUninstall();
   }
 

@@ -3,10 +3,10 @@ package assembler;
 public class Terceto {
 
     static int cont = 0;
-    String id;
-    String operacion;
-    String operando1;
-    String operando2;
+    private String id;
+    private String operacion;
+    private String operando1;
+    private String operando2;
 
     public Terceto(String operacion, String operando1, String operando2) {
         cont++;
@@ -16,11 +16,11 @@ public class Terceto {
         this.operando2 = operando2;
     }
 
-    public Terceto(String operacion) {
+    public Terceto(String operacion, String operando1) {
         cont++;
         this.id = "[" + cont + "]";
         this.operacion = operacion;
-        this.operando1 = null;
+        this.operando1 = operando1;
         this.operando2 = null;
     }
 
@@ -29,7 +29,7 @@ public class Terceto {
     }
 
     public void completar(String operador) {
-            if (this.operando2 == "")
+        if (this.operando2 == null)
                 this.operando2 = "["+operador+"]";
     }
 
@@ -61,4 +61,15 @@ public class Terceto {
     }
 
 
+    public String type() { //TODO Agregar el tipo a los tercetos.
+        return "";
+    }
+
+    public void setOperando1(String s) {
+        this.operando1 = s;
+    }
+
+    public void setOperando2(String s) {
+        this.operando2 = s;
+    }
 }

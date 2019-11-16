@@ -35,7 +35,8 @@ public class AdminTercetos {
         return tercetos.size();
     }
 
-    public static String string() {
+    public static String print() {
+
         StringBuilder out = new StringBuilder();
         for (Terceto t : tercetos) {
             out.append(t.toString() + "\n");

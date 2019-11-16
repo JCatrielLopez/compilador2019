@@ -1,0 +1,22 @@
+package assembler;
+
+import java.util.HashMap;
+
+public class AdminRegistros {
+
+    private HashMap<String, Boolean> registers = new HashMap<String, Boolean>();
+
+
+    public AdminRegistros() {
+        registers.put("bx", false);
+        registers.put("cx", false);
+    }
+
+    public void free(String register) {
+        if (register.startsWith("e")) // Borro la e (EBX -> BX)
+            register = register.substring(1);
+
+        if (this.registers.containsKey(register))
+            this.registers.put(register, false);
+    }
+}

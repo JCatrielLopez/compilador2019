@@ -103,9 +103,9 @@ sentencia_ejecutable 		: sentencia_impresion
 				| sentencia_asignacion
 ;
 
-sentencia_impresion		: PRINT '(' CADENA ')' ';' {AdminTercetos.add(new Terceto("PRINT", $3.sval, "null")); if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Print."));}
-                                | PRINT '(' ID ')' ';' {AdminTercetos.add(new Terceto("PRINT", $3.sval, "null"));}
-				| PRINT '(' cte ')' ';' {AdminTercetos.add(new Terceto("PRINT", $3.sval, "null"));}
+sentencia_impresion		: PRINT '(' CADENA ')' ';' {AdminTercetos.add(new Terceto("PRINT", $3.sval)); if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Print."));}
+                                | PRINT '(' ID ')' ';' {AdminTercetos.add(new Terceto("PRINT", $3.sval));}
+				| PRINT '(' cte ')' ';' {AdminTercetos.add(new Terceto("PRINT", $3.sval));}
                                 | error '(' CADENA ')' ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave PRINT."));}
                                 | PRINT  CADENA ')' ';'   {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal '('."));}
                                 | PRINT '(' CADENA  ';'   {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ')'."));}
@@ -120,7 +120,7 @@ sentencia_impresion		: PRINT '(' CADENA ')' ';' {AdminTercetos.add(new Terceto("
 sentencia_control		: WHILE condicion_while DO bloque_sentencias ';' {	String terceto_inc = AdminTercetos.pop();
 											AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 1));
 											terceto_inc = AdminTercetos.pop();
-											AdminTercetos.add(new Terceto("BI", "["+terceto_inc+"]", "null"));
+											AdminTercetos.add(new Terceto("BI", "["+terceto_inc+"]"));
 											if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia While."));
 										}
                                 | error condicion_while DO bloque_sentencias ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave WHILE."));}
@@ -156,7 +156,7 @@ condicion_if			: condicion {AdminTercetos.add(new Terceto("BF", $1.sval, "")); A
 
 bloque_then			: bloque_sentencias {	String terceto_inc = AdminTercetos.pop();
 							AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 2));
-							AdminTercetos.add(new Terceto("BI", "", "null"));
+							AdminTercetos.add(new Terceto("BI", ""));
 							AdminTercetos.push(AdminTercetos.last().getId());
 						    }
 ;
@@ -200,7 +200,7 @@ sentencia_asignacion 		: id ASIGN expresion ';' {
 							    }else{
 								if (tipo_exp == "INT") {
 									conversion = true;
-									Terceto t = new Terceto("_CONV", $3.sval, "null");
+									Terceto t = new Terceto("_CONV", $3.sval);
 									AdminTercetos.add(t);
 							 	}
 							    }
@@ -212,7 +212,7 @@ sentencia_asignacion 		: id ASIGN expresion ';' {
 							    if (this.verbose)
 								Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Asign."));
                                     			}
-                                | error ASIGN expresion ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el ID de la asignacion."));}
+                                | error ASIGN expresion ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el ID de la ."));}
                                 | id ASIGN ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el lado derecho de la asignacion."));}
                                 | id ASIGN error ';'    {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado derecho de la asignacion."));}
 
@@ -428,12 +428,12 @@ public Integer checkTypes(String exp1, String exp2) {
             tipos.push("ULONG");
 
             if (tipo2 == "INT") {
-                Terceto t = new Terceto("_CONV", exp2, "null");
+                Terceto t = new Terceto("_CONV", exp2);
                 AdminTercetos.add(t);
                 return 2; //Indice del argumento a convertir.
             }
             else {
-                Terceto t = new Terceto("_CONV", exp1, "null");
+                Terceto t = new Terceto("_CONV", exp1);
                 AdminTercetos.add(t);
                 return 1;
             }
