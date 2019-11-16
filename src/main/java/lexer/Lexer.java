@@ -2,6 +2,7 @@ package lexer;
 
 import globals.Printer;
 import semantic_actions.*;
+import parser.*;
 
 public class Lexer {
 
@@ -281,6 +282,7 @@ public class Lexer {
             if (this.verbose) {
                 Printer.print(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|", token));
             }
+            Parser.yylval = new ParserVal(token.getLex());
             return token.getID();
         }
 

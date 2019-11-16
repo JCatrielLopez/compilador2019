@@ -23,7 +23,7 @@ public class AS3 implements SemanticAction {
             cte = (long) (Math.pow(2, 32) - 1);
         }
 
-        if ((cte > Math.pow(2, 32))) {
+        if ((cte > Math.pow(2, 32)-1)) {
             Error.add(String.format("%5s %s %3s %s %s", source.getLineNumber(), "|", "AL", "|",
                     "WARNING CTE fuera de rango, se le asigna el valor maximo."));
             cte = (long) (Math.pow(2, 32) - 1);

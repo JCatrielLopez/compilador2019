@@ -4,6 +4,7 @@ import globals.SymbolTable;
 import lexer.Lexer;
 import org.fusesource.jansi.AnsiConsole;
 import parser.Parser;
+import globals.Error;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,21 +67,41 @@ class Compiler {
     while (source_file.available() != 0) sb.append((char) source_file.read());
     source_file.close();
 
-    Lexer al = new Lexer(sb, al_verbose);
+    if (al_verbose || as_verbose){
+      System.out.println(
+              String.format(
+                      "%5s %s %3s %s %s %-50s %s %s",
+                      "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
+      System.out.println("-----------------------------------------------------------------------");
+    }
 
-    System.out.println(
-            String.format(
-                    "%5s %s %3s %s %s %-50s %s %s",
-                    "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
-    System.out.println("-----------------------------------------------------------------------");
+    Lexer al = new Lexer(sb, al_verbose);
 
     Parser parser = new Parser(al, as_verbose);
     parser.run();
 
+    if (!Error.isEmpty()){
+      System.out.println("-----------------------------------------------------------------------");
+      System.out.println("-------------------------ERRORS AND WARNINGS---------------------------");
+      System.out.println("-----------------------------------------------------------------------");
+      System.out.println(
+              String.format(
+                      "%5s %s %3s %s %s %-50s %s %s",
+                      "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
+      System.out.println("-----------------------------------------------------------------------");
+      Error.print();
+    }
+
+
     if (ts_verbose) SymbolTable.print();
 
     //Tuve que ponerle string() en vez de toString() porque no me deja hacer static a toString.
-    if (tercetos_verbose) System.out.println(AdminTercetos.string());
+    if (tercetos_verbose) {
+      System.out.println("-----------------------------------------------------------------------");
+      System.out.println("-------------------------------TERCETOS--------------------------------");
+      System.out.println("-----------------------------------------------------------------------");
+      System.out.println(AdminTercetos.string());
+    }
 
     AnsiConsole.systemUninstall();
   }

@@ -112,7 +112,7 @@ int i;
 
 String   yytext;//user variable to return contextual strings
 ParserVal yyval; //used to return semantic vals from action routines
-ParserVal yylval;//the 'lval' (result) I got from yylex()
+public static ParserVal yylval;//the 'lval' (result) I got from yylex()
 ParserVal valstk[];
 int valptr;
 //###############################################################
@@ -626,14 +626,14 @@ final static String yyrule[] = {
 "cte : '-' CTE",
 };
 
-//#line 310 "gramatica.y"
+//#line 330 "gramatica.y"
 
 private Lexer al;
 private boolean verbose;
 
 public Parser(Lexer al, boolean as_verbose) {
   this.al = al;
-  this.verbose = verbose;
+  this.verbose = as_verbose;
 }
 
 // Analisis sintactico
@@ -669,8 +669,8 @@ public void check_range(String cte, boolean negativo) {
         	if (Long.parseLong(cte) <= Math.pow(2, 15)) {
 		    new_cte = Integer.valueOf(cte);
 		} else {
-		    Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Constante fuera de rango: " + cte));
-		    Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Se va a reemplazar por el valor: -" + Math.pow(2, 15)));
+		    Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "WARNING Constante fuera de rango: -" + cte));
+		    Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "WARNING Se va a reemplazar por el valor: -" + Math.pow(2, 15)));
 		    new_cte = (int) Math.pow(2, 15);
 		}
 		String new_lex = "-" + new_cte;
@@ -710,7 +710,7 @@ public void addVariable(String lex, String use){
     	lexer.Token token = globals.SymbolTable.getLex(lex);
  	if(token.getAttr("use") == null){
  		token.addAttr("use", use);
- 		token.addAttr("Type", type);
+ 		token.addAttr("type", type);
  	}else{
  		Error.add(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR La variable " + lex + " ya se encuentra declarada."));
  	}
@@ -719,9 +719,9 @@ public void addVariable(String lex, String use){
 public Integer checkTypes(String exp1, String exp2) {
         String tipo1 = "", tipo2 = "";
         if (!tipos.isEmpty())
-            tipo1 = tipos.pop();
-        if (!tipos.isEmpty())
             tipo2 = tipos.pop();
+        if (!tipos.isEmpty())
+            tipo1 = tipos.pop();
 
         if (tipo1 != tipo2)
         {
@@ -964,7 +964,7 @@ case 22:
 break;
 case 23:
 //#line 73 "gramatica.y"
-{type = "LONG INT";}
+{type = "ULONG";}
 break;
 case 24:
 //#line 76 "gramatica.y"
@@ -994,7 +994,7 @@ case 30:
 //#line 84 "gramatica.y"
 {
 							Token coleccion = SymbolTable.getLex(val_peek(3).sval);
-							if (coleccion.getAttr("use") != null){
+							if (coleccion.getAttr("use") == null){
 							    coleccion.addAttr("size", val_peek(1).sval);
 							    coleccion.addAttr("Elements", new ArrayList<>());
 							}
@@ -1063,7 +1063,7 @@ break;
 case 49:
 //#line 120 "gramatica.y"
 {	String terceto_inc = AdminTercetos.pop();
-											AdminTercetos.get(terceto_inc).completar(AdminTercetos.cantTercetos() + 1);
+											AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 1));
 											terceto_inc = AdminTercetos.pop();
 											AdminTercetos.add(new Terceto("BI", "["+terceto_inc+"]", "null"));
 											if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia While."));
@@ -1164,7 +1164,7 @@ break;
 case 73:
 //#line 157 "gramatica.y"
 {	String terceto_inc = AdminTercetos.pop();
-							AdminTercetos.get(terceto_inc).completar(AdminTercetos.cantTercetos() + 2);
+							AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 2));
 							AdminTercetos.add(new Terceto("BI", "", "null"));
 							AdminTercetos.push(AdminTercetos.last().getId());
 						    }
@@ -1172,7 +1172,7 @@ break;
 case 74:
 //#line 164 "gramatica.y"
 {	String terceto_inc = AdminTercetos.pop();
-							AdminTercetos.get(terceto_inc).completar(AdminTercetos.cantTercetos() + 1);
+							AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 1));
 						    }
 break;
 case 75:
@@ -1238,15 +1238,14 @@ break;
 case 90:
 //#line 190 "gramatica.y"
 {
-							    String id = val_peek(3).sval;
-							    String tipo_id = SymbolTable.getLex(id).getAttr("type");
+							    String tipo_id = SymbolTable.getLex(val_peek(3).sval).getAttr("type");
 							    boolean conversion = false;
 							    String tipo_exp="";
 							    if (!tipos.isEmpty())
 							    	tipo_exp = tipos.pop();
 							    if(tipo_id == "INT"){
 							    	if(tipo_exp == "ULONG"){
-							    		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR tipos incompatibles."))
+							    		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR tipos incompatibles."));
 							    	}
 							    }else{
 								if (tipo_exp == "INT") {
@@ -1318,45 +1317,55 @@ case 105:
 break;
 case 108:
 //#line 239 "gramatica.y"
-{AdminTercetos.add(new Terceto("call", val_peek(0).sval, val_peek(2).sval));}
+{	if(SymbolTable.getLex(val_peek(2).sval).getAttr("use") == "COLECCION"){
+								if(val_peek(0).sval == "_length"){
+									tipos.push("INT");
+								}else{
+									tipos.push(SymbolTable.getLex(val_peek(2).sval).getAttr("type"));
+								}
+								AdminTercetos.add(new Terceto("call", val_peek(0).sval, val_peek(2).sval));
+							}else{
+								Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR " + val_peek(2).sval + " no es una coleccion."));
+							}
+						 }
 break;
 case 109:
-//#line 242 "gramatica.y"
+//#line 252 "gramatica.y"
 {yyval = new ParserVal("_first");}
 break;
 case 110:
-//#line 243 "gramatica.y"
+//#line 253 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan parentesis en funcion FIRST."));}
 break;
 case 111:
-//#line 244 "gramatica.y"
+//#line 254 "gramatica.y"
 {yyval = new ParserVal("_last");}
 break;
 case 112:
-//#line 245 "gramatica.y"
+//#line 255 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan parentesis en funcion LAST."));}
 break;
 case 113:
-//#line 246 "gramatica.y"
+//#line 256 "gramatica.y"
 {yyval = new ParserVal("_length");}
 break;
 case 114:
-//#line 247 "gramatica.y"
+//#line 257 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan parentesis en funcion LENGTH."));}
 break;
 case 115:
-//#line 248 "gramatica.y"
+//#line 258 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Funcion desconocida."));}
 break;
 case 116:
-//#line 249 "gramatica.y"
+//#line 259 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Funcion desconocida."));}
 break;
 case 117:
-//#line 252 "gramatica.y"
+//#line 262 "gramatica.y"
 {
                                             if(SymbolTable.getLex(val_peek(0).sval).getAttr("use") != null){
-                                            	yyval = new ParserVal(val_peek(0).sval);
+                                            	yyval = val_peek(0);
                                                 tipos.push(SymbolTable.getLex(val_peek(0).sval).getAttr("type"));
                                             }
                                             else
@@ -1364,50 +1373,60 @@ case 117:
                                        }
 break;
 case 118:
-//#line 260 "gramatica.y"
+//#line 270 "gramatica.y"
 {
 						    Token coleccion = SymbolTable.getLex(val_peek(3).sval);
 						    Token tamaño = SymbolTable.getLex(val_peek(1).sval);
 						     if(coleccion.getAttr("use") != null){
-							if (tamaño.getAttr("use") != null){
-							    if (tamaño.getAttr("type").equals("INT")) {
-								yyval = new ParserVal(val_peek(3).sval+"["+val_peek(1).sval+"]");
-							    }
-							    else
-								Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + val_peek(1).sval + " no es de tipo INT."));
-							}
-							else
-							    Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + val_peek(1).sval + " no declarada."));
+							if(coleccion.getAttr("use") == "COLECCION"){
+								if (tamaño.getAttr("use") != null){
+								    if (tamaño.getAttr("type").equals("INT")) {
+									yyval = new ParserVal(val_peek(3).sval+"["+val_peek(1).sval+"]");
+									tipos.push(coleccion.getAttr("type"));
+								    }
+								    else
+									Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + val_peek(1).sval + " no es de tipo INT."));
+								}
+								else
+								    Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + val_peek(1).sval + " no declarada."));
+						     	}
+						     	else
+								Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR " + val_peek(3).sval + " no es una coleccion."));
 						     }
 						     else
                                                         Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + val_peek(3).sval + " no declarada."));
                                                 }
 break;
 case 119:
-//#line 277 "gramatica.y"
+//#line 292 "gramatica.y"
 {
 							Token coleccion = SymbolTable.getLex(val_peek(3).sval);
 					    		Token tamaño = SymbolTable.getLex(val_peek(1).sval);
 					       		if(coleccion.getAttr("use") != null){
-							  if (tamaño.getAttr("use") != null){
-							      if (tamaño.getAttr("type").equals("INT"))
-								  yyval = new ParserVal(val_peek(3).sval+"["+val_peek(1).sval+"]");
-							      else
-								  Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + val_peek(1).sval + " no es de tipo INT."));
-							  }
-							  else
-							      Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + val_peek(1).sval + " no declarada."));
+					       		  if(coleccion.getAttr("use") == "COLECCION"){
+								if (tamaño.getAttr("use") != null){
+							      		if (tamaño.getAttr("type").equals("INT")){
+								  		yyval = new ParserVal(val_peek(3).sval+"["+val_peek(1).sval+"]");
+								  		tipos.pop(); /*elimino el tipo de indice*/
+							  			tipos.push(coleccion.getAttr("type"));
+							      		} else
+								  		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + val_peek(1).sval + " no es de tipo INT."));
+							  	} else
+							      		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + val_peek(1).sval + " no declarada."));
+					       		  } else {
+					       		  	Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR " + val_peek(3).sval + " no es una coleccion."));
+					       		  }
 						       }
 						       else
 							  Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + val_peek(3).sval + " no declarada."));
 						  }
 break;
 case 120:
-//#line 293 "gramatica.y"
+//#line 313 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el subindice de la coleccion. Se esperaba un INT."));}
 break;
 case 121:
-//#line 296 "gramatica.y"
+//#line 316 "gramatica.y"
 {
                                             String cte = val_peek(0).sval;
                                             check_range(cte, false);
@@ -1415,14 +1434,14 @@ case 121:
                                         }
 break;
 case 122:
-//#line 301 "gramatica.y"
+//#line 321 "gramatica.y"
 {
 						String cte = val_peek(0).sval;
 						check_range(cte, true);
 						yyval = new ParserVal("-" + cte);
                                            }
 break;
-//#line 1348 "Parser.java"
+//#line 1368 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

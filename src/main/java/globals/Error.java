@@ -15,6 +15,10 @@ public class Error {
         }
     }
 
+    public static boolean isEmpty(){
+        return errores.isEmpty();
+    }
+
     public static void remove(String msg) {
         errores.remove(msg);
     }

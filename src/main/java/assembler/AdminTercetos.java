@@ -10,7 +10,7 @@ public class AdminTercetos {
 
 
     public static Terceto get(String id) {
-        return tercetos.get(id);//TODO Parsear para sacar corchetes
+        return tercetos.get(Integer.valueOf(id.substring(1,id.length()-1)));
     }
 
     public static Terceto last() {

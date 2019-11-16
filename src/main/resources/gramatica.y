@@ -70,7 +70,7 @@ sentencia_declarativa 		: tipo lista_variables ';'
 ;
 
 tipo				: INT {type = "INT";}
-				| ULONG {type = "LONG INT";}
+				| ULONG {type = "ULONG";}
 ;
 
 lista_variables			: lista_variables ',' ID {addVariable($3.sval, "VARIABLE");}
@@ -83,7 +83,7 @@ lista_variables			: lista_variables ',' ID {addVariable($3.sval, "VARIABLE");}
 
 coleccion			: ID '[' cte ']' {
 							Token coleccion = SymbolTable.getLex($1.sval);
-							if (coleccion.getAttr("use") != null){
+							if (coleccion.getAttr("use") == null){
 							    coleccion.addAttr("size", $3.sval);
 							    coleccion.addAttr("Elements", new ArrayList<>());
 							}
@@ -118,7 +118,7 @@ sentencia_impresion		: PRINT '(' CADENA ')' ';' {AdminTercetos.add(new Terceto("
 ;
 
 sentencia_control		: WHILE condicion_while DO bloque_sentencias ';' {	String terceto_inc = AdminTercetos.pop();
-											AdminTercetos.get(terceto_inc).completar(AdminTercetos.cantTercetos() + 1); //TODO cast to string
+											AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 1));
 											terceto_inc = AdminTercetos.pop();
 											AdminTercetos.add(new Terceto("BI", "["+terceto_inc+"]", "null"));
 											if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia While."));
@@ -155,14 +155,14 @@ condicion_if			: condicion {AdminTercetos.add(new Terceto("BF", $1.sval, "")); A
 ;
 
 bloque_then			: bloque_sentencias {	String terceto_inc = AdminTercetos.pop();
-							AdminTercetos.get(terceto_inc).completar(AdminTercetos.cantTercetos() + 2);
+							AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 2));
 							AdminTercetos.add(new Terceto("BI", "", "null"));
 							AdminTercetos.push(AdminTercetos.last().getId());
 						    }
 ;
 
 bloque_else			: bloque_sentencias {	String terceto_inc = AdminTercetos.pop();
-							AdminTercetos.get(terceto_inc).completar(AdminTercetos.cantTercetos() + 1);
+							AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 1));
 						    }
 ;
 
@@ -188,15 +188,14 @@ comparador		        : '<' { $$ = new ParserVal("<");}
 ;
 
 sentencia_asignacion 		: id ASIGN expresion ';' {
-							    String id = $1.sval;
-							    String tipo_id = SymbolTable.getLex(id).getAttr("type");
+							    String tipo_id = SymbolTable.getLex($1.sval).getAttr("type");
 							    boolean conversion = false;
 							    String tipo_exp="";
 							    if (!tipos.isEmpty())
 							    	tipo_exp = tipos.pop();
 							    if(tipo_id == "INT"){
 							    	if(tipo_exp == "ULONG"){
-							    		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR tipos incompatibles."))
+							    		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR tipos incompatibles."));
 							    	}
 							    }else{
 								if (tipo_exp == "INT") {
@@ -237,7 +236,17 @@ termino				: termino '*' factor { $$ = new ParserVal(crearTercetoOperacion("*", 
 
 factor 				: id
 				| cte
-				| ID '.' funcion {AdminTercetos.add(new Terceto("call", $3.sval, $1.sval));}
+				| ID '.' funcion {	if(SymbolTable.getLex($1.sval).getAttr("use") == "COLECCION"){
+								if($3.sval == "_length"){
+									tipos.push("INT");
+								}else{
+									tipos.push(SymbolTable.getLex($1.sval).getAttr("type"));
+								}
+								AdminTercetos.add(new Terceto("call", $3.sval, $1.sval));
+							}else{
+								Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR " + $1.sval + " no es una coleccion."));
+							}
+						 }
 ;
 
 funcion				: FIRST '(' ')' {$$ = new ParserVal("_first");}
@@ -252,7 +261,7 @@ funcion				: FIRST '(' ')' {$$ = new ParserVal("_first");}
 
 id 				: ID {
                                             if(SymbolTable.getLex($1.sval).getAttr("use") != null){
-                                            	$$ = new ParserVal($1.sval);
+                                            	$$ = $1;
                                                 tipos.push(SymbolTable.getLex($1.sval).getAttr("type"));
                                             }
                                             else
@@ -262,15 +271,20 @@ id 				: ID {
 						    Token coleccion = SymbolTable.getLex($1.sval);
 						    Token tamaño = SymbolTable.getLex($3.sval);
 						     if(coleccion.getAttr("use") != null){
-							if (tamaño.getAttr("use") != null){
-							    if (tamaño.getAttr("type").equals("INT")) {
-								$$ = new ParserVal($1.sval+"["+$3.sval+"]");
-							    }
-							    else
-								Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no es de tipo INT."));
-							}
-							else
-							    Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no declarada."));
+							if(coleccion.getAttr("use") == "COLECCION"){
+								if (tamaño.getAttr("use") != null){
+								    if (tamaño.getAttr("type").equals("INT")) {
+									$$ = new ParserVal($1.sval+"["+$3.sval+"]");
+									tipos.push(coleccion.getAttr("type"));
+								    }
+								    else
+									Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no es de tipo INT."));
+								}
+								else
+								    Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no declarada."));
+						     	}
+						     	else
+								Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR " + $1.sval + " no es una coleccion."));
 						     }
 						     else
                                                         Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
@@ -279,14 +293,19 @@ id 				: ID {
 							Token coleccion = SymbolTable.getLex($1.sval);
 					    		Token tamaño = SymbolTable.getLex($3.sval);
 					       		if(coleccion.getAttr("use") != null){
-							  if (tamaño.getAttr("use") != null){
-							      if (tamaño.getAttr("type").equals("INT"))
-								  $$ = new ParserVal($1.sval+"["+$3.sval+"]");
-							      else
-								  Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no es de tipo INT."));
-							  }
-							  else
-							      Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no declarada."));
+					       		  if(coleccion.getAttr("use") == "COLECCION"){
+								if (tamaño.getAttr("use") != null){
+							      		if (tamaño.getAttr("type").equals("INT")){
+								  		$$ = new ParserVal($1.sval+"["+$3.sval+"]");
+								  		tipos.pop(); //elimino el tipo de indice
+							  			tipos.push(coleccion.getAttr("type"));
+							      		} else
+								  		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no es de tipo INT."));
+							  	} else
+							      		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $3.sval + " no declarada."));
+					       		  } else {
+					       		  	Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR " + $1.sval + " no es una coleccion."));
+					       		  }
 						       }
 						       else
 							  Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Variable " + $1.sval + " no declarada."));
@@ -314,7 +333,7 @@ private boolean verbose;
 
 public Parser(Lexer al, boolean as_verbose) {
   this.al = al;
-  this.verbose = verbose;
+  this.verbose = as_verbose;
 }
 
 // Analisis sintactico
@@ -350,8 +369,8 @@ public void check_range(String cte, boolean negativo) {
         	if (Long.parseLong(cte) <= Math.pow(2, 15)) {
 		    new_cte = Integer.valueOf(cte);
 		} else {
-		    Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Constante fuera de rango: " + cte));
-		    Printer.print(String.format("%5s %s %s", al.getLineNumber(), "|", "WARNING Se va a reemplazar por el valor: -" + Math.pow(2, 15)));
+		    Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "WARNING Constante fuera de rango: -" + cte));
+		    Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "WARNING Se va a reemplazar por el valor: -" + Math.pow(2, 15)));
 		    new_cte = (int) Math.pow(2, 15);
 		}
 		String new_lex = "-" + new_cte;
@@ -391,7 +410,7 @@ public void addVariable(String lex, String use){
     	lexer.Token token = globals.SymbolTable.getLex(lex);
  	if(token.getAttr("use") == null){
  		token.addAttr("use", use);
- 		token.addAttr("Type", type);
+ 		token.addAttr("type", type);
  	}else{
  		Error.add(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR La variable " + lex + " ya se encuentra declarada."));
  	}
@@ -400,9 +419,9 @@ public void addVariable(String lex, String use){
 public Integer checkTypes(String exp1, String exp2) {
         String tipo1 = "", tipo2 = "";
         if (!tipos.isEmpty())
-            tipo1 = tipos.pop();
-        if (!tipos.isEmpty())
             tipo2 = tipos.pop();
+        if (!tipos.isEmpty())
+            tipo1 = tipos.pop();
 
         if (tipo1 != tipo2)
         {
