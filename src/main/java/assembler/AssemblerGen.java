@@ -16,17 +16,17 @@ public final class AssemblerGen {
     public static String declare(String lex) {
         Token e = SymbolTable.getLex(lex);
 
-        if (e.getID() == SymbolTable.getID("id") && e.getAttr("use") == "variable") {
-            if (e.getAttr("type") == "INT")
+        if (e.getID() == SymbolTable.getID("id") && e.getAttr("use").equals("variable")) {
+            if (e.getAttr("type").equals("INT"))
                 return (e.getLex() + " dw ?");
             else
                 return (e.getLex() + " dd ?");
         }
 
         if (e.getID() == SymbolTable.getID("cadena")) {
-            String nombreCad = "cadena" + cadenas.size();
-            cadenas.put(e.getLex(), nombreCad);
-            return (nombreCad + " db " + lex + ", 0");
+            String cadena = "cadena" + cadenas.size();
+            cadenas.put(e.getLex(), cadena);
+            return (cadena + " db " + lex + ", 0");
         }
 
 
@@ -35,23 +35,27 @@ public final class AssemblerGen {
 
     public static void redefineVariables() {
 
-        for (Terceto t : AdminTercetos.tercetos) {
-            if (t.getOperacion() != "label") {
-                if (!t.getOperando1().startsWith("[")) {
-                    t.setOperando1("_" + t.getOperando1());
-                }
-                if (!t.getOperando2().startsWith("[")) {
-                    t.setOperando2("_" + t.getOperando2());
-                }
+        // TODO Revisar: Creo que es innecesario renombrar los tercetos
+//        for (Terceto t : AdminTercetos.tercetos) {
+//            if (t.getOperacion() != "label") {
+//                if (!t.getOperando1().startsWith("[")) {
+//                    t.setOperando1("_" + t.getOperando1());
+//                }
+//                if (!t.getOperando2().startsWith("[")) {
+//                    t.setOperando2("_" + t.getOperando2());
+//                }
+//            }
+//        }
+
+        for (String lex : SymbolTable.keys()) {
+            Token token = SymbolTable.getLex(lex);
+            if (token.getID() == (SymbolTable.getID("id"))) {
+                SymbolTable.remove(lex);
+                token.setLex("_" + lex);
+                SymbolTable.add(token);
             }
         }
 
-        //TODO Modificar las keys de la SymbolTable para reflejar estos cambios.
-        for (String lex : SymbolTable.keys()) {
-            Token token = SymbolTable.getLex(lex);
-            if (token.getID() == (SymbolTable.getID("id")))
-                token.setLex("_" + lex);
-        }
     }
 
     public static void translate(String path) throws Exception {
@@ -118,7 +122,7 @@ public final class AssemblerGen {
         writer.append("\n");
 
 
-        for (Terceto t : AdminTercetos.tercetos) {
+        for (Terceto t : AdminTercetos.list()) {
             writer.append(getCode(t));
         }
 

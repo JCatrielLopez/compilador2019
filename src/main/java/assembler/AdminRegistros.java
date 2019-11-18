@@ -13,7 +13,7 @@ public class AdminRegistros {
     }
 
     public void free(String register) {
-        if (register.startsWith("e")) // Borro la e (EBX -> BX)
+        if (register.startsWith("E")) // Borro la E (EBX -> BX)
             register = register.substring(1);
 
         if (this.registers.containsKey(register))

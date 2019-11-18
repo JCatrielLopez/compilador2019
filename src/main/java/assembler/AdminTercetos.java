@@ -1,16 +1,17 @@
 package assembler;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Stack;
 
-public class AdminTercetos {
+public class AdminTercetos{
 
-    public static ArrayList<Terceto> tercetos = new ArrayList<>();
-    public static Stack<String> pila = new Stack<>();
+    private static ArrayList<Terceto> tercetos = new ArrayList<>();
+    private static Stack<String> pila = new Stack<>();
 
 
     public static Terceto get(String id) {
-        return tercetos.get(Integer.valueOf(id.substring(1,id.length()-1)));
+        return tercetos.get(Integer.parseInt(id.substring(1,id.length()-1)));
     }
 
     public static Terceto last() {
@@ -39,9 +40,14 @@ public class AdminTercetos {
 
         StringBuilder out = new StringBuilder();
         for (Terceto t : tercetos) {
-            out.append(t.toString() + "\n");
+            out.append(t.toString())
+               .append("\n");
         }
 
         return out.toString();
+    }
+
+    public static ArrayList<Terceto> list(){
+        return tercetos;
     }
 }
