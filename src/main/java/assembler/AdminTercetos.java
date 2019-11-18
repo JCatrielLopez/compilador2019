@@ -10,7 +10,7 @@ public class AdminTercetos {
 
 
     public static Terceto get(String id) {
-        return tercetos.get(Integer.valueOf(id.substring(1,id.length()-1)));
+        return tercetos.get(Integer.valueOf(id.substring(1,id.length()-1))-1);
     }
 
     public static Terceto last() {
