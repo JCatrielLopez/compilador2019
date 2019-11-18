@@ -28,11 +28,6 @@ public class Terceto {
         return id;
     }
 
-    public void completar(String operador) {
-        if (this.operando2 == null)
-                this.operando2 = "["+operador+"]";
-    }
-
     public String getOperando1() {
         return operando1;
     }
