@@ -66,7 +66,7 @@ public final class AssemblerGen {
     // resultado del terceto, el nombre de la variable o la constante.
     public static String getOP(String operando) {
         if (operando.charAt(0) == '[') {
-            return AdminTercetos.get(operando.substring(1, operando.length() - 1))
+            return AdminTercetos.get(operando)
                     .getRegister();
         }
 
@@ -168,11 +168,6 @@ public final class AssemblerGen {
 
         switch (t.getOperacion()) {
             case "+":
-                //                ADD dest,src
-                //                Operación: dest <- dest + src.
-                //                donde dest = {reg_A|mem} y src = {reg_A|mem|inmed} no pudiendo ambos operandos
-                //                estar en memoria.
-//                System.out.println("Antes del switch: " + reg_B);
                 switch (tipo_op1) {
                     case "terceto":
                         reg_A = getOP(t.getOperando1());
@@ -185,14 +180,12 @@ public final class AssemblerGen {
                     case "variable":
 
                         reg_B = getOP(t.getOperando1());
-//                        System.out.println("Case (Variable): " + reg_B);
                         switch (tipo_op2) {
                             case "terceto":
                                 reg_A = getOP(t.getOperando2());
                                 ar.free(reg_A);
                                 break;
                             case "variable":
-//                                System.out.println("Case2 (Variable): " + reg_B);
                                 reg_A = ar.available(size);
                                 instructions.append("MOV ")
                                         .append(reg_A)
@@ -297,7 +290,6 @@ public final class AssemblerGen {
                 //TODO Generar assembler para las labels
                 break;
             case ":=":
-//                System.out.println("ASIGNACION!");
 
                 if (getOP(t.getOperando2()).equals("terceto")) {
                     instructions.append("MOV ")
@@ -309,6 +301,10 @@ public final class AssemblerGen {
                 } else {
                     reg_A = ar.available(size);
 
+                    System.out.println("reg_A -> " + reg_A);
+                    System.out.println(t.getOperando1() + " -> " + getOP(t.getOperando1()));
+                    System.out.println(t.getOperando2() + " -> " + getOP(t.getOperando2()));
+                    System.out.println(" ----------------------- ");
                     instructions.append("MOV ")
                             .append(reg_A)
                             .append(",")
