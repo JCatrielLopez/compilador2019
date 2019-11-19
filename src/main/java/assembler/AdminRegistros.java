@@ -35,4 +35,18 @@ public class AdminRegistros {
             }
         return null;
     }
+
+    public String getRegA(Integer bits) {
+        if (bits == 32)
+            return "EAX";
+        else
+            return "AX";
+    }
+
+    public String getRegD(Integer bits) {
+        if (bits == 32)
+            return "EDX";
+        else
+            return "DX";
+    }
 }

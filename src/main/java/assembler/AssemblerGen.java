@@ -22,10 +22,12 @@ public final class AssemblerGen {
                 return (e.getLex() + " dd ?");
         }
 
-        if (e.getID() == SymbolTable.getID("cadena")) {
-            String cadena = "cte" + cadenas.size();
-            cadenas.put(e.getLex(), cadena);
-            return (cadena + " db " + lex + ", 0");
+        if (e.getID() == SymbolTable.getID("cte")) {
+            ctes.put(e.getLex(), lex);
+            if (e.getAttr("type").equals("INT"))
+                return (e.getLex() + " dw " + e.getLex());
+            else
+                return (e.getLex() + " dd " + e.getLex());
         }
 
 
@@ -38,10 +40,12 @@ public final class AssemblerGen {
             if (!t.getOperacion().equals("label")) {
 
                 if (!t.getOperando1().startsWith("[")) {
-                    t.setOperando1("_" + t.getOperando1());
+                    if (SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("VARIABLE"))
+                        t.setOperando1("_" + t.getOperando1());
                 }
                 if (!t.getOperando2().startsWith("[")) {
-                    t.setOperando2("_" + t.getOperando2());
+                    if (SymbolTable.getLex(t.getOperando2()).getAttr("use").equals("VARIABLE"))
+                        t.setOperando2("_" + t.getOperando2());
                 }
             }
         }
@@ -65,8 +69,9 @@ public final class AssemblerGen {
             return AdminTercetos.get(operando.substring(1, operando.length() - 1))
                     .getRegister();
         }
-//        System.out.println(operando + " -> " + SymbolTable.contains(operando));
+
         Token token = SymbolTable.getLex(operando);
+//        System.out.println(operando + " -> " + token);
         if (token != null) {
             String uso = token.getAttr("use");
             switch (uso) {
@@ -74,7 +79,7 @@ public final class AssemblerGen {
                     return operando;
                 case "CTE NEG":
                 case "CTE POS":
-                    return cadenas.get(operando);
+                    return ctes.get(operando);
             }
         }
         return "";
@@ -162,13 +167,12 @@ public final class AssemblerGen {
             size = 16;
 
         switch (t.getOperacion()) {
-            //TODO: Verificar que la suma este bien.
             case "+":
                 //                ADD dest,src
                 //                Operación: dest <- dest + src.
-                //                donde dest = {reg|mem} y src = {reg|mem|inmed} no pudiendo ambos operandos
+                //                donde dest = {reg_A|mem} y src = {reg_A|mem|inmed} no pudiendo ambos operandos
                 //                estar en memoria.
-                System.out.println("Antes del switch: " + reg_B);
+//                System.out.println("Antes del switch: " + reg_B);
                 switch (tipo_op1) {
                     case "terceto":
                         reg_A = getOP(t.getOperando1());
@@ -181,14 +185,14 @@ public final class AssemblerGen {
                     case "variable":
 
                         reg_B = getOP(t.getOperando1());
-                        System.out.println("Case (Variable): " + reg_B);
+//                        System.out.println("Case (Variable): " + reg_B);
                         switch (tipo_op2) {
                             case "terceto":
                                 reg_A = getOP(t.getOperando2());
                                 ar.free(reg_A);
                                 break;
                             case "variable":
-                                System.out.println("Case2 (Variable): " + reg_B);
+//                                System.out.println("Case2 (Variable): " + reg_B);
                                 reg_A = ar.available(size);
                                 instructions.append("MOV ")
                                         .append(reg_A)
@@ -211,13 +215,77 @@ public final class AssemblerGen {
 
                 break;
             case "-":
-                //TODO Generar assembler para la operacion -
+                switch (tipo_op1) {
+                    case "terceto":
+                        reg_A = getOP(t.getOperando1());
+                        reg_B = getOP(t.getOperando2());
+
+                        if (tipo_op2.equals("terceto"))
+                            ar.free(reg_B);
+                        break;
+                    case "variable":
+                        reg_B = getOP(t.getOperando1());
+                        reg_A = ar.available(size);
+                        switch (tipo_op2) {
+                            case "terceto":
+                                instructions.append("MOV ")
+                                        .append(reg_A)
+                                        .append(", ")
+                                        .append(reg_B)
+                                        .append("\n");
+
+                                reg_B = getOP(t.getOperando2());
+                                ar.free(getOP(t.getOperando2()));
+                                break;
+                            case "variable":
+                                instructions.append("MOV ")
+                                        .append(reg_A)
+                                        .append(", ")
+                                        .append(reg_B)
+                                        .append("\n");
+
+                                reg_B = getOP(t.getOperando2());
+                                break;
+                        }
+                        break;
+                }
+
+                instructions.append("SUB ")
+                        .append(reg_A)
+                        .append(", ")
+                        .append(reg_B)
+                        .append("\n");
+                t.setRegister(reg_A);
+
                 break;
             case "/":
                 //TODO Generar assembler para la operacion /
                 break;
             case "*":
-                //TODO Generar assembler para la operacion *
+                String reg_1 = getOP(t.getOperando1());
+                String reg_2 = getOP(t.getOperando2());
+
+                instructions.append("MOV ")
+                        .append(ar.getRegA(size))
+                        .append(", ")
+                        .append(reg_2)
+                        .append("\n");
+
+                instructions.append("MOV ")
+                        .append(ar.getRegD(size))
+                        .append(", ")
+                        .append(reg_2);
+                instructions.append("\n");
+                instructions.append("IMUL " + ar.getRegA(size) + ", " + ar.getRegD(size));
+                instructions.append("\n");
+
+                t.setRegister(ar.getRegA(size));
+
+                if (reg_1.equals("terceto"))
+                    ar.free(reg_1);
+                if (reg_2.equals("terceto"))
+                    ar.free(reg_2);
+
                 break;
             case "BI":
                 //TODO Generar assembler para la operacion BI
@@ -229,7 +297,35 @@ public final class AssemblerGen {
                 //TODO Generar assembler para las labels
                 break;
             case ":=":
-                //TODO Generar assembler para la operacion :=
+//                System.out.println("ASIGNACION!");
+
+                if (getOP(t.getOperando2()).equals("terceto")) {
+                    instructions.append("MOV ")
+                            .append(getOP(t.getOperando1()))
+                            .append(", ")
+                            .append(getOP(t.getOperando2()))
+                            .append("\n");
+                    ar.free(getOP(t.getOperando2()));
+                } else {
+                    reg_A = ar.available(size);
+
+                    instructions.append("MOV ")
+                            .append(reg_A)
+                            .append(",")
+                            .append(getOP(t.getOperando2()))
+                            .append("\n")
+                            .append("MOV ")
+                            .append(getOP(t.getOperando1()))
+                            .append(", ")
+                            .append(reg_A)
+                            .append("\n");
+
+                    ar.free(reg_A);
+                }
+
+                if (getOP(t.getOperando2()).equals("terceto"))
+                    ar.free(getOP(t.getOperando2()));
+
                 break;
             case "PRINT":
                 //TODO Generar assembler para la operacion PRINT
