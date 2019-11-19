@@ -205,8 +205,6 @@ public final class AssemblerGen {
                         .append(reg_A)
                         .append(", ")
                         .append(reg_B)
-                        .append("\n")
-                        .append("JO overflow")
                         .append("\n");
 
                 t.setRegister(reg_A);
