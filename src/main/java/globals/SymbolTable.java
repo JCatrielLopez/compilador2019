@@ -3,6 +3,7 @@ package globals;
 import lexer.Token;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -93,7 +94,7 @@ public final class SymbolTable {
     }
 
     public static Set<String> keys() {
-        return symbols.keySet();
+        return new HashSet<String>(symbols.keySet());
     }
 
 //    public static Set<String> iterator() {

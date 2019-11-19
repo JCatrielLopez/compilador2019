@@ -33,12 +33,12 @@ public class Terceto {
 
     public void setOperando2(String operador) {
         if (this.operando2 == null)
-                this.operando2 = "["+operador+"]";
+                this.operando2 = operador;
     }
   
-    public void setOperando1(String s) {
+    public void setOperando1(String operador) {
         if (this.operando1 == null)
-                this.operando1 = "["+operador+"]";
+                this.operando1 = operador;
     }
 
     public void setType(String type){
@@ -67,6 +67,8 @@ public class Terceto {
                 .append(this.operando1)
                 .append(", ")
                 .append(this.operando2)
+                //.append(", ")
+                //.append(this.type)
                 .append(")");
 
         return out.toString();

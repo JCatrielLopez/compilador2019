@@ -118,10 +118,8 @@ sentencia_impresion		: PRINT '(' CADENA ')' ';' {AdminTercetos.add(new Terceto("
 				| PRINT '(' CADENA ')' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ';'"));}
 ;
 
-// TODO: Verificar que el merge este bien!
 sentencia_control		: while condicion_while DO bloque_sentencias ';' {	String terceto_inc = AdminTercetos.pop();
 											AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 2)+"]");
-
 											terceto_inc = AdminTercetos.pop();
 											AdminTercetos.add(new Terceto("BI", terceto_inc, "null"));
 											AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
@@ -162,8 +160,6 @@ sentencia_seleccion		: IF condicion_if bloque_then END_IF ';' {	String terceto_i
                                 | IF error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en sentencia IF."));}
 ;
 
-// TODO: Verificar que el merge este bien!
-
 condicion_if			: condicion {AdminTercetos.add(new Terceto("BF", $1.sval, null)); AdminTercetos.push(AdminTercetos.last().getId());}
 ;
 
@@ -183,8 +179,6 @@ bloque_else			: bloque_sentencias {	String terceto_inc = AdminTercetos.pop();
 						    }
 ;
 
-
-
 condicion			: '(' comparacion ')' {$$ = $2;}
                                 |  comparacion ')' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el caracter ("));}
                                 | '(' comparacion  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el caracter )"));}
@@ -193,11 +187,10 @@ condicion			: '(' comparacion ')' {$$ = $2;}
 ;
 
 comparacion			: expresion comparador expresion {
-                                                        Terceto t = crearTercetoOperacion($2.sval, $1.sval, $3.sval);
-                                                        t.setType(tipos.pop());
+                                                        String t_id = crearTercetoOperacion($2.sval, $1.sval, $3.sval);
+                                                        Terceto t = AdminTercetos.get(t_id);
                                                         $$ = new ParserVal(t);
                                                      }
-
                                 | error comparador expresion  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado izquierdo de la comparacion."));}
                                 | expresion error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta comparador."));}
                                 | expresion comparador error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado derecho de la comparacion."));}
@@ -222,7 +215,6 @@ sentencia_asignacion 		: id ASIGN expresion ';' {
 							    		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR tipos incompatibles."));
 							    	}
 							    }else{
-
 								if (tipo_exp == "INT") {
 									conversion = true;
 									Terceto t = new Terceto("_CONV", $3.sval);
@@ -232,14 +224,11 @@ sentencia_asignacion 		: id ASIGN expresion ';' {
 							    }
 							    Terceto t = new Terceto(":=", $1.sval);
 							    if(conversion)
-							        t.completar(AdminTercetos.last().getId());
+								t.setOperando2(AdminTercetos.last().getId());
 							    else
-                                    t.completar($3.sval);
-
-                                t.setType(tipo_id);
-                                AdminTercetos.add(t);
-
-
+								t.setOperando2($3.sval);
+							    t.setType(tipo_id);
+							    AdminTercetos.add(t);
 							    if (this.verbose)
 								Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia Asign."));
                                     			}
@@ -249,9 +238,9 @@ sentencia_asignacion 		: id ASIGN expresion ';' {
 
 ;
 
-expresion			                : expresion '+' termino { $$ = new ParserVal(crearTercetoOperacion("+", $1.sval, $3.sval)); }
+expresion			: expresion '+' termino { $$ = new ParserVal(crearTercetoOperacion("+", $1.sval, $3.sval)); }
                                 | expresion '-' termino { $$ = new ParserVal(crearTercetoOperacion("-", $1.sval, $3.sval)); }
-				                | termino
+				| termino
                                 | expresion '+' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '+'"));}
                                 | expresion '-' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '-'"));}
 ;
@@ -475,15 +464,13 @@ public Integer checkTypes(String exp1, String exp2) {
 
 public String crearTercetoOperacion(String op, String arg1, String arg2){
 	Integer conv = checkTypes(arg1, arg2);
-	String tipo = tipos.pop();
-
 	if (conv == 1)
 		arg1 = AdminTercetos.last().getId();
 	if (conv == 2)
 		arg2 = AdminTercetos.last().getId();
 	Terceto terceto = new Terceto(op, arg1, arg2);
+	String tipo = tipos.pop();
 	terceto.setType(tipo);
-
 	tipos.push(tipo);
 	AdminTercetos.add(terceto);
 	return terceto.getId();
