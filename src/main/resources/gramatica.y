@@ -23,6 +23,7 @@ import java.util.Stack;
 %token MAYOR_IGUAL
 %token MENOR_IGUAL
 %token DISTINTO
+%token IGUAL
 %token ASIGN
 %token BEGIN
 %token END
@@ -117,62 +118,71 @@ sentencia_impresion		: PRINT '(' CADENA ')' ';' {AdminTercetos.add(new Terceto("
 				| PRINT '(' CADENA ')' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ';'"));}
 ;
 
-sentencia_control		: WHILE condicion_while DO bloque_sentencias ';' {
-                                            String terceto_inc = AdminTercetos.pop();
-											AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 1));
+// TODO: Verificar que el merge este bien!
+sentencia_control		: while condicion_while DO bloque_sentencias ';' {	String terceto_inc = AdminTercetos.pop();
+											AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 2)+"]");
+
 											terceto_inc = AdminTercetos.pop();
-											AdminTercetos.add(new Terceto("BI", "["+terceto_inc+"]"));
+											AdminTercetos.add(new Terceto("BI", "["+(Integer.valueOf(terceto_inc.substring(1,terceto_inc.length()-1))+1)+"]", "null"));
 											if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia While."));
 										}
                                 | error condicion_while DO bloque_sentencias ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave WHILE."));}
-                                | WHILE condicion_while error bloque_sentencias ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave DO."));}
-                                | WHILE error DO bloque_sentencias ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion de WHILE."));}
-                                | WHILE condicion_while DO error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el bloque de sentencias WHILE."));}
-                                | WHILE error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la sentencia WHILE."));}
-				| WHILE condicion_while DO bloque_sentencias error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ';'."));}
+                                | while condicion_while error bloque_sentencias ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave DO."));}
+                                | while error DO bloque_sentencias ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion de WHILE."));}
+                                | while condicion_while DO error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el bloque de sentencias WHILE."));}
+                                | while error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la sentencia WHILE."));}
+				| while condicion_while DO bloque_sentencias error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ';'."));}
 ;
 
-condicion_while			: condicion {
-                                         AdminTercetos.push(AdminTercetos.last().getId());
-                                         AdminTercetos.add(new Terceto("BF", $1.sval));
-                                         AdminTercetos.push(AdminTercetos.last().getId());
-                                    }
-
+// TODO: Verificar que el merge este bien!
+while 				: WHILE {AdminTercetos.push("["+AdminTercetos.cantTercetos()+"]");}
 ;
 
-sentencia_seleccion		: IF condicion_if bloque_then END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If.."));}
-                                | IF condicion_if bloque_then ELSE bloque_else END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If-Else."));}
+condicion_while 		: condicion {AdminTercetos.add(new Terceto("BF", $1.sval, null)); AdminTercetos.push(AdminTercetos.last().getId());}
+;
+
+sentencia_seleccion		: IF condicion_if bloque_then END_IF ';' {	String terceto_inc = AdminTercetos.pop();
+										AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 1)+"]");
+										if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If.."));}
+                                | IF condicion_if bloque_then else bloque_else END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If-Else."));}
                                 | error condicion_if bloque_then END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR al comienzo de la sentencia If."));}
                                 | IF condicion_if bloque_then error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR al final de la sentencia If."));}
                                 | IF condicion_if error END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el bloque de sentencias IF."));}
                                 | IF error bloque_then END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion de IF."));}
                                 | IF condicion_if bloque_then END_IF error{Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ';'."));}
-                                | error condicion_if bloque_then ELSE bloque_else END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave IF."));}
+                                | error condicion_if bloque_then else bloque_else END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave IF."));}
                                 | IF condicion_if bloque_then error bloque_else END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave ELSE."));}
-                                | IF condicion_if bloque_then ELSE bloque_else error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave END_IF."));}
-                                | IF condicion_if error ELSE bloque_else END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en bloque THEN de la sentencia IF."));}
-                                | IF condicion_if bloque_then ELSE error END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en bloque ELSE de la sentencia IF."));}
-                                | IF error bloque_then ELSE bloque_else END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion de la sentencia IF-ELSE."));}
-                                | IF condicion_if bloque_then ELSE bloque_else END_IF error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ';'."));}
+                                | IF condicion_if bloque_then else bloque_else error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave END_IF."));}
+                                | IF condicion_if error else bloque_else END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en bloque THEN de la sentencia IF."));}
+                                | IF condicion_if bloque_then else error END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en bloque ELSE de la sentencia IF."));}
+                                | IF error bloque_then else bloque_else END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion de la sentencia IF-ELSE."));}
+                                | IF condicion_if bloque_then else bloque_else END_IF error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ';'."));}
                                 | IF error ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en sentencia IF."));}
 ;
 
-condicion_if			: condicion {AdminTercetos.add(new Terceto("BF", $1.sval)); AdminTercetos.push(AdminTercetos.last().getId());}
+// TODO: Verificar que el merge este bien!
+
+condicion_if			: condicion {AdminTercetos.add(new Terceto("BF", $1.sval, null)); AdminTercetos.push(AdminTercetos.last().getId());}
 ;
 
-bloque_then			: bloque_sentencias {	String terceto_inc = AdminTercetos.pop();
-							AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 2));
-							AdminTercetos.add(new Terceto("BI"));
-							AdminTercetos.push(AdminTercetos.last().getId());
-						    }
+bloque_then			: bloque_sentencias
+;
+
+else				: ELSE {String terceto_inc = AdminTercetos.pop();
+					AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 2)+"]");
+					AdminTercetos.add(new Terceto("BI", null, null));
+					AdminTercetos.push(AdminTercetos.last().getId());}
+
 ;
 
 bloque_else			: bloque_sentencias {	String terceto_inc = AdminTercetos.pop();
-							AdminTercetos.get(terceto_inc).completar(String.valueOf(AdminTercetos.cantTercetos() + 1));
+							AdminTercetos.get(terceto_inc).setOperando1(String.valueOf(AdminTercetos.cantTercetos() + 1));
 						    }
 ;
 
-condicion			: '(' comparacion ')'          {$$ = $1;}
+
+
+condicion			: '(' comparacion ')' {$$ = $2;}
                                 |  comparacion ')' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el caracter ("));}
                                 | '(' comparacion  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el caracter )"));}
                                 | comparacion {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR faltan ambos parentesis en la condicion"));}
@@ -192,7 +202,7 @@ comparacion			: expresion comparador expresion {
 
 comparador		        : '<' { $$ = new ParserVal("<");}
 				| '>' { $$ = new ParserVal(">");}
-				| '=' { $$ = new ParserVal("=");}
+				| IGUAL { $$ = $1;}
 				| MENOR_IGUAL { $$ = $1;}
 				| MAYOR_IGUAL { $$ = $1;}
 				| DISTINTO { $$ = $1;}

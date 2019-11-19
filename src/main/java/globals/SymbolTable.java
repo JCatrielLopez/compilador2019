@@ -29,16 +29,16 @@ public final class SymbolTable {
         ids.put("if", 257);
         ids.put("else", 258);
         ids.put("end_if", 259);
-        ids.put(":=", 271);
+        ids.put(":=", 272);
         ids.put("print", 260);
         ids.put("cte", 267);
         ids.put("int", 261);
         ids.put("ulong", 262);
-        ids.put("first", 274);
-        ids.put("last", 275);
-        ids.put("length", 276);
-        ids.put("begin", 272);
-        ids.put("end", 273);
+        ids.put("first", 275);
+        ids.put("last", 276);
+        ids.put("length", 277);
+        ids.put("begin", 273);
+        ids.put("end", 274);
         ids.put("while", 263);
         ids.put("do", 264);
         ids.put("id", 265);
@@ -46,7 +46,7 @@ public final class SymbolTable {
         ids.put(">=", 268);
         ids.put("<=", 269);
         ids.put("<>", 270);
-        ids.put("==", 275);
+        ids.put("==", 271);
     }
 
 

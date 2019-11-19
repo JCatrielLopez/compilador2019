@@ -31,15 +31,20 @@ public class Terceto {
         return id;
     }
 
-    public void completar(String operador) {
+    public void setOperando2(String operador) {
         if (this.operando2 == null)
                 this.operando2 = "["+operador+"]";
+    }
+  
+    public void setOperando1(String s) {
+        if (this.operando1 == null)
+                this.operando1 = "["+operador+"]";
     }
 
     public void setType(String type){
         this.type = type;
     }
-
+  
     public String getOperando1() {
         return operando1;
     }
@@ -72,11 +77,4 @@ public class Terceto {
         return this.type;
     }
 
-    public void setOperando1(String s) {
-        this.operando1 = s;
-    }
-
-    public void setOperando2(String s) {
-        this.operando2 = s;
-    }
 }
