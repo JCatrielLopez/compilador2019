@@ -7,6 +7,7 @@ public class Terceto {
     private String operacion;
     private String operando1;
     private String operando2;
+    private String type;
 
     public Terceto(String operacion, String operando1, String operando2) {
         cont++;
@@ -14,6 +15,7 @@ public class Terceto {
         this.operacion = operacion;
         this.operando1 = operando1;
         this.operando2 = operando2;
+        this.type = new String();
     }
 
     public Terceto(String operacion, String operando1) {
@@ -22,12 +24,27 @@ public class Terceto {
         this.operacion = operacion;
         this.operando1 = operando1;
         this.operando2 = null;
+        this.type = new String();
     }
 
     public String getId() {
         return id;
     }
 
+    public void setOperando2(String operador) {
+        if (this.operando2 == null)
+                this.operando2 = "["+operador+"]";
+    }
+  
+    public void setOperando1(String s) {
+        if (this.operando1 == null)
+                this.operando1 = "["+operador+"]";
+    }
+
+    public void setType(String type){
+        this.type = type;
+    }
+  
     public String getOperando1() {
         return operando1;
     }
@@ -56,15 +73,8 @@ public class Terceto {
     }
 
 
-    public String type() { //TODO Agregar el tipo a los tercetos.
-        return "";
+    public String type() {
+        return this.type;
     }
 
-    public void setOperando1(String s) {
-        this.operando1 = s;
-    }
-
-    public void setOperando2(String s) {
-        this.operando2 = s;
-    }
 }
