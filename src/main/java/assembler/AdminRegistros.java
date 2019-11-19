@@ -49,4 +49,8 @@ public class AdminRegistros {
         else
             return "DX";
     }
+
+    public void occupy(String reg) {
+        this.registers.put(reg, false);
+    }
 }

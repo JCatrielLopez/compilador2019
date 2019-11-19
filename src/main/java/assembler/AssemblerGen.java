@@ -205,6 +205,7 @@ public final class AssemblerGen {
                         .append("\n");
 
                 t.setRegister(reg_A);
+//                ar.occupy(reg_A);
 
                 break;
             case "-":
@@ -248,6 +249,7 @@ public final class AssemblerGen {
                         .append(", ")
                         .append(reg_B)
                         .append("\n");
+
                 t.setRegister(reg_A);
 
                 break;
@@ -262,15 +264,17 @@ public final class AssemblerGen {
                         .append(ar.getRegA(size))
                         .append(", ")
                         .append(reg_2)
-                        .append("\n");
-
-                instructions.append("MOV ")
+                        .append("\n")
+                        .append("MOV ")
                         .append(ar.getRegD(size))
                         .append(", ")
-                        .append(reg_2);
-                instructions.append("\n");
-                instructions.append("IMUL " + ar.getRegA(size) + ", " + ar.getRegD(size));
-                instructions.append("\n");
+                        .append(reg_2)
+                        .append("\n")
+                        .append("IMUL ")
+                        .append(ar.getRegA(size))
+                        .append(", ")
+                        .append(ar.getRegD(size))
+                        .append("\n");
 
                 t.setRegister(ar.getRegA(size));
 
@@ -291,7 +295,7 @@ public final class AssemblerGen {
                 break;
             case ":=":
 
-                if (getOP(t.getOperando2()).equals("terceto")) {
+                if (tipo_op2.equals("terceto")) {
                     instructions.append("MOV ")
                             .append(getOP(t.getOperando1()))
                             .append(", ")
@@ -307,7 +311,7 @@ public final class AssemblerGen {
                     System.out.println(" ----------------------- ");
                     instructions.append("MOV ")
                             .append(reg_A)
-                            .append(",")
+                            .append(", ")
                             .append(getOP(t.getOperando2()))
                             .append("\n")
                             .append("MOV ")
