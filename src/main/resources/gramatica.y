@@ -121,7 +121,8 @@ sentencia_impresion		: PRINT '(' CADENA ')' ';' {AdminTercetos.add(new Terceto("
 sentencia_control		: while condicion_while DO bloque_sentencias ';' {	String terceto_inc = AdminTercetos.pop();
 											AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 2)+"]");
 											terceto_inc = AdminTercetos.pop();
-											AdminTercetos.add(new Terceto("BI", "["+(Integer.valueOf(terceto_inc.substring(1,terceto_inc.length()-1))+1)+"]", "null"));
+											AdminTercetos.add(new Terceto("BI", terceto_inc, "null"));
+											AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
 											if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia While."));
 										}
                                 | error condicion_while DO bloque_sentencias ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave WHILE."));}
@@ -132,7 +133,8 @@ sentencia_control		: while condicion_while DO bloque_sentencias ';' {	String ter
 				| while condicion_while DO bloque_sentencias error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ';'."));}
 ;
 
-while 				: WHILE {AdminTercetos.push("["+AdminTercetos.cantTercetos()+"]");}
+while 				: WHILE {AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
+					 AdminTercetos.push(AdminTercetos.last().getId());}
 ;
 
 condicion_while 		: condicion {AdminTercetos.add(new Terceto("BF", $1.sval, null)); AdminTercetos.push(AdminTercetos.last().getId());}
@@ -140,6 +142,7 @@ condicion_while 		: condicion {AdminTercetos.add(new Terceto("BF", $1.sval, null
 
 sentencia_seleccion		: IF condicion_if bloque_then END_IF ';' {	String terceto_inc = AdminTercetos.pop();
 										AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 1)+"]");
+										AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
 										if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If.."));}
                                 | IF condicion_if bloque_then else bloque_else END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If-Else."));}
                                 | error condicion_if bloque_then END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR al comienzo de la sentencia If."));}
@@ -166,11 +169,13 @@ bloque_then			: bloque_sentencias
 else				: ELSE {String terceto_inc = AdminTercetos.pop();
 					AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 2)+"]");
 					AdminTercetos.add(new Terceto("BI", null, null));
-					AdminTercetos.push(AdminTercetos.last().getId());}
+					AdminTercetos.push(AdminTercetos.last().getId());
+					AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));}
 ;
 
 bloque_else			: bloque_sentencias {	String terceto_inc = AdminTercetos.pop();
-							AdminTercetos.get(terceto_inc).setOperando1(String.valueOf(AdminTercetos.cantTercetos() + 1));
+							AdminTercetos.get(terceto_inc).setOperando1("["+String.valueOf(AdminTercetos.cantTercetos() + 1)+"]");
+							AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
 						    }
 ;
 
