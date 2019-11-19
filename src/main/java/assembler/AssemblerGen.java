@@ -15,8 +15,7 @@ public final class AssemblerGen {
 
     public static String declare(String lex) {
         Token e = SymbolTable.getLex(lex);
-
-        if (e.getID() == SymbolTable.getID("id") && e.getAttr("use").equals("variable")) {
+        if (e.getID() == SymbolTable.getID("id") && e.getAttr("use").equals("VARIABLE")) {
             if (e.getAttr("type").equals("INT"))
                 return (e.getLex() + " dw ?");
             else
@@ -24,7 +23,7 @@ public final class AssemblerGen {
         }
 
         if (e.getID() == SymbolTable.getID("cadena")) {
-            String cadena = "cadena" + cadenas.size();
+            String cadena = "cte" + cadenas.size();
             cadenas.put(e.getLex(), cadena);
             return (cadena + " db " + lex + ", 0");
         }
@@ -35,33 +34,55 @@ public final class AssemblerGen {
 
     public static void redefineVariables() {
 
-        // TODO Revisar: Creo que es innecesario renombrar los tercetos
-//        for (Terceto t : AdminTercetos.tercetos) {
-//            if (t.getOperacion() != "label") {
-//                if (!t.getOperando1().startsWith("[")) {
-//                    t.setOperando1("_" + t.getOperando1());
-//                }
-//                if (!t.getOperando2().startsWith("[")) {
-//                    t.setOperando2("_" + t.getOperando2());
-//                }
-//            }
-//        }
+        for (Terceto t : AdminTercetos.list()) {
+            if (!t.getOperacion().equals("label")) {
 
-        for (String lex : SymbolTable.keys()) {
-            Token token = SymbolTable.getLex(lex);
-            if (token.getID() == (SymbolTable.getID("id"))) {
-                SymbolTable.remove(lex);
-                token.setLex("_" + lex);
-                SymbolTable.add(token);
+                if (!t.getOperando1().startsWith("[")) {
+                    t.setOperando1("_" + t.getOperando1());
+                }
+                if (!t.getOperando2().startsWith("[")) {
+                    t.setOperando2("_" + t.getOperando2());
+                }
             }
         }
 
+        HashMap<String, Token> new_tokens = new HashMap<>();
+        for (String lex : SymbolTable.keys()) {
+            Token token = SymbolTable.getLex(lex);
+            if (token.getAttr("use").equals("VARIABLE")) {
+                token.setLex("_" + lex);
+                new_tokens.put("_" + lex, token);
+            } else
+                new_tokens.put(lex, token);
+        }
+        SymbolTable.setSymbols(new_tokens.clone());
+    }
+
+    // Devuelve el operando de la instruccion en assembler, sea el registro en el que esta almacenado el
+    // resultado del terceto, el nombre de la variable o la constante.
+    public static String getOP(String operando) {
+        if (operando.charAt(0) == '[') {
+            return AdminTercetos.get(operando.substring(1, operando.length() - 1))
+                    .getRegister();
+        }
+//        System.out.println(operando + " -> " + SymbolTable.contains(operando));
+        Token token = SymbolTable.getLex(operando);
+        if (token != null) {
+            String uso = token.getAttr("use");
+            switch (uso) {
+                case "VARIABLE":
+                    return operando;
+                case "CTE NEG":
+                case "CTE POS":
+                    return cadenas.get(operando);
+            }
+        }
+        return "";
     }
 
     public static void translate(String path) throws Exception {
 
         redefineVariables();
-// TODO        AdminTercetos.agregarEtiquetas();
 
         FileOutputStream fileOutput = new FileOutputStream(path);
         OutputStreamWriter writer = new OutputStreamWriter(fileOutput);
@@ -87,36 +108,20 @@ public final class AssemblerGen {
 
         writer.append(".data");
         writer.append("\n");
+        String declaration = "";
         for (String s : SymbolTable.keys()) {
-            writer.append(declare(s));
-            writer.append("\n");
+            declaration = declare(s);
+            if (!declaration.equals("")) {
+                writer.append(declare(s));
+                writer.append("\n");
+            }
         }
-
-        writer.append("OverFlow db \"OverFlow en operacion aritmetica\", 0");
-        writer.append("\n");
-        writer.append("DivPorCero db \"No se permite dividir por cero\", 0");
-        writer.append("\n\n");
 
 
         // Codigo
 
         writer.append(".code");
         writer.append("\n");
-
-
-        writer.append("overflow:");
-        writer.append("\n");
-        writer.append("invoke MessageBox, NULL, addr OverFlow, addr OverFlow, MB_OK");
-        writer.append("\n");
-        writer.append("invoke ExitProcess, 0");
-        writer.append("\n");
-
-        writer.append("divcero:");
-        writer.append("\n");
-        writer.append("invoke MessageBox, NULL, addr DivPorCero, addr DivPorCero, MB_OK");
-        writer.append("\n");
-        writer.append("invoke ExitProcess, 0");
-        writer.append("\n\n");
 
         writer.append("start:");
         writer.append("\n");
@@ -141,6 +146,7 @@ public final class AssemblerGen {
     private static String getCode(Terceto t) {
 
         StringBuilder instructions = new StringBuilder();
+        AdminRegistros ar = new AdminRegistros();
 
         String reg_A = "";
         String reg_B = "";
@@ -156,8 +162,55 @@ public final class AssemblerGen {
             size = 16;
 
         switch (t.getOperacion()) {
+            //TODO: Verificar que la suma este bien.
             case "+":
-                //TODO Generar assembler para la operacion +
+                //                ADD dest,src
+                //                Operación: dest <- dest + src.
+                //                donde dest = {reg|mem} y src = {reg|mem|inmed} no pudiendo ambos operandos
+                //                estar en memoria.
+                System.out.println("Antes del switch: " + reg_B);
+                switch (tipo_op1) {
+                    case "terceto":
+                        reg_A = getOP(t.getOperando1());
+                        reg_B = getOP(t.getOperando2());
+
+                        if (tipo_op2.equals("terceto")) // Libero el registro del resultado del terceto.
+                            ar.free(reg_B);
+
+                        break;
+                    case "variable":
+
+                        reg_B = getOP(t.getOperando1());
+                        System.out.println("Case (Variable): " + reg_B);
+                        switch (tipo_op2) {
+                            case "terceto":
+                                reg_A = getOP(t.getOperando2());
+                                ar.free(reg_A);
+                                break;
+                            case "variable":
+                                System.out.println("Case2 (Variable): " + reg_B);
+                                reg_A = ar.available(size);
+                                instructions.append("MOV ")
+                                        .append(reg_A)
+                                        .append(", ")
+                                        .append(reg_B)
+                                        .append("\n");
+                                reg_B = getOP(t.getOperando2());
+                                break;
+                        }
+                        break;
+                }
+
+                instructions.append("ADD ")
+                        .append(reg_A)
+                        .append(", ")
+                        .append(reg_B)
+                        .append("\n")
+                        .append("JO overflow")
+                        .append("\n");
+
+                t.setRegister(reg_A);
+
                 break;
             case "-":
                 //TODO Generar assembler para la operacion -

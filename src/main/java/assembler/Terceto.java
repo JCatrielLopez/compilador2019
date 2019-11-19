@@ -8,6 +8,7 @@ public class Terceto {
     private String operando1;
     private String operando2;
     private String type;
+    private String register;
 
     public Terceto(String operacion, String operando1, String operando2) {
         cont++;
@@ -15,7 +16,8 @@ public class Terceto {
         this.operacion = operacion;
         this.operando1 = operando1;
         this.operando2 = operando2;
-        this.type = new String();
+        this.type = "";
+        this.register = "";
     }
 
     public Terceto(String operacion, String operando1) {
@@ -24,7 +26,8 @@ public class Terceto {
         this.operacion = operacion;
         this.operando1 = operando1;
         this.operando2 = null;
-        this.type = new String();
+        this.type = "";
+        this.register = "";
     }
 
     public String getId() {
@@ -32,13 +35,11 @@ public class Terceto {
     }
 
     public void setOperando2(String operador) {
-        if (this.operando2 == null)
-                this.operando2 = operador;
+        this.operando2 = operador;
     }
   
     public void setOperando1(String operador) {
-        if (this.operando1 == null)
-                this.operando1 = operador;
+        this.operando1 = operador;
     }
 
     public void setType(String type){
@@ -79,4 +80,11 @@ public class Terceto {
         return this.type;
     }
 
+    public String getRegister() {
+        return this.register;
+    }
+
+    public void setRegister(String register) {
+        this.register = register;
+    }
 }

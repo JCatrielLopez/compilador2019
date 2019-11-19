@@ -10,7 +10,7 @@ import java.util.Set;
 public final class SymbolTable {
 
     private static final HashMap<String, Integer> ids = new HashMap<>();
-    private static final HashMap<String, Token> symbols = new HashMap<>();
+    private static HashMap<String, Token> symbols = new HashMap<>();
 
     public static void init() {
         ids.put("(", 40);
@@ -95,6 +95,11 @@ public final class SymbolTable {
 
     public static Set<String> keys() {
         return new HashSet<String>(symbols.keySet());
+    }
+
+    public static void setSymbols(Object clone) {
+        symbols.clear();
+        symbols = (HashMap<String, Token>) clone;
     }
 
 //    public static Set<String> iterator() {

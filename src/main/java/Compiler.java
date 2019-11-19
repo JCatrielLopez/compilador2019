@@ -1,4 +1,5 @@
 import assembler.AdminTercetos;
+import assembler.AssemblerGen;
 import globals.Error;
 import globals.Printer;
 import globals.SymbolTable;
@@ -8,6 +9,7 @@ import parser.Parser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 class Compiler {
 
@@ -101,6 +103,24 @@ class Compiler {
       System.out.println("-----------------------------------------------------------------------");
       System.out.println(AdminTercetos.print());
     }
+
+      String tercetos_path = "";
+      String assembler_path = "";
+
+      // TODO: Esto se hace mejor con una libreria de Apache. Cambiarlo.
+      if (source_path.contains(".")) {
+          assembler_path = source_path.substring(0, source_path.lastIndexOf('.')) + ".a";
+          tercetos_path = source_path.substring(0, source_path.lastIndexOf('.')) + ".t";
+      } else {
+          assembler_path = source_path + ".a";
+          tercetos_path = source_path + ".t";
+      }
+
+      FileOutputStream tercetos_file = new FileOutputStream(tercetos_path);
+
+      tercetos_file.write(AdminTercetos.print().getBytes());
+
+      AssemblerGen.translate(assembler_path);
 
     System.out.println();
     AnsiConsole.systemUninstall();

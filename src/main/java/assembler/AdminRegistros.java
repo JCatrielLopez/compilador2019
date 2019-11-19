@@ -4,12 +4,15 @@ import java.util.HashMap;
 
 public class AdminRegistros {
 
+    // registers = {register: [True, False]}
+    //                         True: El registro esta liberado.
+    //                         False: El registro esta ocupado.
     private HashMap<String, Boolean> registers = new HashMap<String, Boolean>();
 
 
     public AdminRegistros() {
-        registers.put("bx", false);
-        registers.put("cx", false);
+        registers.put("bx", true);
+        registers.put("cx", true);
     }
 
     public void free(String register) {
@@ -17,6 +20,19 @@ public class AdminRegistros {
             register = register.substring(1);
 
         if (this.registers.containsKey(register))
-            this.registers.put(register, false);
+            this.registers.put(register, true);
+    }
+
+    public String available(Integer bits) {
+        for (String register : registers.keySet())
+            if (registers.get(register)) {
+                registers.put(register, false);
+
+                if (bits == 32)
+                    return "E" + register;
+                else
+                    return register;
+            }
+        return null;
     }
 }
