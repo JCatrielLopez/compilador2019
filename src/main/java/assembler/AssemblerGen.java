@@ -30,6 +30,13 @@ public final class AssemblerGen {
                 return (e.getLex() + " dd " + e.getLex());
         }
 
+        if (e.getID() == SymbolTable.getID("cadena")) {
+            String nombreCad = "cadena" + cadenas.size();
+            cadenas.put(e.getLex(), nombreCad);
+            return (nombreCad + " db " + e.getLex() + ", 0");
+        }
+
+
 
         return "";
     }
@@ -40,23 +47,29 @@ public final class AssemblerGen {
             if (!t.getOperacion().equals("label")) {
 
                 if (!t.getOperando1().startsWith("[")) {
-                    if (SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("VARIABLE"))
-                        t.setOperando1("_" + t.getOperando1());
+                    if (!SymbolTable.getLex(t.getOperando1()).getDescription().equals("CADENA"))
+                        if (SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("VARIABLE"))
+                            t.setOperando1("_" + t.getOperando1());
                 }
-                if (!t.getOperando2().startsWith("[")) {
-                    if (SymbolTable.getLex(t.getOperando2()).getAttr("use").equals("VARIABLE"))
-                        t.setOperando2("_" + t.getOperando2());
-                }
+                if (t.getOperando2() != null)
+                    if (!t.getOperando2().startsWith("[")) {
+                        if (!SymbolTable.getLex(t.getOperando1()).getDescription().equals("CADENA"))
+                            if (SymbolTable.getLex(t.getOperando2()).getAttr("use").equals("VARIABLE"))
+                                t.setOperando2("_" + t.getOperando2());
+                    }
             }
         }
 
         HashMap<String, Token> new_tokens = new HashMap<>();
         for (String lex : SymbolTable.keys()) {
             Token token = SymbolTable.getLex(lex);
-            if (token.getAttr("use").equals("VARIABLE")) {
-                token.setLex("_" + lex);
-                new_tokens.put("_" + lex, token);
-            } else
+            if (!token.getDescription().equals("CADENA"))
+                if (token.getAttr("use").equals("VARIABLE")) {
+                    token.setLex("_" + lex);
+                    new_tokens.put("_" + lex, token);
+                } else
+                    new_tokens.put(lex, token);
+            else
                 new_tokens.put(lex, token);
         }
         SymbolTable.setSymbols(new_tokens.clone());
@@ -74,13 +87,16 @@ public final class AssemblerGen {
 //        System.out.println(operando + " -> " + token);
         if (token != null) {
             String uso = token.getAttr("use");
-            switch (uso) {
-                case "VARIABLE":
-                    return operando;
-                case "CTE NEG":
-                case "CTE POS":
-                    return ctes.get(operando);
-            }
+            if (uso != null)
+                switch (uso) {
+                    case "VARIABLE":
+                        return operando;
+                    case "CTE NEG":
+                    case "CTE POS":
+                        return ctes.get(operando);
+                }
+            else // Es una cadena!
+                return cadenas.get(operando);
         }
         return "";
     }
@@ -328,7 +344,13 @@ public final class AssemblerGen {
 
                 break;
             case "PRINT":
-                //TODO Generar assembler para la operacion PRINT
+                String operando = getOP(t.getOperando1());
+                instructions.append("INVOKE MessageBox, NULL, addr ")
+                        .append(operando)
+                        .append(", addr ")
+                        .append(operando)
+                        .append(", MB_OK")
+                        .append("\n");
                 break;
             case "_CONV":
                 //TODO Generar assembler para la operacion _CONV
