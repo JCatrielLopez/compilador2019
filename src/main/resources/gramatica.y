@@ -85,8 +85,11 @@ lista_variables			: lista_variables ',' ID {addVariable($3.sval, "VARIABLE");}
 coleccion			: ID '[' cte ']' {
 							Token coleccion = SymbolTable.getLex($1.sval);
 							if (coleccion.getAttr("use") == null){
-							    coleccion.addAttr("size", $3.sval);
-							    coleccion.addAttr("Elements", new ArrayList<>());
+								if (Integer.parseInt($3.sval) >= 0){
+									coleccion.addAttr("size", $3.sval);
+                                                                        coleccion.addAttr("Elements", new ArrayList<>());
+								}else
+							    		Error.add(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR tamaño del arreglo no puede ser negativo."));
 							}
 							else
 							    Error.add(
@@ -186,11 +189,7 @@ condicion			: '(' comparacion ')' {$$ = $2;}
                                 | '(' ')' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion."));}
 ;
 
-comparacion			: expresion comparador expresion {
-                                                        String t_id = crearTercetoOperacion($2.sval, $1.sval, $3.sval);
-                                                        Terceto t = AdminTercetos.get(t_id);
-                                                        $$ = new ParserVal(t);
-                                                     }
+comparacion			: expresion comparador expresion {$$ = new ParserVal(crearTercetoOperacion($2.sval, $1.sval, $3.sval));}
                                 | error comparador expresion  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado izquierdo de la comparacion."));}
                                 | expresion error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta comparador."));}
                                 | expresion comparador error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado derecho de la comparacion."));}
@@ -262,7 +261,9 @@ factor 				: id
 								}else{
 									tipos.push(SymbolTable.getLex($1.sval).getAttr("type"));
 								}
-								AdminTercetos.add(new Terceto("call", $3.sval, $1.sval));
+								Terceto t = new Terceto("call", $3.sval, $1.sval);
+								AdminTercetos.add(t);
+								$$ = new ParserVal(t.getId());
 							}else{
 								Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR " + $1.sval + " no es una coleccion."));
 							}

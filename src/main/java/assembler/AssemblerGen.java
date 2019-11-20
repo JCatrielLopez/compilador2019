@@ -55,7 +55,7 @@ public final class AssemblerGen {
 
         for (Terceto t : AdminTercetos.list()) {
             if (!t.getOperacion().equals("label")) {
-
+                //TODO si el operando empieza con _ (calls) se rompe
                 if (!t.getOperando1().startsWith("[")) {
                     if (!SymbolTable.getLex(t.getOperando1()).getDescription().equals("CADENA"))
                         if (SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("VARIABLE"))
@@ -194,34 +194,26 @@ public final class AssemblerGen {
 
         switch (t.getOperacion()) {
             case "+":
-                switch (tipo_op1) {
-                    case "terceto":
-                        reg_A = getOP(t.getOperando1());
+                if(tipo_op1.equals("variable")){ //primer operando variable
+                    if(tipo_op2.equals("variable")) { //segundo operando variable
+                        reg_A = ar.getRegBC(size);
+                        instructions.append("MOV ")
+                                .append(reg_A)
+                                .append(", ")
+                                .append(getOP(t.getOperando1()))
+                                .append("\n");
                         reg_B = getOP(t.getOperando2());
-                        if (tipo_op2.equals("terceto")) // Libero el registro del resultado del terceto.
-                            ar.free(reg_B);
-                        break;
-                    case "variable":
-
+                    }else { //segundo operando registro... opero sobre el segundo operando
+                        reg_A = getOP(t.getOperando2());
                         reg_B = getOP(t.getOperando1());
-                        switch (tipo_op2) {
-                            case "terceto":
-                                reg_A = getOP(t.getOperando2());
-                                ar.free(reg_A);
-                                break;
-                            case "variable":
-                                reg_A = ar.getRegBC(size);
-                                instructions.append("MOV ")
-                                        .append(reg_A)
-                                        .append(", ")
-                                        .append(reg_B)
-                                        .append("\n");
-                                reg_B = getOP(t.getOperando2());
-                                break;
-                        }
-                        break;
+                    }
+                } else { //primer operando registro no importa lo q sea el segundo.. opero sobre el primero
+                    reg_A = getOP(t.getOperando1());
+                    reg_B = getOP(t.getOperando2());
+                    if(tipo_op2.equals("terceto")){//si ambos son terceto libero al segundo
+                        ar.free(reg_B);
+                    }
                 }
-
                 instructions.append("ADD ")
                         .append(reg_A)
                         .append(", ")
@@ -229,45 +221,35 @@ public final class AssemblerGen {
                         .append("\n");
 
                 t.setRegister(reg_A);
-//                ar.occupy(reg_A);
 
                 break;
             case "-":
-                switch (tipo_op1) {
-                    case "terceto":
-                        reg_A = getOP(t.getOperando1());
-                        reg_B = getOP(t.getOperando2());
-
-                        if (tipo_op2.equals("terceto"))
-                            ar.free(reg_B);
-                        break;
-                    case "variable":
-                        reg_B = getOP(t.getOperando1());
+                if(tipo_op1.equals("variable")){ //primer operando variable
+                    if(tipo_op2.equals("variable")) { //segundo operando variable
                         reg_A = ar.getRegBC(size);
-                        switch (tipo_op2) {
-                            case "terceto":
-                                instructions.append("MOV ")
-                                        .append(reg_A)
-                                        .append(", ")
-                                        .append(reg_B)
-                                        .append("\n");
-
-                                reg_B = getOP(t.getOperando2());
-                                ar.free(getOP(t.getOperando2()));
-                                break;
-                            case "variable":
-                                instructions.append("MOV ")
-                                        .append(reg_A)
-                                        .append(", ")
-                                        .append(reg_B)
-                                        .append("\n");
-
-                                reg_B = getOP(t.getOperando2());
-                                break;
-                        }
-                        break;
+                        instructions.append("MOV ")
+                                .append(reg_A)
+                                .append(", ")
+                                .append(getOP(t.getOperando1()))
+                                .append("\n");
+                        reg_B = getOP(t.getOperando2());
+                    }else { //segundo operando registro...  ocupo nuevo reg, genero codigo sobre ese reg y libero el otro
+                        reg_A = ar.getRegBC(size);
+                        instructions.append("MOV ")
+                                .append(reg_A)
+                                .append(", ")
+                                .append(getOP(t.getOperando1()))
+                                .append("\n");
+                        reg_B = getOP(t.getOperando2());
+                        ar.free(reg_B);
+                    }
+                } else { //primer operando registro no importa lo q sea el segundo.. opero sobre el primero
+                    reg_A = getOP(t.getOperando1());
+                    reg_B = getOP(t.getOperando2());
+                    if(tipo_op2.equals("terceto")){//si ambos son terceto libero al segundo
+                        ar.free(reg_B);
+                    }
                 }
-
                 instructions.append("SUB ")
                         .append(reg_A)
                         .append(", ")
@@ -278,7 +260,40 @@ public final class AssemblerGen {
 
                 break;
             case "/":
-                //TODO Generar assembler para la operacion /
+                if(tipo_op1.equals("variable")){ //primer operando variable
+                    if(tipo_op2.equals("variable")) { //segundo operando variable
+                        reg_A = ar.getRegBC(size);
+                        instructions.append("MOV ")
+                                .append(reg_A)
+                                .append(", ")
+                                .append(getOP(t.getOperando1()))
+                                .append("\n");
+                        reg_B = getOP(t.getOperando2());
+                    }else { //segundo operando registro...  ocupo nuevo reg, genero codigo sobre ese reg y libero el otro
+                        reg_A = ar.getRegBC(size);
+                        instructions.append("MOV ")
+                                .append(reg_A)
+                                .append(", ")
+                                .append(getOP(t.getOperando1()))
+                                .append("\n");
+                        reg_B = getOP(t.getOperando2());
+                        ar.free(reg_B);
+                    }
+                } else { //primer operando registro no importa lo q sea el segundo.. opero sobre el primero
+                    reg_A = getOP(t.getOperando1());
+                    reg_B = getOP(t.getOperando2());
+                    if(tipo_op2.equals("terceto")){//si ambos son terceto libero al segundo
+                        ar.free(reg_B);
+                    }
+                }
+                instructions.append("IDIV ")
+                        .append(reg_A)
+                        .append(", ")
+                        .append(reg_B)
+                        .append("\n");
+
+                t.setRegister(reg_A);
+
                 break;
             case "*":
                 if(tipo_op1.equals("variable")){ //primer operando variable
