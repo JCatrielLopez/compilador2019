@@ -4,12 +4,11 @@ import globals.Error;
 import globals.Printer;
 import globals.SymbolTable;
 import lexer.Lexer;
+import org.apache.commons.io.FilenameUtils;
 import org.fusesource.jansi.AnsiConsole;
 import parser.Parser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 
 class Compiler {
 
@@ -55,7 +54,8 @@ class Compiler {
           tercetos_verbose = true;
           break;
         case "-h":
-          if (!(al_verbose || as_verbose || gc_verbose || ts_verbose || tercetos_verbose)) print_help();
+          if (!(al_verbose || as_verbose || gc_verbose || ts_verbose || tercetos_verbose))
+            print_help();
           return;
         default:
           // Ignoramos los argumentos que no son validos.
@@ -69,11 +69,10 @@ class Compiler {
     while (source_file.available() != 0) sb.append((char) source_file.read());
     source_file.close();
 
-    if (al_verbose || as_verbose){
+    if (al_verbose || as_verbose) {
       System.out.println(
               String.format(
-                      "%5s %s %3s %s %s %-50s %s %s",
-                      "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
+                      "%5s %s %3s %s %s %-50s %s %s", "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
       System.out.println("-----------------------------------------------------------------------");
     }
 
@@ -82,47 +81,57 @@ class Compiler {
     Parser parser = new Parser(al, as_verbose);
     parser.run();
 
-    if (!Error.isEmpty()){
+    if (!Error.isEmpty()) {
       System.out.println("-----------------------------------------------------------------------");
       System.out.println("-------------------------ERRORS AND WARNINGS---------------------------");
       System.out.println("-----------------------------------------------------------------------");
       System.out.println(
               String.format(
-                      "%5s %s %3s %s %s %-50s %s %s",
-                      "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
+                      "%5s %s %3s %s %s %-50s %s %s", "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
       System.out.println("-----------------------------------------------------------------------");
       Error.print();
-    }
-
-
-    if (ts_verbose) SymbolTable.print();
-
-    if (tercetos_verbose) {
-      System.out.println("-----------------------------------------------------------------------");
-      System.out.println("-------------------------------TERCETOS--------------------------------");
-      System.out.println("-----------------------------------------------------------------------");
-      System.out.println(AdminTercetos.print());
-    }
-
-      String tercetos_path = "";
-      String assembler_path = "";
-
-      // TODO: Esto se hace mejor con una libreria de Apache. Cambiarlo.
-      if (source_path.contains(".")) {
-          assembler_path = source_path.substring(0, source_path.lastIndexOf('.')) + ".asm";
-          tercetos_path = source_path.substring(0, source_path.lastIndexOf('.')) + ".t";
-      } else {
-          assembler_path = source_path + ".asm";
-          tercetos_path = source_path + ".t";
+    } else {
+      if (tercetos_verbose) {
+        System.out.println(
+                "-----------------------------------------------------------------------");
+        System.out.println(
+                "-------------------------------TERCETOS--------------------------------");
+        System.out.println(
+                "-----------------------------------------------------------------------");
+        System.out.println(AdminTercetos.print());
       }
 
+      String source_name = FilenameUtils.removeExtension(source_path);
+      String tercetos_path = source_name + ".t";
+      String assembler_path = source_name + ".asm";
+      String obj_path = source_name + ".obj";
+
+      // Guardo los tercetos en archivo.t
       FileOutputStream tercetos_file = new FileOutputStream(tercetos_path);
 
       tercetos_file.write(AdminTercetos.print().getBytes());
 
+      // Genero las instrucciones assembly
       AssemblerGen.translate(assembler_path);
 
-    System.out.println();
+      // Genero el archivo.exe
+      Process p = Runtime.getRuntime().exec("\\masm32\\bin\\ml /c /Zd /coff " + assembler_path);
+      BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+      BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+      System.out.println(stdInput);
+      System.out.println(stdError);
+
+      p = Runtime.getRuntime().exec("\\masm32\\bin\\Link SUBSYSTEM:CONSOLE" + obj_path);
+      stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+      stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+      System.out.println(stdInput);
+      System.out.println(stdError);
+    }
+
+    if (ts_verbose) SymbolTable.print();
+
     AnsiConsole.systemUninstall();
   }
 
@@ -137,11 +146,9 @@ class Compiler {
     System.out.println(
             String.format("%6s %s %-30s", "-as", " ", "Imprime informacion del analisis sintactico."));
     System.out.println(
-            String.format("%6s %s %-30s", "-g", " ", "Imprime informacion de la generacion de assembler."));
-    System.out.println(String.format("%6s %s %-30s", "-ts", " ", "Imprime la tabla de simbolos."));
-    System.out.println(
             String.format(
-                    "%6s %s %-30s",
-                    "-h", " ", "Imprime informacion de ayuda."));
+                    "%6s %s %-30s", "-g", " ", "Imprime informacion de la generacion de assembler."));
+    System.out.println(String.format("%6s %s %-30s", "-ts", " ", "Imprime la tabla de simbolos."));
+    System.out.println(String.format("%6s %s %-30s", "-h", " ", "Imprime informacion de ayuda."));
   }
 }
