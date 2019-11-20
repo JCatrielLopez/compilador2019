@@ -109,10 +109,10 @@ class Compiler {
 
       // TODO: Esto se hace mejor con una libreria de Apache. Cambiarlo.
       if (source_path.contains(".")) {
-          assembler_path = source_path.substring(0, source_path.lastIndexOf('.')) + ".a";
+          assembler_path = source_path.substring(0, source_path.lastIndexOf('.')) + ".asm";
           tercetos_path = source_path.substring(0, source_path.lastIndexOf('.')) + ".t";
       } else {
-          assembler_path = source_path + ".a";
+          assembler_path = source_path + ".asm";
           tercetos_path = source_path + ".t";
       }
 

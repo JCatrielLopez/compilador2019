@@ -15,25 +15,35 @@ public final class AssemblerGen {
 
     public static String declare(String lex) {
         Token e = SymbolTable.getLex(lex);
-        if (e.getID() == SymbolTable.getID("id") && e.getAttr("use").equals("VARIABLE")) {
-            if (e.getAttr("type").equals("INT"))
-                return (e.getLex() + " dw ?");
-            else
-                return (e.getLex() + " dd ?");
+
+        if (e.getID() == SymbolTable.getID("id")) {
+            if(e.getAttr("use").equals("VARIABLE")){
+                if (e.getAttr("type").equals("INT"))
+                    return (e.getLex() + " dw ?");
+                else
+                    return (e.getLex() + " dd ?");
+            } else if (e.getAttr("use").equals("COLECCION")) {
+                if (e.getAttr("type").equals("INT"))
+                    return (e.getLex() + " dw "+ e.getAttr("size") + " dup ?");
+                else
+                    return (e.getLex() + " dd "+ e.getAttr("size")+ " dup ?");
+            }
+
         }
 
         if (e.getID() == SymbolTable.getID("cte")) {
-            ctes.put(e.getLex(), lex);
+            String nombreCte = "cte" + ctes.size();
+            ctes.put(e.getLex(), nombreCte);
             if (e.getAttr("type").equals("INT"))
-                return (e.getLex() + " dw " + e.getLex());
+                return (nombreCte + " dw " + e.getLex());
             else
-                return (e.getLex() + " dd " + e.getLex());
+                return (nombreCte + " dd " + e.getLex());
         }
 
         if (e.getID() == SymbolTable.getID("cadena")) {
             String nombreCad = "cadena" + cadenas.size();
             cadenas.put(e.getLex(), nombreCad);
-            return (nombreCad + " db " + e.getLex() + ", 0");
+            return (nombreCad + " db " +'"'+ e.getLex() +'"'+ ", 0");
         }
 
 
@@ -53,7 +63,7 @@ public final class AssemblerGen {
                 }
                 if (t.getOperando2() != null)
                     if (!t.getOperando2().startsWith("[")) {
-                        if (!SymbolTable.getLex(t.getOperando1()).getDescription().equals("CADENA"))
+                        if (!SymbolTable.getLex(t.getOperando2()).getDescription().equals("CADENA"))
                             if (SymbolTable.getLex(t.getOperando2()).getAttr("use").equals("VARIABLE"))
                                 t.setOperando2("_" + t.getOperando2());
                     }
@@ -84,7 +94,6 @@ public final class AssemblerGen {
         }
 
         Token token = SymbolTable.getLex(operando);
-//        System.out.println(operando + " -> " + token);
         if (token != null) {
             String uso = token.getAttr("use");
             if (uso != null)
@@ -144,6 +153,8 @@ public final class AssemblerGen {
         writer.append(".code");
         writer.append("\n");
 
+        //TODO aca van las funciones predefinidas first, last, leght, (acceder a un elemento coleccion?)
+        //TODO Generar assembler para las funciones FIRST, LENGTH y LAST.
         writer.append("start:");
         writer.append("\n");
 
@@ -152,7 +163,6 @@ public final class AssemblerGen {
             writer.append(getCode(t));
         }
 
-        //TODO Generar assembler para las funciones FIRST, LENGTH y LAST.
 
         writer.append("invoke ExitProcess, 0");
         writer.append("\n");
@@ -188,10 +198,8 @@ public final class AssemblerGen {
                     case "terceto":
                         reg_A = getOP(t.getOperando1());
                         reg_B = getOP(t.getOperando2());
-
                         if (tipo_op2.equals("terceto")) // Libero el registro del resultado del terceto.
                             ar.free(reg_B);
-
                         break;
                     case "variable":
 
@@ -275,6 +283,18 @@ public final class AssemblerGen {
             case "*":
                 String reg_1 = getOP(t.getOperando1());
                 String reg_2 = getOP(t.getOperando2());
+                if(tipo_op1.equals("variable") && tipo_op2.equals("variable")){
+                    instructions.append("MOV ")
+                            .append(ar.getRegA(size))
+                            .append(", ")
+                            .append(reg_2)
+                            .append("\n");
+                } else {
+
+                }
+
+                System.out.println("Reg1 -> " + reg_1);
+                System.out.println("Reg2 -> " + reg_2);
 
                 instructions.append("MOV ")
                         .append(ar.getRegA(size))
