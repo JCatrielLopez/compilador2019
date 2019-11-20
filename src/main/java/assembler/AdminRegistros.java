@@ -13,6 +13,8 @@ public class AdminRegistros {
     public AdminRegistros() {
         registers.put("bx", true);
         registers.put("cx", true);
+        registers.put("ax", true);
+        registers.put("dx", true);
     }
 
     public void free(String register) {
@@ -41,6 +43,10 @@ public class AdminRegistros {
             return "EAX";
         else
             return "AX";
+    }
+
+    public boolean is_available(String register) {
+        return this.registers.get(register);
     }
 
     public String getRegD(Integer bits) {
