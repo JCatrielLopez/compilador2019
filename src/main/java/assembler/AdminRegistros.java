@@ -15,10 +15,14 @@ public class AdminRegistros {
         registers.put("cx", true);
         registers.put("ax", true);
         registers.put("dx", true);
+        registers.put("ebx", true);
+        registers.put("ecx", true);
+        registers.put("eax", true);
+        registers.put("edx", true);
     }
 
     public void free(String register) {
-        if (register.startsWith("E")) // Borro la E (EBX -> BX)
+        if (register.startsWith("e")) // Borro la E (EBX -> BX)
             register = register.substring(1);
 
         if (this.registers.containsKey(register))
@@ -26,23 +30,24 @@ public class AdminRegistros {
     }
 
     public String available(Integer bits) {
-        for (String register : registers.keySet())
-            if (registers.get(register)) {
-                registers.put(register, false);
-
-                if (bits == 32)
-                    return "E" + register;
-                else
+        for (String register : registers.keySet()) {
+            if (bits == 32)
+                if (registers.get(register) && register.startsWith("e")) {
+                    registers.put(register, false);
                     return register;
-            }
+                } else if (registers.get(register) && !register.startsWith("e")) {
+                    registers.put(register, false);
+                    return register;
+                }
+        }
         return null;
     }
 
     public String getRegA(Integer bits) {
         if (bits == 32)
-            return "EAX";
+            return "eax";
         else
-            return "AX";
+            return "ax";
     }
 
     public boolean is_available(String register) {
@@ -51,9 +56,9 @@ public class AdminRegistros {
 
     public String getRegD(Integer bits) {
         if (bits == 32)
-            return "EDX";
+            return "edx";
         else
-            return "DX";
+            return "dx";
     }
 
     public void occupy(String reg) {
