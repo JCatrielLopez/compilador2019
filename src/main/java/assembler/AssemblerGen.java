@@ -56,10 +56,12 @@ public final class AssemblerGen {
         for (Terceto t : AdminTercetos.list()) {
             if (!t.getOperacion().equals("label")) {
                 //TODO si el operando empieza con _ (calls) se rompe
-                if (!t.getOperando1().startsWith("[")) {
-                    if (!SymbolTable.getLex(t.getOperando1()).getDescription().equals("CADENA"))
-                        if (SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("VARIABLE"))
-                            t.setOperando1("_" + t.getOperando1());
+                if (t.getOperando1() != null) {
+                    if (!t.getOperando1().startsWith("[")) {
+                        if (!SymbolTable.getLex(t.getOperando1()).getDescription().equals("CADENA"))
+                            if (SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("VARIABLE"))
+                                t.setOperando1("_" + t.getOperando1());
+                    }
                 }
                 if (t.getOperando2() != null)
                     if (!t.getOperando2().startsWith("[")) {
@@ -328,13 +330,68 @@ public final class AssemblerGen {
 
                 break;
             case "BI":
-                //TODO Generar assembler para la operacion BI
+                String nroLabel = t.getOperando1().substring(1, t.getOperando1().length() - 1);
+                instructions.append("JMP Label" + nroLabel)
+                            .append("\n");
                 break;
             case "BF":
-                //TODO Generar assembler para la operacion BF
+                Terceto anterior = AdminTercetos.get("["+Integer.valueOf(t.getOperando1().substring(1, t.getOperando1().length() - 1))+"]");
+                String target = t.getOperando2().substring(1, t.getOperando2().length() - 1);
+                target = "Label" + target;
+
+                switch (anterior.getOperacion()){
+                    case ">":
+                        instructions.append("JLE " + target);
+                        break;
+                    case "<":
+                        instructions.append("JGE " + target);
+                        break;
+                    case ">=":
+                        instructions.append("JL " + target);
+                        break;
+                    case "<=":
+                        instructions.append("JG " + target);
+                        break;
+                    case "==":
+                        instructions.append("JNE " + target);
+                        break;
+                    case "<>":
+                        instructions.append("JE " + target);
+                        break;
+                }
+                instructions.append("\n");
                 break;
-            case "label":
-                //TODO Generar assembler para las labels
+            case "Label":
+                instructions.append("Label" + t.getOperando1().substring(1, t.getOperando1().length() - 1) + ":")
+                            .append("\n");
+                break;
+            case "<":
+            case ">":
+            case "<=":
+            case ">=":
+            case "<>":
+            case "==":
+                if(tipo_op1.equals("variable") && tipo_op2.equals("variable")){ //si ambos operandos estan en mem traer uno a reg
+                    reg_A = ar.getRegBC(size);
+                    instructions.append("MOV ")
+                            .append(reg_A)
+                            .append(", ")
+                            .append(getOP(t.getOperando1()))
+                            .append("\n");
+                    ar.free(reg_A);
+                    reg_B = getOP(t.getOperando2());
+                } else{ //si uno no esta en mem opero, y libero si corresponde
+                    reg_A = getOP(t.getOperando1());
+                    reg_B = getOP(t.getOperando2());
+                    if(tipo_op1.equals("terceto")){
+                        ar.free(reg_A);
+                    }
+                    if(tipo_op2.equals("terceto")){
+                        ar.free(reg_B);
+                    }
+                }
+                instructions.append("CMP " + reg_A + ", " + reg_B)
+                            .append("\n");
                 break;
             case ":=":
                 if(tipo_op2.equals("variable")) { //valor a asignar en variable

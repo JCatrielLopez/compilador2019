@@ -1079,7 +1079,7 @@ case 49:
 											AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 2)+"]");
 											terceto_inc = AdminTercetos.pop();
 											AdminTercetos.add(new Terceto("BI", terceto_inc, "null"));
-											AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
+											AdminTercetos.add(new Terceto ("Label", "["+(AdminTercetos.cantTercetos()+1)+"]", null));
 											if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia While."));
 										}
 break;
@@ -1109,7 +1109,7 @@ case 55:
 break;
 case 56:
 //#line 139 "gramatica.y"
-{AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
+{AdminTercetos.add(new Terceto ("Label","["+(AdminTercetos.cantTercetos()+1)+"]", null));
 					 AdminTercetos.push(AdminTercetos.last().getId());}
 break;
 case 57:
@@ -1120,7 +1120,7 @@ case 58:
 //#line 146 "gramatica.y"
 {	String terceto_inc = AdminTercetos.pop();
 										AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 1)+"]");
-										AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
+										AdminTercetos.add(new Terceto ("Label","["+(AdminTercetos.cantTercetos()+1)+"]", null));
 										if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If.."));}
 break;
 case 59:
@@ -1189,13 +1189,13 @@ case 75:
 					AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 2)+"]");
 					AdminTercetos.add(new Terceto("BI", null, null));
 					AdminTercetos.push(AdminTercetos.last().getId());
-					AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));}
+					AdminTercetos.add(new Terceto ("Label","["+(AdminTercetos.cantTercetos()+1)+"]", null));}
 break;
 case 76:
 //#line 179 "gramatica.y"
 {	String terceto_inc = AdminTercetos.pop();
 							AdminTercetos.get(terceto_inc).setOperando1("["+String.valueOf(AdminTercetos.cantTercetos() + 1)+"]");
-							AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
+							AdminTercetos.add(new Terceto ("Label","["+(AdminTercetos.cantTercetos()+1)+"]", null));
 						    }
 break;
 case 77:
