@@ -1,5 +1,7 @@
-int z,a,b,c,d;
+int z,a,b,d,c;
+ulong x,y;
 
 begin
-z:=1+a*2+b*5;
+    x:=5+1;
+
 end;

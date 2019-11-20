@@ -139,7 +139,7 @@ public final class AssemblerGen {
         // Declaracion de variables
 
         writer.append(".data");
-        writer.append("\n");
+        writer.append("\n\n");
         String declaration = "";
         for (String s : SymbolTable.keys()) {
             declaration = declare(s);
@@ -149,16 +149,25 @@ public final class AssemblerGen {
             }
         }
 
+        writer.append("ConvError db \"Perdida de informacion en conversion.\", 0");
+        writer.append("\n\n");
 
         // Codigo
 
         writer.append(".code");
+        writer.append("\n\n");
+
+        writer.append("negativo:");
         writer.append("\n");
+        writer.append("invoke MessageBox, NULL, addr ConvError, addr ConvError, MB_OK");
+        writer.append("\n");
+        writer.append("invoke ExitProcess, 0");
+        writer.append("\n\n");
 
         //TODO aca van las funciones predefinidas first, last, leght, (acceder a un elemento coleccion?)
         //TODO Generar assembler para las funciones FIRST, LENGTH y LAST.
         writer.append("start:");
-        writer.append("\n");
+        writer.append("\n\n");
 
 
         for (Terceto t : AdminTercetos.list()) {
@@ -167,7 +176,7 @@ public final class AssemblerGen {
 
 
         writer.append("invoke ExitProcess, 0");
-        writer.append("\n");
+        writer.append("\n\n");
         writer.append("end start");
 
         writer.close();
@@ -426,6 +435,28 @@ public final class AssemblerGen {
                 break;
             case "_CONV":
                 //TODO Generar assembler para la operacion _CONV
+                if(tipo_op1.equals("variable")){ // si es variable la traigo a reg
+                    reg_A = ar.getRegBC(16);
+                    instructions.append("MOV ")
+                            .append(reg_A)
+                            .append(", ")
+                            .append(getOP(t.getOperando1()))
+                            .append("\n");
+                }else{
+                    reg_A = getOP(t.getOperando1());
+                }
+                //Chequeo perida de informacion
+                instructions.append("CMP ")
+                        .append(reg_A)
+                        .append(", ")
+                        .append("0")
+                        .append("\n");
+                instructions.append("JL negativo")
+                        .append("\n");
+                //si no es negativo realizo la conversion
+                instructions.append("CWDE ") //TODO esto funciona?? estoy extendiendo el signo de un numero positivo (extiendo ceros?)
+                        .append("\n");
+                t.setRegister("E"+reg_A);
                 break;
         }
 
