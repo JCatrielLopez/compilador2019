@@ -633,7 +633,7 @@ final static String yyrule[] = {
 "cte : '-' CTE",
 };
 
-//#line 351 "gramatica.y"
+//#line 353 "gramatica.y"
 
 private Lexer al;
 private boolean verbose;
@@ -1261,11 +1261,13 @@ break;
 case 92:
 //#line 206 "gramatica.y"
 {
-							    String tipo_id = SymbolTable.getLex(val_peek(3).sval).getAttr("type");
 							    boolean conversion = false;
 							    String tipo_exp="";
+							    String tipo_id="";
 							    if (!tipos.isEmpty())
 							    	tipo_exp = tipos.pop();
+							    if (!tipos.isEmpty())
+							    	tipo_id = tipos.pop();
 							    if(tipo_id == "INT"){
 							    	if(tipo_exp == "ULONG"){
 							    		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR tipos incompatibles."));
@@ -1290,59 +1292,59 @@ case 92:
                                     			}
 break;
 case 93:
-//#line 234 "gramatica.y"
+//#line 236 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el ID de la ."));}
 break;
 case 94:
-//#line 235 "gramatica.y"
+//#line 237 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el lado derecho de la asignacion."));}
 break;
 case 95:
-//#line 236 "gramatica.y"
+//#line 238 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado derecho de la asignacion."));}
 break;
 case 96:
-//#line 240 "gramatica.y"
+//#line 242 "gramatica.y"
 { yyval = new ParserVal(crearTercetoOperacion("+", val_peek(2).sval, val_peek(0).sval)); }
 break;
 case 97:
-//#line 241 "gramatica.y"
+//#line 243 "gramatica.y"
 { yyval = new ParserVal(crearTercetoOperacion("-", val_peek(2).sval, val_peek(0).sval)); }
 break;
 case 99:
-//#line 243 "gramatica.y"
+//#line 245 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '+'"));}
 break;
 case 100:
-//#line 244 "gramatica.y"
+//#line 246 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '-'"));}
 break;
 case 101:
-//#line 247 "gramatica.y"
+//#line 249 "gramatica.y"
 { yyval = new ParserVal(crearTercetoOperacion("*", val_peek(2).sval, val_peek(0).sval)); }
 break;
 case 102:
-//#line 248 "gramatica.y"
+//#line 250 "gramatica.y"
 { yyval = new ParserVal(crearTercetoOperacion("/", val_peek(2).sval, val_peek(0).sval)); }
 break;
 case 104:
-//#line 250 "gramatica.y"
+//#line 252 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '*'"));}
 break;
 case 105:
-//#line 251 "gramatica.y"
+//#line 253 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '*"));}
 break;
 case 106:
-//#line 252 "gramatica.y"
+//#line 254 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '/'"));}
 break;
 case 107:
-//#line 253 "gramatica.y"
+//#line 255 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '/'"));}
 break;
 case 110:
-//#line 258 "gramatica.y"
+//#line 260 "gramatica.y"
 {	if(SymbolTable.getLex(val_peek(2).sval).getAttr("use") == "COLECCION"){
 								if(val_peek(0).sval == "_length"){
 									tipos.push("INT");
@@ -1358,39 +1360,39 @@ case 110:
 						 }
 break;
 case 111:
-//#line 273 "gramatica.y"
+//#line 275 "gramatica.y"
 {yyval = new ParserVal("_first");}
 break;
 case 112:
-//#line 274 "gramatica.y"
+//#line 276 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan parentesis en funcion FIRST."));}
 break;
 case 113:
-//#line 275 "gramatica.y"
+//#line 277 "gramatica.y"
 {yyval = new ParserVal("_last");}
 break;
 case 114:
-//#line 276 "gramatica.y"
+//#line 278 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan parentesis en funcion LAST."));}
 break;
 case 115:
-//#line 277 "gramatica.y"
+//#line 279 "gramatica.y"
 {yyval = new ParserVal("_length");}
 break;
 case 116:
-//#line 278 "gramatica.y"
+//#line 280 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Faltan parentesis en funcion LENGTH."));}
 break;
 case 117:
-//#line 279 "gramatica.y"
+//#line 281 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Funcion desconocida."));}
 break;
 case 118:
-//#line 280 "gramatica.y"
+//#line 282 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Funcion desconocida."));}
 break;
 case 119:
-//#line 283 "gramatica.y"
+//#line 285 "gramatica.y"
 {
                                             if(SymbolTable.getLex(val_peek(0).sval).getAttr("use") != null){
                                             	yyval = val_peek(0);
@@ -1401,7 +1403,7 @@ case 119:
                                        }
 break;
 case 120:
-//#line 291 "gramatica.y"
+//#line 293 "gramatica.y"
 {
 						    Token coleccion = SymbolTable.getLex(val_peek(3).sval);
 						    Token tamaño = SymbolTable.getLex(val_peek(1).sval);
@@ -1426,7 +1428,7 @@ case 120:
                                                 }
 break;
 case 121:
-//#line 313 "gramatica.y"
+//#line 315 "gramatica.y"
 {
 							Token coleccion = SymbolTable.getLex(val_peek(3).sval);
 					    		Token tamaño = SymbolTable.getLex(val_peek(1).sval);
@@ -1450,11 +1452,11 @@ case 121:
 						  }
 break;
 case 122:
-//#line 334 "gramatica.y"
+//#line 336 "gramatica.y"
 {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el subindice de la coleccion. Se esperaba un INT."));}
 break;
 case 123:
-//#line 337 "gramatica.y"
+//#line 339 "gramatica.y"
 {
                                             String cte = val_peek(0).sval;
                                             check_range(cte, false);
@@ -1462,14 +1464,14 @@ case 123:
                                         }
 break;
 case 124:
-//#line 342 "gramatica.y"
+//#line 344 "gramatica.y"
 {
 						String cte = val_peek(0).sval;
 						check_range(cte, true);
 						yyval = new ParserVal("-" + cte);
                                            }
 break;
-//#line 1396 "Parser.java"
+//#line 1398 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

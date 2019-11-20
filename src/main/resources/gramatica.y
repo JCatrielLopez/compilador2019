@@ -204,11 +204,13 @@ comparador		        : '<' { $$ = new ParserVal("<");}
 ;
 
 sentencia_asignacion 		: id ASIGN expresion ';' {
-							    String tipo_id = SymbolTable.getLex($1.sval).getAttr("type");
 							    boolean conversion = false;
 							    String tipo_exp="";
+							    String tipo_id="";
 							    if (!tipos.isEmpty())
 							    	tipo_exp = tipos.pop();
+							    if (!tipos.isEmpty())
+							    	tipo_id = tipos.pop();
 							    if(tipo_id == "INT"){
 							    	if(tipo_exp == "ULONG"){
 							    		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR tipos incompatibles."));
