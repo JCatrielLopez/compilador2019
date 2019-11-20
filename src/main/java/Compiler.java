@@ -122,7 +122,7 @@ class Compiler {
       System.out.println(stdInput.toString());
       System.out.println(stdError.toString());
 
-      p = Runtime.getRuntime().exec("\\masm32\\bin\\Link SUBSYSTEM:CONSOLE" + obj_path);
+      p = Runtime.getRuntime().exec("\\masm32\\bin\\Link /SUBSYSTEM:CONSOLE" + obj_path);
       stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
       stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
