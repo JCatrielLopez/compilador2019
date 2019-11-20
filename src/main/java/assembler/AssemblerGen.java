@@ -177,7 +177,7 @@ public final class AssemblerGen {
     private static String getCode(Terceto t) {
 
         StringBuilder instructions = new StringBuilder();
-        AdminRegistros ar = new AdminRegistros();
+        AdminRegistros ar = AdminRegistros.getInstance();
 
         String reg_A = "";
         String reg_B = "";
@@ -210,7 +210,7 @@ public final class AssemblerGen {
                                 ar.free(reg_A);
                                 break;
                             case "variable":
-                                reg_A = ar.available(size);
+                                reg_A = ar.getRegBC(size);
                                 instructions.append("MOV ")
                                         .append(reg_A)
                                         .append(", ")
@@ -243,7 +243,7 @@ public final class AssemblerGen {
                         break;
                     case "variable":
                         reg_B = getOP(t.getOperando1());
-                        reg_A = ar.available(size);
+                        reg_A = ar.getRegBC(size);
                         switch (tipo_op2) {
                             case "terceto":
                                 instructions.append("MOV ")
@@ -281,43 +281,33 @@ public final class AssemblerGen {
                 //TODO Generar assembler para la operacion /
                 break;
             case "*":
-                String reg_1 = getOP(t.getOperando1());
-                String reg_2 = getOP(t.getOperando2());
-                if(tipo_op1.equals("variable") && tipo_op2.equals("variable")){
-                    instructions.append("MOV ")
-                            .append(ar.getRegA(size))
-                            .append(", ")
-                            .append(reg_2)
-                            .append("\n");
-                } else {
-
+                if(tipo_op1.equals("variable")){ //primer operando variable
+                    if(tipo_op2.equals("variable")) { //segundo operando variable
+                        reg_A = ar.getRegAD(size);
+                        instructions.append("MOV ")
+                                .append(reg_A)
+                                .append(", ")
+                                .append(getOP(t.getOperando1()))
+                                .append("\n");
+                        reg_B = getOP(t.getOperando2());
+                    }else { //segundo operando registro... opero sobre el segundo operando
+                        reg_A = getOP(t.getOperando2());
+                        reg_B = getOP(t.getOperando1());
+                    }
+                } else { //primer operando registro no importa lo q sea el segundo.. opero sobre el primero
+                    reg_A = getOP(t.getOperando1());
+                    reg_B = getOP(t.getOperando2());
+                    if(tipo_op2.equals("terceto")){//si ambos son terceto libero al segundo
+                        ar.free(reg_B);
+                    }
                 }
+                instructions.append("IMUL ")
+                    .append(reg_A)
+                    .append(", ")
+                    .append(reg_B)
+                    .append("\n");
 
-                System.out.println("Reg1 -> " + reg_1);
-                System.out.println("Reg2 -> " + reg_2);
-
-                instructions.append("MOV ")
-                        .append(ar.getRegA(size))
-                        .append(", ")
-                        .append(reg_2)
-                        .append("\n")
-                        .append("MOV ")
-                        .append(ar.getRegD(size))
-                        .append(", ")
-                        .append(reg_2)
-                        .append("\n")
-                        .append("IMUL ")
-                        .append(ar.getRegA(size))
-                        .append(", ")
-                        .append(ar.getRegD(size))
-                        .append("\n");
-
-                t.setRegister(ar.getRegA(size));
-
-                if (reg_1.equals("terceto"))
-                    ar.free(reg_1);
-                if (reg_2.equals("terceto"))
-                    ar.free(reg_2);
+                t.setRegister(reg_A);
 
                 break;
             case "BI":
@@ -339,7 +329,7 @@ public final class AssemblerGen {
                             .append("\n");
                     ar.free(getOP(t.getOperando2()));
                 } else {
-                    reg_A = ar.available(size);
+                    reg_A = ar.getRegBC(size);
 
                     System.out.println("reg_A -> " + reg_A);
                     System.out.println(t.getOperando1() + " -> " + getOP(t.getOperando1()));

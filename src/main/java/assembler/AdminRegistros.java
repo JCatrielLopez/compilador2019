@@ -4,6 +4,17 @@ import java.util.HashMap;
 
 public class AdminRegistros {
 
+    // SINGLETON
+    private static AdminRegistros instance;
+
+    public static AdminRegistros getInstance(){
+        if( AdminRegistros.instance == null){
+            AdminRegistros.instance = new AdminRegistros();
+        }
+        return AdminRegistros.instance;
+    }
+
+    // DINAMICOS
     // registers = {register: [True, False]}
     //                         True: El registro esta liberado.
     //                         False: El registro esta ocupado.
@@ -11,10 +22,10 @@ public class AdminRegistros {
 
 
     public AdminRegistros() {
-        registers.put("bx", true);
-        registers.put("cx", true);
-        registers.put("ax", true);
-        registers.put("dx", true);
+        registers.put("BX", true);
+        registers.put("CX", true);
+        registers.put("AX", true);
+        registers.put("DX", true);
     }
 
     public void free(String register) {
@@ -25,36 +36,35 @@ public class AdminRegistros {
             this.registers.put(register, true);
     }
 
-    public String available(Integer bits) {
-        for (String register : registers.keySet())
-            if (registers.get(register)) {
-                registers.put(register, false);
+    public String getRegAD(Integer bits) {
+        String register = null;
 
-                if (bits == 32)
-                    return "E" + register;
-                else
-                    return register;
-            }
-        return null;
-    }
-
-    public String getRegA(Integer bits) {
+        if(registers.get("AX")){
+            register = "AX";
+        }else if (registers.get("DX")){
+            register = "DX";
+        }
         if (bits == 32)
-            return "EAX";
-        else
-            return "AX";
+            register = "E" + register;
+
+        registers.put(register, false);
+        return register;
     }
 
-    public boolean is_available(String register) {
-        return this.registers.get(register);
-    }
-
-    public String getRegD(Integer bits) {
+    public String getRegBC(Integer bits) {
+        String register = null;
+        if(registers.get("BX")){
+            register = "BX";
+        }else if (registers.get("CX")){
+            register = "CX";
+        }
         if (bits == 32)
-            return "EDX";
-        else
-            return "DX";
+            register = "E" + register;
+        registers.put(register, false);
+        return register;
     }
+
+    public boolean is_aviable(String register){return registers.get(register);}
 
     public void occupy(String reg) {
         this.registers.put(reg, false);

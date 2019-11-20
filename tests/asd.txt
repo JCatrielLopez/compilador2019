@@ -1,6 +1,5 @@
-int a;
+int z,a,b,c,d;
 
 begin
-    a := 1;
-    a := a + 3;
+z:=1+a*2+b*5;
 end;
