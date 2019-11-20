@@ -53,7 +53,7 @@ public final class AssemblerGen {
                 }
                 if (t.getOperando2() != null)
                     if (!t.getOperando2().startsWith("[")) {
-                        if (!SymbolTable.getLex(t.getOperando2()).getDescription().equals("CADENA"))
+                        if (!SymbolTable.getLex(t.getOperando1()).getDescription().equals("CADENA"))
                             if (SymbolTable.getLex(t.getOperando2()).getAttr("use").equals("VARIABLE"))
                                 t.setOperando2("_" + t.getOperando2());
                     }
