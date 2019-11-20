@@ -54,21 +54,33 @@ public final class AssemblerGen {
     public static void redefineVariables() {
 
         for (Terceto t : AdminTercetos.list()) {
-            if (!t.getOperacion().equals("label")) {
-                //TODO si el operando empieza con _ (calls) se rompe
-                if (t.getOperando1() != null) {
-                    if (!t.getOperando1().startsWith("[")) {
-                        if (!SymbolTable.getLex(t.getOperando1()).getDescription().equals("CADENA"))
-                            if (SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("VARIABLE"))
-                                t.setOperando1("_" + t.getOperando1());
-                    }
+
+            String op1 = t.getOperando1();
+
+            if (op1 != null) {
+                Token token = SymbolTable.getLex(op1);
+                if (token != null) { // Reescribo los id de las variables.
+                    if (token.getAttr("use") != null)
+                        if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION"))
+                            t.setOperando1("_" + op1);
+                } else {
+                    if (op1.endsWith("]"))
+                        t.setOperando1("_" + op1);
                 }
-                if (t.getOperando2() != null)
-                    if (!t.getOperando2().startsWith("[")) {
-                        if (!SymbolTable.getLex(t.getOperando2()).getDescription().equals("CADENA"))
-                            if (SymbolTable.getLex(t.getOperando2()).getAttr("use").equals("VARIABLE"))
-                                t.setOperando2("_" + t.getOperando2());
-                    }
+            }
+
+            String op2 = t.getOperando2();
+
+            if (op2 != null) {
+                Token token = SymbolTable.getLex(op2);
+                if (token != null) { // Reescribo los id de las variables.
+                    if (token.getAttr("use") != null)
+                        if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION"))
+                            t.setOperando1("_" + op2);
+                } else {
+                    if (op2.endsWith("]"))
+                        t.setOperando1("_" + op2);
+                }
             }
         }
 
