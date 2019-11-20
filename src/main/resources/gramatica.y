@@ -124,7 +124,7 @@ sentencia_impresion		: PRINT '(' CADENA ')' ';' {AdminTercetos.add(new Terceto("
 sentencia_control		: while condicion_while DO bloque_sentencias ';' {	String terceto_inc = AdminTercetos.pop();
 											AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 2)+"]");
 											terceto_inc = AdminTercetos.pop();
-											AdminTercetos.add(new Terceto("BI", terceto_inc, "null"));
+											AdminTercetos.add(new Terceto("BI", terceto_inc, null));
 											AdminTercetos.add(new Terceto ("Label", "["+(AdminTercetos.cantTercetos()+1)+"]", null));
 											if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia While."));
 										}
