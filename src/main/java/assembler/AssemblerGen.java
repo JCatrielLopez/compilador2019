@@ -2,7 +2,6 @@ package assembler;
 
 import globals.SymbolTable;
 import lexer.Token;
-
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
@@ -24,9 +23,9 @@ public final class AssemblerGen {
                     return (e.getLex() + " dd ?");
             } else if (e.getAttr("use").equals("COLECCION")) {
                 if (e.getAttr("type").equals("INT"))
-                    return (e.getLex() + " dw "+ e.getAttr("size") + " dup ?");
+                    return (e.getLex() + " dw "+ (Integer.valueOf(e.getAttr("size"))+1) + " dup (?)");
                 else
-                    return (e.getLex() + " dd "+ e.getAttr("size")+ " dup ?");
+                    return (e.getLex() + " dd "+ (Integer.valueOf(e.getAttr("size"))+1)+ " dup (?)");
             }
 
         }
@@ -64,7 +63,7 @@ public final class AssemblerGen {
                         if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION"))
                             t.setOperando1("_" + op1);
                 } else {
-                    if (op1.endsWith("]"))
+                    if (!op1.startsWith("[") && op1.endsWith("]"))
                         t.setOperando1("_" + op1);
                 }
             }
@@ -78,7 +77,7 @@ public final class AssemblerGen {
                         if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION"))
                             t.setOperando1("_" + op2);
                 } else {
-                    if (op2.endsWith("]"))
+                    if (!op2.startsWith("[") && op2.endsWith("]"))
                         t.setOperando1("_" + op2);
                 }
             }
@@ -88,7 +87,7 @@ public final class AssemblerGen {
         for (String lex : SymbolTable.keys()) {
             Token token = SymbolTable.getLex(lex);
             if (!token.getDescription().equals("CADENA"))
-                if (token.getAttr("use").equals("VARIABLE")) {
+                if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION")) {
                     token.setLex("_" + lex);
                     new_tokens.put("_" + lex, token);
                 } else
@@ -102,7 +101,7 @@ public final class AssemblerGen {
     // Devuelve el operando de la instruccion en assembler, sea el registro en el que esta almacenado el
     // resultado del terceto, el nombre de la variable o la constante.
     public static String getOP(String operando) {
-        if (operando.charAt(0) == '[') {
+        if (operando.startsWith("[")) {
             return AdminTercetos.get(operando)
                     .getRegister();
         }
@@ -133,19 +132,11 @@ public final class AssemblerGen {
 
         writer.append(".386");
         writer.append("\n");
-        writer.append(".model flat, stdcall");
+        writer.append("include \\masm32\\include\\masm32rt.inc");
         writer.append("\n");
-        writer.append("option casemap :none");
+        writer.append("dll_dllcrt0 PROTO C");
         writer.append("\n");
-        writer.append("include \\masm32\\include\\windows.inc");
-        writer.append("\n");
-        writer.append("include \\masm32\\include\\kernel32.inc");
-        writer.append("\n");
-        writer.append("include \\masm32\\include\\user32.inc");
-        writer.append("\n");
-        writer.append("includelib \\masm32\\lib\\kernel32.lib");
-        writer.append("\n");
-        writer.append("includelib \\masm32\\lib\\user32.lib");
+        writer.append("printf PROTO C :VARARG");
         writer.append("\n\n");
 
         // Declaracion de variables
@@ -181,6 +172,15 @@ public final class AssemblerGen {
         writer.append("start:");
         writer.append("\n\n");
 
+        //Setear tamaño arreglos
+        writer.append(";Seteamos los tamaños de las colecciones. \n");
+        for (String lex : SymbolTable.keys()) {
+            if(SymbolTable.getLex(lex).getAttr("use")!= null && SymbolTable.getLex(lex).getAttr("use").equals("COLECCION")){
+                writer.append("MOV ["+ lex + "], "+SymbolTable.getLex(lex).getAttr("size"));
+                writer.append("\n");
+            }
+        }
+        writer.append(";Fin de seteo de tamaños. \n");
 
         for (Terceto t : AdminTercetos.list()) {
             writer.append(getCode(t));
@@ -356,7 +356,7 @@ public final class AssemblerGen {
                             .append("\n");
                 break;
             case "BF":
-                Terceto anterior = AdminTercetos.get("["+Integer.valueOf(t.getOperando1().substring(1, t.getOperando1().length() - 1))+"]");
+                Terceto anterior = AdminTercetos.get(t.getOperando1());
                 String target = t.getOperando2().substring(1, t.getOperando2().length() - 1);
                 target = "Label" + target;
 
@@ -437,13 +437,25 @@ public final class AssemblerGen {
 
                 break;
             case "PRINT":
-                String operando = getOP(t.getOperando1());
-                instructions.append("INVOKE MessageBox, NULL, addr ")
-                        .append(operando)
-                        .append(", addr ")
-                        .append(operando)
-                        .append(", MB_OK")
-                        .append("\n");
+                Token token = SymbolTable.getLex(t.getOperando1());
+                if(!token.getDescription().equals("CADENA")){
+                    if(!token.getAttr("use").equals("COLECCION")){
+                        instructions.append("invoke printf, cfm$(\"%. %d\\n\"), "+ getOP(t.getOperando1()));
+                    }else {//TODO print coleccion
+
+                    }
+                }else
+                {
+                    String operando = getOP(t.getOperando1());
+
+                    instructions.append("INVOKE MessageBox, NULL, addr ")
+                            .append(operando)
+                            .append(", addr ")
+                            .append(operando)
+                            .append(", MB_OK")
+                            .append("\n");
+
+                }
                 break;
             case "_CONV":
                 if(tipo_op1.equals("variable")){ // si es variable la traigo a reg
@@ -465,7 +477,7 @@ public final class AssemblerGen {
                 instructions.append("JL negativo")
                         .append("\n");
                 //si no es negativo realizo la conversion
-                instructions.append("CWDE ") //TODO esto funciona?? estoy extendiendo el signo de un numero positivo (extiendo ceros?)
+                instructions.append("CWDE ")
                         .append("\n");
                 t.setRegister("E"+reg_A);
                 break;

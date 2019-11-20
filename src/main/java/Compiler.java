@@ -101,7 +101,7 @@ class Compiler {
         System.out.println(AdminTercetos.print());
       }
 
-      String source_name = FilenameUtils.removeExtension(source_path);
+      String source_name = "tests/asd";
       String tercetos_path = source_name + ".t";
       String assembler_path = source_name + ".asm";
       String obj_path = source_name + ".obj";
@@ -119,15 +119,15 @@ class Compiler {
       BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
       BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-      System.out.println(stdInput);
-      System.out.println(stdError);
+      System.out.println(stdInput.toString());
+      System.out.println(stdError.toString());
 
       p = Runtime.getRuntime().exec("\\masm32\\bin\\Link SUBSYSTEM:CONSOLE" + obj_path);
       stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
       stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-      System.out.println(stdInput);
-      System.out.println(stdError);
+      System.out.println(stdInput.toString());
+      System.out.println(stdError.toString());
     }
 
     if (ts_verbose) SymbolTable.print();

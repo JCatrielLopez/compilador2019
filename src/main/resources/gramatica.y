@@ -84,17 +84,19 @@ lista_variables			: lista_variables ',' ID {addVariable($3.sval, "VARIABLE");}
 
 coleccion			: ID '[' cte ']' {
 							Token coleccion = SymbolTable.getLex($1.sval);
-							if (coleccion.getAttr("use") == null){
-								if (Integer.parseInt($3.sval) >= 0){
-									coleccion.addAttr("size", $3.sval);
-                                                                        coleccion.addAttr("Elements", new ArrayList<>());
-								}else
-							    		Error.add(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR tamaño del arreglo no puede ser negativo."));
-							}
-							else
-							    Error.add(
-								    String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR La variable " + $1.sval + " ya se encuentra declarada.")
-							    );
+							String tipo_cte = tipos.pop();
+							if(tipo_cte.equals("INT")){
+								if (coleccion.getAttr("use") == null){
+									if (Integer.parseInt($3.sval) >= 0){
+										coleccion.addAttr("size", $3.sval);
+									}else
+										Error.add(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR tamaño del arreglo no puede ser negativo."));
+								}
+								else
+							    		Error.add(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR La variable " + $1.sval + " ya se encuentra declarada."));
+							}else
+								Error.add(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR tamaño del arreglo debe ser un entero."));
+
 						}
                                 |   ID '[' ']'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el tamaño de la declaracion."));}
                                 |   ID '[' error ']'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la declaracion del tamaño de la coleccion."));}
