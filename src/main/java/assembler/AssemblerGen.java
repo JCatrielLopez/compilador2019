@@ -434,7 +434,6 @@ public final class AssemblerGen {
                         .append("\n");
                 break;
             case "_CONV":
-                //TODO Generar assembler para la operacion _CONV
                 if(tipo_op1.equals("variable")){ // si es variable la traigo a reg
                     reg_A = ar.getRegBC(16);
                     instructions.append("MOV ")
