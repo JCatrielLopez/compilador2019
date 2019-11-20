@@ -29,7 +29,7 @@ public class AdminRegistros {
     }
 
     public void free(String register) {
-        if (register.startsWith("e")) // Borro la E (EBX -> BX)
+        if (register.startsWith("E")) // Borro la E (EBX -> BX)
             register = register.substring(1);
 
         if (this.registers.containsKey(register))
@@ -44,10 +44,9 @@ public class AdminRegistros {
         }else if (registers.get("DX")){
             register = "DX";
         }
+        registers.put(register, false);
         if (bits == 32)
             register = "E" + register;
-
-        registers.put(register, false);
         return register;
     }
 
@@ -58,15 +57,14 @@ public class AdminRegistros {
         }else if (registers.get("CX")){
             register = "CX";
         }
+        registers.put(register, false);
         if (bits == 32)
             register = "E" + register;
-        registers.put(register, false);
         return register;
     }
 
-    public boolean is_aviable(String register){return registers.get(register);}
-
-    public void occupy(String reg) {
-        this.registers.put(reg, false);
+    public void imp() {
+        for (String s: registers.keySet())
+            System.out.println("Registro "+s+": "+registers.get(s));
     }
 }

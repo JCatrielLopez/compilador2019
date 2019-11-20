@@ -178,6 +178,8 @@ public final class AssemblerGen {
 
         StringBuilder instructions = new StringBuilder();
         AdminRegistros ar = AdminRegistros.getInstance();
+        //ar.imp();
+        //System.out.println("-----------------------------");
 
         String reg_A = "";
         String reg_B = "";
@@ -335,37 +337,25 @@ public final class AssemblerGen {
                 //TODO Generar assembler para las labels
                 break;
             case ":=":
-
-                if (tipo_op2.equals("terceto")) {
+                if(tipo_op2.equals("variable")) { //valor a asignar en variable
+                    reg_B = ar.getRegBC(size);
                     instructions.append("MOV ")
-                            .append(getOP(t.getOperando1()))
+                            .append(reg_B)
                             .append(", ")
                             .append(getOP(t.getOperando2()))
                             .append("\n");
-                    ar.free(getOP(t.getOperando2()));
-                } else {
-                    reg_A = ar.getRegBC(size);
-
-                    System.out.println("reg_A -> " + reg_A);
-                    System.out.println(t.getOperando1() + " -> " + getOP(t.getOperando1()));
-                    System.out.println(t.getOperando2() + " -> " + getOP(t.getOperando2()));
-                    System.out.println(" ----------------------- ");
-                    instructions.append("MOV ")
-                            .append(reg_A)
-                            .append(", ")
-                            .append(getOP(t.getOperando2()))
-                            .append("\n")
-                            .append("MOV ")
-                            .append(getOP(t.getOperando1()))
-                            .append(", ")
-                            .append(reg_A)
-                            .append("\n");
-
-                    ar.free(reg_A);
+                    reg_A = getOP(t.getOperando1());
+                    ar.free(reg_B);
+                }else{//valor a asignar en registro
+                    reg_A =  getOP(t.getOperando1());
+                    reg_B =  getOP(t.getOperando2());
+                    ar.free(reg_B);
                 }
-
-                if (getOP(t.getOperando2()).equals("terceto"))
-                    ar.free(getOP(t.getOperando2()));
+                instructions.append("MOV ")
+                        .append(reg_A)
+                        .append(", ")
+                        .append(reg_B)
+                        .append("\n");
 
                 break;
             case "PRINT":
