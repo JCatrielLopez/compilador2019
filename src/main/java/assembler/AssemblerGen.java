@@ -60,11 +60,11 @@ public final class AssemblerGen {
                 Token token = SymbolTable.getLex(op1);
                 if (token != null) { // Reescribo los id de las variables.
                     if (token.getAttr("use") != null)
-                        if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION"))
-                            t.setOperando1("_" + op1);
+                        if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION")){
+                            t.setOperando1("_" + op1);}
                 } else {
-                    if (!op1.startsWith("[") && op1.endsWith("]"))
-                        t.setOperando1("_" + op1);
+                    if ((!op1.startsWith("[")) && op1.endsWith("]")){
+                        t.setOperando1("_" + op1);}
                 }
             }
 
@@ -75,10 +75,10 @@ public final class AssemblerGen {
                 if (token != null) { // Reescribo los id de las variables.
                     if (token.getAttr("use") != null)
                         if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION"))
-                            t.setOperando1("_" + op2);
+                            t.setOperando2("_" + op2);
                 } else {
                     if (!op2.startsWith("[") && op2.endsWith("]"))
-                        t.setOperando1("_" + op2);
+                        t.setOperando2("_" + op2);
                 }
             }
         }
@@ -296,6 +296,7 @@ public final class AssemblerGen {
         AdminRegistros ar = AdminRegistros.getInstance();
         //ar.imp();
         //System.out.println("-----------------------------");
+        //System.out.println("Terceto: "+t.toString());
 
         String reg_A = "";
         String reg_B = "";
