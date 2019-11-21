@@ -8,7 +8,7 @@ printf PROTO C :VARARG
 ;Datos del programa.
 cte1 dw 1
 _a dw 3, 10, 20, 30
-_b dd 4, 100, 200, 300, 400
+_b dd 4, -100, -200, -300, -400
 _c dw ?
 cte2 dw 5
 
@@ -19,6 +19,8 @@ cte2 dw 5
 @indice dw ?
 @tipo dd ?
 @offset dd ?
+@valor_asignacion_16 dw ?
+@valor_asignacion_32 dd ?
 ConvError db "Error, perdida de informacion en conversion.", 0
 IndiceError db "Error, indice fuera de los limites de la coleccion.", 0
 @tempEAX dd ?
@@ -47,17 +49,14 @@ RET
 
 _first:
 MOV @tempEAX, EAX
+MOV @tempEBX, EBX
 MOV EAX, @coleccion
 ADD EAX, @tipo
-MOV @offset, EAX
-CMP @tipo, 2
-JNE F_Resultado32
-CALL _setResult16
-JMP F_end
-F_Resultado32:
-CALL _setResult32
+MOV EBX, [EAX]
+MOV @resultado_16, BX
+MOV @resultado_32, EBX
 MOV EAX, @tempEAX
-F_end:
+MOV EBX, @tempEBX
 RET
 
 _last:
@@ -68,33 +67,29 @@ MOV EBX, 0              ;pongo 0 por si habia algo
 MOV BX, [EAX]           ;length
 IMUL EBX, @tipo         ;calculo el offset
 ADD EAX, EBX
-MOV @offset, EAX
-CMP @tipo, 2
-JNE L_Resultado32
-CALL _setResult16
-JMP L_end
-L_Resultado32:
-CALL _setResult32
+MOV EBX, [EAX]
+MOV @resultado_16, BX
+MOV @resultado_32, EBX
 MOV EAX, @tempEAX
 MOV EBX, @tempEBX
-L_end:
 RET
 
 _element:
+MOV @tempEAX, EAX
+MOV @tempEBX, EBX
 CALL _offset
-CMP @tipo, 2
-JNE E_Resultado32
-CALL _setResult16
-JMP E_end
-E_Resultado32:
-CALL _setResult32
-E_end:
+MOV EAX, @offset
+MOV EBX, [EAX]
+MOV @resultado_16, BX
+MOV @resultado_32, EBX
+MOV EAX, @tempEAX
+MOV EBX, @tempEBX
 RET
 
 _offset:
 MOV @tempEAX, EAX
 MOV @tempEBX, EBX
-MOV @tempEBX, EDX
+MOV @tempEDX, EDX
 MOV EAX, @coleccion
 MOV EDX, 0
 MOV DX, @indice
@@ -113,43 +108,35 @@ MOV EBX, @tempEBX
 MOV EDX, @tempEDX
 RET
 
-_setResult16:
-MOV @tempEAX, EAX
-MOV @tempEAX, EBX
-MOV EAX, @offset
-MOV BX, [EAX]
-MOV @resultado_16, BX
-MOV EAX, @tempEAX
-MOV EAX, @tempEBX
-RET
-
-_setResult32:
-MOV @tempEAX, EAX
-MOV @tempEAX, EBX
-MOV EAX, @offset
-MOV EBX, [EAX]
-MOV @resultado_32, EBX
-MOV EAX, @tempEAX
-MOV EAX, @tempEBX
-RET
-
 _rowing:
-MOV @tempEAX, EAX             ;Posicion del indice donde voy a asignar el @valor_asignacion
-MOV @tempEBX, EBX             ;Contador de posiciones. Puede que este de mas, no se si puedo usar una variable en el .while
-MOV EAX, @indice
+MOV @tempEAX, EAX
+MOV @tempEBX, EBX
+MOV @tempECX, ECX
+CALL _length
+MOV AX, @resultado_16
+SUB AX, 1
 MOV EBX, @coleccion
-MOV @indice, [EBX]
-
+MOV @indice, AX
 r_while:
 CMP @indice, 0
 JL r_end
-_call offset
+CALL _offset
 MOV ECX, @offset
-MOV [ECX], @valor_asignacion
+CMP @tipo, 2
+JNE R_asignacion32
+MOV AX, @valor_asignacion_16
+MOV [ECX], AX
+JMP R_out
+R_asignacion32:
+MOV EAX, @valor_asignacion_32
+MOV [ECX], EAX
+R_out:
 SUB @indice, 1
-JUMP r_while
-
+JMP r_while
 r_end:
+MOV EAX, @tempEAX
+MOV EBX, @tempEBX
+MOV ECX, @tempECX
 RET
 
 start:
@@ -161,16 +148,18 @@ start:
 LEA EAX, [_a]
 MOV @coleccion, EAX
 MOV @tipo, 2
-MOV @indice, 1
+MOV @indice, 2
 ;CALL _length
 ;invoke printf, cfm$("%. %d\n"), @resultado_16
-CALL _element
-invoke printf, cfm$("%. %d\n"), @resultado_16
+;CALL _first
+;invoke printf, cfm$("%. %d\n"), @resultado_16
 ;invoke printf, cfm$("%. %d\n"), @resultado_32
 ;CALL _last
 ;invoke printf, cfm$("%. %d\n"), @resultado_16
+;invoke printf, cfm$("%. %d\n"), @resultado_32
 ;CALL _element
 ;invoke printf, cfm$("%. %d\n"), @resultado_16
+;invoke printf, cfm$("%. %d\n"), @resultado_32
 
 ;CALL _offset
 ;MOV AX, 99
@@ -178,6 +167,28 @@ invoke printf, cfm$("%. %d\n"), @resultado_16
 ;MOV [EDX], AX
 ;CALL _element
 ;invoke printf, cfm$("%. %d\n"), @resultado_16
+
+
+;MOV @valor_asignacion_32, -1
+;CALL _rowing
+
+;MOV @indice, 0
+;CALL _element
+;invoke printf, cfm$("%. %d\n"), @resultado_32
+
+;MOV @indice, 1
+;CALL _element
+;invoke printf, cfm$("%. %d\n"), @resultado_32
+
+;MOV @indice, 2
+;CALL _element
+;invoke printf, cfm$("%. %d\n"), @resultado_32
+
+;MOV @indice, 3
+;CALL _element
+;invoke printf, cfm$("%. %d\n"), @resultado_32
+
+
 
 invoke ExitProcess, 0
 

@@ -198,66 +198,66 @@ public final class AssemblerGen {
         writer.append("invoke ExitProcess, 0");
         writer.append("\n\n");
 
-        //AdminRegistros ar = AdminRegistros.getInstance();//TODO para mi esto genera conflictos xq no sabe q registro esta disponible y le pisa el contenido
+        //AdminRegistros ar = AdminRegistros.getInstance();
         //funciones predefinidas
-        writer.append("_length:");
-        writer.append("\n");
-        writer.append("MOV AX, [@coleccion]");
-        writer.append("\n");
-        writer.append("MOV @resultado, AX");
-        writer.append("\n");
-        writer.append("RET");
-        writer.append("\n\n");
-
-        writer.append("_first:");
-        writer.append("\n");
-        writer.append("MOV AX, [@coleccion]");
-        writer.append("\n");
-        writer.append("MOV @resultado, AX");
-        writer.append("\n");
-        writer.append("RET");
-        writer.append("\n\n");
-
-        writer.append("_last:");
-        writer.append("\n");
-        writer.append("MOV AX, [@coleccion]");
-        writer.append("\n");
-        writer.append("MOV @resultado, AX");
-        writer.append("\n");
-        writer.append("RET");
-        writer.append("\n\n");
-
-        writer.append("_elemento:");
-        writer.append("\n");
-        writer.append("CALL _get_offset");
-        writer.append("\n");
-        writer.append("MOV AX, @resultado");
-        writer.append("\n");
-        writer.append("MOV BX, @coleccion");
-        writer.append("\n");
-        writer.append("MOV @resultado, [BX+AX]");
-        writer.append("\n");
-        writer.append("RET");
-        writer.append("\n\n");
-
-        writer.append("_get_offset:");
-        writer.append("\n");
-        writer.append("MOV AX, @indice");//pongo indice en AX
-        writer.append("\n");
-        writer.append("CMP AX, 0");
-        writer.append("\n");
-        writer.append("JL error_indice"); //indice negativo
-        writer.append("\n");
-        writer.append("CMP AX, [@coleccion]"); //comparo con tamaño
-        writer.append("\n");
-        writer.append("JG error_indice"); // indice mayor a tañano de la coleccion
-        writer.append("\n");
-        writer.append("MUL AX, @tipo"); //calculo el offset
-        writer.append("\n");
-        writer.append("MOV @resultado, AX"); //retorno el resultado
-        writer.append("\n");
-        writer.append("RET");
-        writer.append("\n\n");
+//        writer.append("_length:");
+//        writer.append("\n");
+//        writer.append("MOV AX, [@coleccion]");
+//        writer.append("\n");
+//        writer.append("MOV @resultado, AX");
+//        writer.append("\n");
+//        writer.append("RET");
+//        writer.append("\n\n");
+//
+//        writer.append("_first:");
+//        writer.append("\n");
+//        writer.append("MOV AX, [@coleccion]");
+//        writer.append("\n");
+//        writer.append("MOV @resultado, AX");
+//        writer.append("\n");
+//        writer.append("RET");
+//        writer.append("\n\n");
+//
+//        writer.append("_last:");
+//        writer.append("\n");
+//        writer.append("MOV AX, [@coleccion]");
+//        writer.append("\n");
+//        writer.append("MOV @resultado, AX");
+//        writer.append("\n");
+//        writer.append("RET");
+//        writer.append("\n\n");
+//
+//        writer.append("_elemento:");
+//        writer.append("\n");
+//        writer.append("CALL _get_offset");
+//        writer.append("\n");
+//        writer.append("MOV AX, @resultado");
+//        writer.append("\n");
+//        writer.append("MOV BX, @coleccion");
+//        writer.append("\n");
+//        writer.append("MOV @resultado, [BX+AX]");
+//        writer.append("\n");
+//        writer.append("RET");
+//        writer.append("\n\n");
+//
+//        writer.append("_get_offset:");
+//        writer.append("\n");
+//        writer.append("MOV AX, @indice");//pongo indice en AX
+//        writer.append("\n");
+//        writer.append("CMP AX, 0");
+//        writer.append("\n");
+//        writer.append("JL error_indice"); //indice negativo
+//        writer.append("\n");
+//        writer.append("CMP AX, [@coleccion]"); //comparo con tamaño
+//        writer.append("\n");
+//        writer.append("JG error_indice"); // indice mayor a tañano de la coleccion
+//        writer.append("\n");
+//        writer.append("MUL AX, @tipo"); //calculo el offset
+//        writer.append("\n");
+//        writer.append("MOV @resultado, AX"); //retorno el resultado
+//        writer.append("\n");
+//        writer.append("RET");
+//        writer.append("\n\n");
 
         writer.append("start:");
         writer.append("\n\n");
