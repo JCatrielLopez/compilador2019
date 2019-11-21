@@ -8,10 +8,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.fusesource.jansi.AnsiConsole;
 import parser.Parser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 class Compiler {
 
@@ -100,14 +97,22 @@ class Compiler {
         AssemblerGen.translate(assembler_path);
 
         // Genero el archivo exe
-        ProcessBuilder builder;
-        Process p;
 
-        builder = new ProcessBuilder("cmd.exe", "/c", "\\masm32\\bin\\ml /c /Zd /coff" + assembler_path);
-        p = builder.start();
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "\\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
+        builder.redirectErrorStream(true);
+        Process p = builder.start();
+        BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        String line;
+        while (true) {
+          line = r.readLine();
+          if (line == null) {
+            break;
+          }
+          System.out.println(line);
+        }
 
-        builder.command("cmd.exe /c \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE" + obj_path);
-        p = builder.start();
+//        builder = new ProcessBuilder("cmd.exe /c \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE " + obj_path);;
+//        p = builder.start();
       }
     }
 
