@@ -291,9 +291,6 @@ public final class AssemblerGen {
 
         StringBuilder instructions = new StringBuilder();
         AdminRegistros ar = AdminRegistros.getInstance();
-        //ar.imp();
-        //System.out.println("-----------------------------");
-        //System.out.println("Terceto: "+t.toString());
 
         String reg_A = "";
         String reg_B = "";
@@ -507,7 +504,6 @@ public final class AssemblerGen {
                 break;
             case ":=":
                 if(tipo_op2.equals("variable")) { //valor a asignar en variable
-
                     reg_B = ar.getRegBC(size);
                     instructions.append("MOV ")
                             .append(reg_B)
@@ -521,11 +517,30 @@ public final class AssemblerGen {
                     reg_B =  getOP(t.getOperando2());
                     ar.free(reg_B);
                 }
-                instructions.append("MOV ")
-                        .append(reg_A)
-                        .append(", ")
-                        .append(reg_B)
-                        .append("\n");
+
+                if (!SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("COLECCION")) {
+                    instructions.append("MOV ")
+                            .append(reg_A)
+                            .append(", ")
+                            .append(reg_B)
+                            .append("\n");
+                } else {
+                    reg_A = ar.getRegAD(32);
+                    instructions.append("LEA ")
+                            .append(reg_A)
+                            .append(", ")
+                            .append("[" + getOP(t.getOperando1()) + "]")
+                            .append("\n")
+                            .append("MOV @coleccion, ")
+                            .append(reg_A)
+                            .append("MOV @tipo, ")
+                            .append(size / 8)
+                            .append("\n")
+                            .append("MOV @indice, 1");
+
+                    instructions.append("CALL _rowing");
+                }
+
 
                 break;
             case "PRINT":
@@ -545,6 +560,7 @@ public final class AssemblerGen {
                             .append(operando)
                             .append(", addr ")
                             .append(operando)
+
                             .append(", MB_OK")
                             .append("\n");
 
@@ -570,9 +586,18 @@ public final class AssemblerGen {
                 instructions.append("JL error_negativo")
                         .append("\n");
                 //si no es negativo realizo la conversion
-                instructions.append("CWDE ")
-                        .append("\n");
-                t.setRegister("E"+reg_A);
+
+                reg_B = ar.getRegAD(32);
+                instructions.append("MOV ")
+                        .append(reg_B)
+                        .append(", 0")
+                        .append("\n")
+                        .append("MOV ")
+                        .append(reg_B.substring(1))
+                        .append(", ")
+                        .append(reg_A);
+
+                t.setRegister(reg_B);
                 break;
         }
 

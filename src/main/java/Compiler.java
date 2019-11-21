@@ -84,6 +84,7 @@ class Compiler {
 
       if (cmd.hasOption("c")) {
         String source_name = FilenameUtils.removeExtension(source_path);
+          String path = FilenameUtils.getPath(source_path);
         String tercetos_path = source_name + ".t";
         String assembler_path = source_name + ".asm";
         String obj_path = source_name + ".obj";
@@ -97,44 +98,34 @@ class Compiler {
         AssemblerGen.translate(assembler_path);
 
         // Genero el archivo exe
-
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "\\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd", path, "\\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
         builder.redirectErrorStream(true);
+
         Process p = builder.start();
+
         BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        String line;
-        while (true) {
-          line = r.readLine();
-          if (line == null) {
-            break;
-          }
+        String line = "";
+
+        while (line != null) {
           System.out.println(line);
+          line = r.readLine();
         }
 
-//        builder = new ProcessBuilder("cmd.exe /c \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE " + obj_path);;
-//        p = builder.start();
+        builder.command("cmd.exe", "/c", "cd", path, "\\masm32\\bin\\Link /SUBSYSTEM:CONSOLE", obj_path);
+        p = builder.start();
+        r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+        line = "";
+
+        while (line != null) {
+          System.out.println(line);
+          line = r.readLine();
+        }
       }
     }
 
     if (cmd.hasOption("ts")) SymbolTable.print();
 
     AnsiConsole.systemUninstall();
-  }
-
-  private static void print_help() {
-    System.out.println("Usage: java -jar COMPILADOR [OPTIONS] (-i SOURCE_FILE | -h)\n");
-    System.out.println("Compilador para Diseño de Compiladores 2019");
-    System.out.println("Velez, Ezequiel\nLopez, Catriel\n");
-    System.out.println(String.format("%6s %s %-30s", "Option", " ", "Description"));
-    System.out.println(String.format("%6s %s %-30s", "-i", " ", "Input file."));
-    System.out.println(
-            String.format("%6s %s %-30s", "-al", " ", "Imprime informacion del analisis lexico."));
-    System.out.println(
-            String.format("%6s %s %-30s", "-as", " ", "Imprime informacion del analisis sintactico."));
-    System.out.println(
-            String.format(
-                    "%6s %s %-30s", "-g", " ", "Imprime informacion de la generacion de assembler."));
-    System.out.println(String.format("%6s %s %-30s", "-ts", " ", "Imprime la tabla de simbolos."));
-    System.out.println(String.format("%6s %s %-30s", "-h", " ", "Imprime informacion de ayuda."));
   }
 }
