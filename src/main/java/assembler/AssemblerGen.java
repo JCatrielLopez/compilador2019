@@ -153,6 +153,7 @@ public final class AssemblerGen {
             }
         }
 
+
         //variables auxiliares
         writer.append("\n");
         writer.append(";Variables predefinidas. \n");
@@ -257,10 +258,6 @@ public final class AssemblerGen {
         writer.append("\n");
         writer.append("RET");
         writer.append("\n\n");
-
-        //TODO aca van las funciones predefinidas first, last, leght, (acceder a un elemento coleccion?)
-        //TODO Generar assembler para las funciones FIRST, LENGTH y LAST.
-
 
         writer.append("start:");
         writer.append("\n\n");
