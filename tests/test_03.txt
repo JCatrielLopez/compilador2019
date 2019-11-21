@@ -1,0 +1,34 @@
+int indice_if;
+int indice_while;
+int a[4];
+
+begin
+
+    indice_if := 3;
+    if (indice_if > 0)
+        begin
+            print(indice_if);
+        end;
+    end_if;
+
+    indice_while := 3;
+
+    a[0] := 0;
+    a[1] := 0;
+    a[2] := 0;
+    a[3] := 0;
+
+    while (indice_while >= -1) do
+        begin
+            a[indice_while] := 2;
+            print(indice_while);
+            indice_while := indice_while - 1;
+        end;
+    end;
+
+    print(a.first());
+    print(a.length());
+    print(a.last());
+
+end;
+

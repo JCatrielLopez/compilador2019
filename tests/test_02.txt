@@ -1,0 +1,4 @@
+/+ Variables y colecciones redeclaradas +/
+int x;
+int y;
+int x;

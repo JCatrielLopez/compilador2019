@@ -1,7 +1,0 @@
-int z,a,b,d,c;
-ulong x,y;
-
-begin
-    x:=5+1;
-
-end;

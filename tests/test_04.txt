@@ -1,0 +1,18 @@
+int x;
+ulong y;
+
+begin
+    x := 0;
+    y := 1;
+
+    x := x + y;
+
+    if (x == 1)
+        begin
+            print(x);
+        end;
+    end_if;
+
+    x := -15;
+    y := x;
+end;
