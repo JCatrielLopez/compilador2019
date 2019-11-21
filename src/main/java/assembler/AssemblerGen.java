@@ -143,6 +143,7 @@ public final class AssemblerGen {
 
         writer.append(".data");
         writer.append("\n\n");
+        writer.append(";Datos del programa. \n");
         String declaration = "";
         for (String s : SymbolTable.keys()) {
             declaration = declare(s);
@@ -152,7 +153,29 @@ public final class AssemblerGen {
             }
         }
 
-        writer.append("ConvError db \"Perdida de informacion en conversion.\", 0");
+        //variables auxiliares
+        writer.append("\n");
+        writer.append(";Variables predefinidas. \n");
+        writer.append("@resultado dw ?")
+            .append("\n")
+            .append("@coleccion dw ?")
+            .append("\n")
+            .append("@indice dw ?")
+            .append("\n")
+            .append("@tipo dw ?")
+            .append("\n")
+            .append("@tempEAX dd ?")
+            .append("\n")
+            .append("@tempEBX dd ?")
+            .append("\n")
+            .append("@tempECX dd ?")
+            .append("\n")
+            .append("@tempEDX dd ?")
+            .append("\n");
+
+        writer.append("ConvError db \"Error, perdida de informacion en conversion.\", 0");
+        writer.append("\n");
+        writer.append("IndiceError db \"Error, indice fuera de los limites de la coleccion.\", 0");
         writer.append("\n\n");
 
         // Codigo
@@ -160,15 +183,85 @@ public final class AssemblerGen {
         writer.append(".code");
         writer.append("\n\n");
 
-        writer.append("negativo:");
+        writer.append("error_negativo:");
         writer.append("\n");
         writer.append("invoke MessageBox, NULL, addr ConvError, addr ConvError, MB_OK");
         writer.append("\n");
         writer.append("invoke ExitProcess, 0");
         writer.append("\n\n");
 
+        writer.append("error_indice:");
+        writer.append("\n");
+        writer.append("invoke MessageBox, NULL, addr IndiceError, addr IndiceError, MB_OK");
+        writer.append("\n");
+        writer.append("invoke ExitProcess, 0");
+        writer.append("\n\n");
+
+        //AdminRegistros ar = AdminRegistros.getInstance();//TODO para mi esto genera conflictos xq no sabe q registro esta disponible y le pisa el contenido
+        //funciones predefinidas
+        writer.append("_length:");
+        writer.append("\n");
+        writer.append("MOV AX, [@coleccion]");
+        writer.append("\n");
+        writer.append("MOV @resultado, AX");
+        writer.append("\n");
+        writer.append("RET");
+        writer.append("\n\n");
+
+        writer.append("_first:");
+        writer.append("\n");
+        writer.append("MOV AX, [@coleccion]");
+        writer.append("\n");
+        writer.append("MOV @resultado, AX");
+        writer.append("\n");
+        writer.append("RET");
+        writer.append("\n\n");
+
+        writer.append("_last:");
+        writer.append("\n");
+        writer.append("MOV AX, [@coleccion]");
+        writer.append("\n");
+        writer.append("MOV @resultado, AX");
+        writer.append("\n");
+        writer.append("RET");
+        writer.append("\n\n");
+
+        writer.append("_elemento:");
+        writer.append("\n");
+        writer.append("CALL _get_offset");
+        writer.append("\n");
+        writer.append("MOV AX, @resultado");
+        writer.append("\n");
+        writer.append("MOV BX, @coleccion");
+        writer.append("\n");
+        writer.append("MOV @resultado, [BX+AX]");
+        writer.append("\n");
+        writer.append("RET");
+        writer.append("\n\n");
+
+        writer.append("_get_offset:");
+        writer.append("\n");
+        writer.append("MOV AX, @indice");//pongo indice en AX
+        writer.append("\n");
+        writer.append("CMP AX, 0");
+        writer.append("\n");
+        writer.append("JL error_indice"); //indice negativo
+        writer.append("\n");
+        writer.append("CMP AX, [@coleccion]"); //comparo con tamaño
+        writer.append("\n");
+        writer.append("JG error_indice"); // indice mayor a tañano de la coleccion
+        writer.append("\n");
+        writer.append("MUL AX, @tipo"); //calculo el offset
+        writer.append("\n");
+        writer.append("MOV @resultado, AX"); //retorno el resultado
+        writer.append("\n");
+        writer.append("RET");
+        writer.append("\n\n");
+
         //TODO aca van las funciones predefinidas first, last, leght, (acceder a un elemento coleccion?)
         //TODO Generar assembler para las funciones FIRST, LENGTH y LAST.
+
+
         writer.append("start:");
         writer.append("\n\n");
 
@@ -440,7 +533,8 @@ public final class AssemblerGen {
                 Token token = SymbolTable.getLex(t.getOperando1());
                 if(!token.getDescription().equals("CADENA")){
                     if(!token.getAttr("use").equals("COLECCION")){
-                        instructions.append("invoke printf, cfm$(\"%. %d\\n\"), "+ getOP(t.getOperando1()));
+                        instructions.append("invoke printf, cfm$(\"%. %d\\n\"), "+ getOP(t.getOperando1()))
+                                    .append("\n");
                     }else {//TODO print coleccion
 
                     }
@@ -459,7 +553,7 @@ public final class AssemblerGen {
                 break;
             case "_CONV":
                 if(tipo_op1.equals("variable")){ // si es variable la traigo a reg
-                    reg_A = ar.getRegBC(16);
+                    reg_A = ar.getRegBC(16); //TODO creo q CWDE solo funciona si el registro es AX
                     instructions.append("MOV ")
                             .append(reg_A)
                             .append(", ")
@@ -474,7 +568,7 @@ public final class AssemblerGen {
                         .append(", ")
                         .append("0")
                         .append("\n");
-                instructions.append("JL negativo")
+                instructions.append("JL error_negativo")
                         .append("\n");
                 //si no es negativo realizo la conversion
                 instructions.append("CWDE ")
