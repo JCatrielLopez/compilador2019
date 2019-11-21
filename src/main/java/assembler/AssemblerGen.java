@@ -506,6 +506,7 @@ public final class AssemblerGen {
                 break;
             case ":=":
                 if(tipo_op2.equals("variable")) { //valor a asignar en variable
+
                     reg_B = ar.getRegBC(size);
                     instructions.append("MOV ")
                             .append(reg_B)

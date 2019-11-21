@@ -100,10 +100,14 @@ class Compiler {
         AssemblerGen.translate(assembler_path);
 
         // Genero el archivo exe
+        ProcessBuilder builder;
         Process p;
 
-        p = Runtime.getRuntime().exec("\\masm32\\bin\\ml /c /Zd /coff " + assembler_path);
-        p = Runtime.getRuntime().exec("\\masm32\\bin\\Link /SUBSYSTEM:CONSOLE" + obj_path);
+        builder = new ProcessBuilder("cmd.exe", "/c", "\\masm32\\bin\\ml /c /Zd /coff" + assembler_path);
+        p = builder.start();
+
+        builder.command("cmd.exe /c \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE" + obj_path);
+        p = builder.start();
       }
     }
 
