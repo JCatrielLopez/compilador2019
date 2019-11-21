@@ -23,12 +23,16 @@ begin
             a[indice_while] := 2;
             print(indice_while);
             indice_while := indice_while - 1;
-        end;
-    end;
+        end;;
 
-    print(a.first());
-    print(a.length());
-    print(a.last());
+    indice_if := a.first();
+    print(indice_if);
+
+    indice_if := a.length();
+    print(indice_if);
+
+    indice_if := a.last();
+    print(indice_if);
 
 end;
 

@@ -15,7 +15,8 @@ begin
     x := a[0];
 
     print(c);
-    print(d.first);
+    x := d.first();
+    print(x);
 
     b[2] := 5;
     a[2] := b[2];

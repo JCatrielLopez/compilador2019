@@ -84,7 +84,7 @@ class Compiler {
 
       if (cmd.hasOption("c")) {
         String source_name = FilenameUtils.removeExtension(source_path);
-          String path = FilenameUtils.getPath(source_path);
+        String path = FilenameUtils.getFullPath(source_path);
         String tercetos_path = source_name + ".t";
         String assembler_path = source_name + ".asm";
         String obj_path = source_name + ".obj";
