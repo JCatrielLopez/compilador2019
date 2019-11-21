@@ -133,6 +133,25 @@ MOV EAX, @tempEAX
 MOV EAX, @tempEBX
 RET
 
+_rowing:
+MOV @tempEAX, EAX             ;Posicion del indice donde voy a asignar el @valor_asignacion
+MOV @tempEBX, EBX             ;Contador de posiciones. Puede que este de mas, no se si puedo usar una variable en el .while
+MOV EAX, @indice
+MOV EBX, @coleccion
+MOV @indice, [EBX]
+
+r_while:
+CMP @indice, 0
+JL r_end
+_call offset
+MOV ECX, @offset
+MOV [ECX], @valor_asignacion
+SUB @indice, 1
+JUMP r_while
+
+r_end:
+RET
+
 start:
 
 ;Seteamos los tamaños de las colecciones.
