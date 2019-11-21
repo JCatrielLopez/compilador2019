@@ -157,13 +157,21 @@ public final class AssemblerGen {
         //variables auxiliares
         writer.append("\n");
         writer.append(";Variables predefinidas. \n");
-        writer.append("@resultado dw ?")
+        writer.append("@resultado_16 dw ?")
             .append("\n")
-            .append("@coleccion dw ?")
+            .append("@resultado_32 dd ?")
+            .append("\n")
+            .append("@coleccion dd ?")
             .append("\n")
             .append("@indice dw ?")
             .append("\n")
-            .append("@tipo dw ?")
+            .append("@tipo dd ?")
+            .append("\n")
+            .append("@offset dd ?")
+            .append("\n")
+            .append("@valor_asignacion_16 dw ?")
+            .append("\n")
+            .append("@valor_asignacion_32 dd ?")
             .append("\n")
             .append("@tempEAX dd ?")
             .append("\n")
@@ -198,66 +206,142 @@ public final class AssemblerGen {
         writer.append("invoke ExitProcess, 0");
         writer.append("\n\n");
 
-        //AdminRegistros ar = AdminRegistros.getInstance();
-        //funciones predefinidas
-//        writer.append("_length:");
-//        writer.append("\n");
-//        writer.append("MOV AX, [@coleccion]");
-//        writer.append("\n");
-//        writer.append("MOV @resultado, AX");
-//        writer.append("\n");
-//        writer.append("RET");
-//        writer.append("\n\n");
-//
-//        writer.append("_first:");
-//        writer.append("\n");
-//        writer.append("MOV AX, [@coleccion]");
-//        writer.append("\n");
-//        writer.append("MOV @resultado, AX");
-//        writer.append("\n");
-//        writer.append("RET");
-//        writer.append("\n\n");
-//
-//        writer.append("_last:");
-//        writer.append("\n");
-//        writer.append("MOV AX, [@coleccion]");
-//        writer.append("\n");
-//        writer.append("MOV @resultado, AX");
-//        writer.append("\n");
-//        writer.append("RET");
-//        writer.append("\n\n");
-//
-//        writer.append("_elemento:");
-//        writer.append("\n");
-//        writer.append("CALL _get_offset");
-//        writer.append("\n");
-//        writer.append("MOV AX, @resultado");
-//        writer.append("\n");
-//        writer.append("MOV BX, @coleccion");
-//        writer.append("\n");
-//        writer.append("MOV @resultado, [BX+AX]");
-//        writer.append("\n");
-//        writer.append("RET");
-//        writer.append("\n\n");
-//
-//        writer.append("_get_offset:");
-//        writer.append("\n");
-//        writer.append("MOV AX, @indice");//pongo indice en AX
-//        writer.append("\n");
-//        writer.append("CMP AX, 0");
-//        writer.append("\n");
-//        writer.append("JL error_indice"); //indice negativo
-//        writer.append("\n");
-//        writer.append("CMP AX, [@coleccion]"); //comparo con tamaño
-//        writer.append("\n");
-//        writer.append("JG error_indice"); // indice mayor a tañano de la coleccion
-//        writer.append("\n");
-//        writer.append("MUL AX, @tipo"); //calculo el offset
-//        writer.append("\n");
-//        writer.append("MOV @resultado, AX"); //retorno el resultado
-//        writer.append("\n");
-//        writer.append("RET");
-//        writer.append("\n\n");
+        writer.append("_length:")
+            .append("\n")
+            .append("MOV @tempEAX, EAX")
+            .append("\n")
+            .append("MOV @tempEBX, EBX")
+            .append("\n")
+            .append("MOV EAX, @coleccion")
+            .append("\n")
+            .append("MOV BX, [EAX]")
+            .append("\n")
+            .append("MOV @resultado_16, BX")
+            .append("\n")
+            .append("MOV EAX, @tempEAX")
+            .append("\n")
+            .append("MOV EBX, @tempEBX")
+            .append("\n")
+            .append("RET")
+            .append("\n\n");
+
+        writer.append("_first:")
+                .append("\n")
+                .append("MOV @tempEAX, EAX")
+                .append("\n")
+                .append("MOV @tempEBX, EBX")
+                .append("\n")
+                .append("MOV EAX, @coleccion")
+                .append("\n")
+                .append("ADD EAX, @tipo")
+                .append("\n")
+                .append("MOV EBX, [EAX]")
+                .append("\n")
+                .append("MOV @resultado_16, BX")
+                .append("\n")
+                .append("MOV @resultado_32, EBX")
+                .append("\n")
+                .append("MOV EAX, @tempEAX")
+                .append("\n")
+                .append("MOV EBX, @tempEBX")
+                .append("\n")
+                .append("RET")
+                .append("\n\n");
+
+        writer.append("_last:")
+                .append("\n")
+                .append("MOV @tempEAX, EAX")
+                .append("\n")
+                .append("MOV @tempEBX, EBX")
+                .append("\n")
+                .append("MOV EAX, @coleccion")
+                .append("\n")
+                .append("MOV EBX, 0")
+                .append("\n")
+                .append("MOV BX, [EAX]")
+                .append("\n")
+                .append("IMUL EBX, @tipo")
+                .append("\n")
+                .append("ADD EAX, EBX")
+                .append("\n")
+                .append("MOV EBX, [EAX]")
+                .append("\n")
+                .append("MOV @resultado_16, BX")
+                .append("\n")
+                .append("MOV @resultado_32, EBX")
+                .append("\n")
+                .append("MOV EAX, @tempEAX")
+                .append("\n")
+                .append("MOV EBX, @tempEBX")
+                .append("\n")
+                .append("RET")
+                .append("\n\n");
+
+        writer.append("_element:")
+                .append("\n")
+                .append("MOV @tempEAX, EAX")
+                .append("\n")
+                .append("MOV @tempEBX, EBX")
+                .append("\n")
+                .append("CALL _offset")
+                .append("\n")
+                .append("MOV EAX, @offset")
+                .append("\n")
+                .append("MOV EBX, [EAX]")
+                .append("\n")
+                .append("MOV @resultado_16, BX")
+                .append("\n")
+                .append("MOV @resultado_32, EBX")
+                .append("\n")
+                .append("MOV EAX, @tempEAX")
+                .append("\n")
+                .append("MOV EBX, @tempEBX")
+                .append("\n")
+                .append("RET")
+                .append("\n\n");
+
+        writer.append("_offset:")
+                .append("\n")
+                .append("MOV @tempEAX, EAX")
+                .append("\n")
+                .append("MOV @tempEBX, EBX")
+                .append("\n")
+                .append("MOV @tempEDX, EDX")
+                .append("\n")
+                .append("MOV EAX, @coleccion")
+                .append("\n")
+                .append("MOV EDX, 0")
+                .append("\n")
+                .append("MOV DX, @indice")
+                .append("\n")
+                .append("CMP DX, 0  ")
+                .append("\n")
+                .append("JL error_indice")
+                .append("\n")
+                .append("ADD DX, 1")
+                .append("\n")
+                .append("MOV EBX, 0")
+                .append("\n")
+                .append("MOV BX, [EAX]")
+                .append("\n")
+                .append("CMP DX, BX")
+                .append("\n")
+                .append("JG error_indice")
+                .append("\n")
+                .append("IMUL EDX, @tipo")
+                .append("\n")
+                .append("ADD EAX, EDX")
+                .append("\n")
+                .append("MOV @offset, EAX")
+                .append("\n")
+                .append("MOV EAX, @tempEAX")
+                .append("\n")
+                .append("MOV EBX, @tempEBX")
+                .append("\n")
+                .append("MOV EDX, @tempEDX")
+                .append("\n")
+                .append("RET")
+                .append("\n\n");
 
         writer.append("start:");
         writer.append("\n\n");
