@@ -198,7 +198,6 @@ public final class AssemblerGen {
         writer.append("invoke ExitProcess, 0");
         writer.append("\n\n");
 
-        //AdminRegistros ar = AdminRegistros.getInstance();//TODO para mi esto genera conflictos xq no sabe q registro esta disponible y le pisa el contenido
         //funciones predefinidas
         writer.append("_length:");
         writer.append("\n");
@@ -586,9 +585,18 @@ public final class AssemblerGen {
                 instructions.append("JL error_negativo")
                         .append("\n");
                 //si no es negativo realizo la conversion
-                instructions.append("CWDE ")
-                        .append("\n");
-                t.setRegister("E"+reg_A);
+
+                reg_B = ar.getRegAD(32);
+                instructions.append("MOV ")
+                        .append(reg_B)
+                        .append(", 0")
+                        .append("\n")
+                        .append("MOV ")
+                        .append(reg_B.substring(1))
+                        .append(", ")
+                        .append(reg_A);
+
+                t.setRegister(reg_B);
                 break;
         }
 
