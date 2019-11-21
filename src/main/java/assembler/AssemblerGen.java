@@ -2,6 +2,7 @@ package assembler;
 
 import globals.SymbolTable;
 import lexer.Token;
+
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
@@ -342,6 +343,38 @@ public final class AssemblerGen {
                 .append("\n")
                 .append("RET")
                 .append("\n\n");
+
+
+        writer.append("_rowing:")
+                .append("MOV @tempEAX, EAX\n")
+                .append("MOV @tempEBX, EBX\n")
+                .append("MOV @tempECX, ECX\n")
+                .append("CALL _length\n")
+                .append("MOV AX, @resultado_16")
+                .append("SUB AX, 1\n")
+                .append("MOV EBX, @coleccion\n")
+                .append("MOV @indice, AX\n")
+                .append("r_while:\n")
+                .append("CMP @indice, 0\n")
+                .append("JL r_end\n")
+                .append("CALL _offset\n")
+                .append("MOV ECX, @offset\n")
+                .append("CMP @tipo, 2\n")
+                .append("JNE R_asignacion32\n")
+                .append("MOV AX, @valor_asignacion_16\n")
+                .append("MOV [ECX], AX\n")
+                .append("JMP R_out\n")
+                .append("R_asignacion32:\n")
+                .append("MOV EAX, @valor_asignacion_32\n")
+                .append("MOV [ECX], EAX\n")
+                .append("R_out:\n")
+                .append("SUB @indice, 1\n")
+                .append("JMP r_while\n")
+                .append("r_end:\n")
+                .append("MOV EAX, @tempEAX\n")
+                .append("MOV EBX, @tempEBX\n")
+                .append("MOV ECX, @tempECX\n")
+                .append("RET\n");
 
         writer.append("start:");
         writer.append("\n\n");
