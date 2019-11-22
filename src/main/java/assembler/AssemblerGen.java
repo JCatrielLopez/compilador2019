@@ -620,15 +620,44 @@ public final class AssemblerGen {
                             .append("\n");
                 break;
             case ":=":
+
                 if(tipo_op2.equals("variable")) { //valor a asignar en variable
+                  if (!SymbolTable.getLex(getOP(t.getOperando1())).getAttr("use").equals("COLECCION")) {
                     reg_B = ar.getRegBC(size);
-                    instructions.append("MOV ")
-                            .append(reg_B)
-                            .append(", ")
-                            .append(getOP(t.getOperando2()))
-                            .append("\n");
+                    instructions
+                        .append("MOV ")
+                        .append(reg_B)
+                        .append(", ")
+                        .append(getOP(t.getOperando2()))
+                        .append("\n");
                     reg_A = getOP(t.getOperando1());
                     ar.free(reg_B);
+                  }
+                  else {
+                      instructions.append("MOV @coleccion, ")
+                              .append(getOP(t.getOperando1()))
+                              .append("\n")
+                              .append("MOV @indice, ")
+                              .append(t.getOperando1(), t.getOperando1().indexOf("["), t.getOperando1().lastIndexOf("]"))
+                              .append("\n")
+                              .append("MOV @tipo, ")
+                              .append(size/8)
+                              .append("\n");
+                      instructions.append("call _offset\n");
+
+                      reg_B = ar.getRegBC(16);
+
+                      instructions.append("MOV ")
+                              .append(reg_B)
+                              .append(", @offset");
+
+                      instructions.append("MOV ")
+                              .append("[")
+                              .append(reg_B)
+                              .append("], ")
+                              .append(getOP(t.getOperando2()));
+                  }
+
                 }else{//valor a asignar en registro
                     reg_A =  getOP(t.getOperando1());
                     reg_B =  getOP(t.getOperando2());
