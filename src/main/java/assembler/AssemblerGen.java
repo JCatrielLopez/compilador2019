@@ -716,6 +716,55 @@ public final class AssemblerGen {
 
                 t.setRegister(reg_B);
                 break;
+
+            case "call":
+                switch (t.getOperando1()) {
+                    case "_first":
+                        instructions.append("MOV @coleccion, ")
+                                .append(getOP(t.getOperando2()))
+                                .append("\n");
+
+                        instructions.append("MOV @tipo, ")
+                                .append(size / 8)
+                                .append("\n");
+
+                        instructions.append("call _first\n");
+                        break;
+                    case "_length":
+                        instructions.append("MOV @coleccion, ")
+                                .append(getOP(t.getOperando2()))
+                                .append("\n");
+                        instructions.append("call _length\n");
+                        break;
+                    case "_last":
+                        instructions.append("MOV @coleccion, ")
+                                .append(getOP(t.getOperando2()))
+                                .append("\n");
+
+                        instructions.append("MOV @tipo, ")
+                                .append(size / 8)
+                                .append("\n");
+
+                        instructions.append("call _last\n");
+                        break;
+                }
+
+                reg_A = ar.getRegAD(size);
+
+                if (size == 16) {
+                    instructions.append("MOV ")
+                            .append("@resultado_16, ")
+                            .append(reg_A)
+                            .append("\n");
+                } else {
+                    instructions.append("MOV ")
+                            .append("@resultado_32, ")
+                            .append(reg_A)
+                            .append("\n");
+                }
+
+                t.setRegister(reg_A);
+                break;
         }
 
         return instructions.toString();
