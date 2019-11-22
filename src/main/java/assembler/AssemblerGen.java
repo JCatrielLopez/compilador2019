@@ -60,12 +60,14 @@ public final class AssemblerGen {
             if (op1 != null) {
                 Token token = SymbolTable.getLex(op1);
                 if (token != null) { // Reescribo los id de las variables.
-                    if (token.getAttr("use") != null)
-                        if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION")){
-                            t.setOperando1("_" + op1);}
+                    if (token.getAttr("use") != null) {
+                        if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION")) {
+                            t.setOperando1("_" + op1);
+                        }
+                    }
                 } else {
-                    if ((!op1.startsWith("[")) && op1.endsWith("]")){
-                        t.setOperando1("_" + op1);}
+                    if (!op1.startsWith("[") && !op1.startsWith("_"))
+                        t.setOperando1("_" + op1);
                 }
             }
 
@@ -78,7 +80,7 @@ public final class AssemblerGen {
                         if (token.getAttr("use").equals("VARIABLE") || token.getAttr("use").equals("COLECCION"))
                             t.setOperando2("_" + op2);
                 } else {
-                    if (!op2.startsWith("[") && op2.endsWith("]"))
+                    if (!op2.startsWith("["))
                         t.setOperando2("_" + op2);
                 }
             }
@@ -107,12 +109,17 @@ public final class AssemblerGen {
                     .getRegister();
         }
 
+        if (operando.endsWith("]")){
+            return operando.substring(0, operando.lastIndexOf("["));
+        }
+
         Token token = SymbolTable.getLex(operando);
         if (token != null) {
             String uso = token.getAttr("use");
             if (uso != null)
                 switch (uso) {
                     case "VARIABLE":
+                    case "COLECCION":
                         return operando;
                     case "CTE NEG":
                     case "CTE POS":
@@ -387,7 +394,7 @@ public final class AssemblerGen {
                 writer.append("\n");
             }
         }
-        writer.append(";Fin de seteo de tamaños. \n");
+        writer.append(";Fin de seteo de tamaños. \n\n");
 
         for (Terceto t : AdminTercetos.list()) {
             writer.append(getCode(t));
@@ -411,6 +418,8 @@ public final class AssemblerGen {
 
         String reg_A = "";
         String reg_B = "";
+        String reg1 = ""; //usado para colecciones
+        String reg2 = ""; //usado para colecciones
 
         String tipo_op1 = use(t.getOperando1());
         String tipo_op2 = use(t.getOperando2());
@@ -424,23 +433,41 @@ public final class AssemblerGen {
 
         switch (t.getOperacion()) {
             case "+":
+                if(tipo_op1.equals("coleccion"))
+                    reg1 = elemento_coleccion(t.getOperando1(), ar, size, instructions);
+                if (tipo_op2.equals("coleccion"))
+                    reg2 = elemento_coleccion(t.getOperando2(), ar, size, instructions);
+
                 if(tipo_op1.equals("variable")){ //primer operando variable
                     if(tipo_op2.equals("variable")) { //segundo operando variable
-                        reg_A = ar.getRegBC(size);
+                        reg_A = ar.getRegAD(size);
                         instructions.append("MOV ")
                                 .append(reg_A)
                                 .append(", ")
                                 .append(getOP(t.getOperando1()))
                                 .append("\n");
                         reg_B = getOP(t.getOperando2());
-                    }else { //segundo operando registro... opero sobre el segundo operando
-                        reg_A = getOP(t.getOperando2());
+                    }else { //segundo operando registro o coleccion... opero sobre el segundo operando
+                        if(tipo_op2.equals("coleccion")){
+                            reg_A = reg2;
+                        }else{
+                            reg_A = getOP(t.getOperando2());
+                        }
+
                         reg_B = getOP(t.getOperando1());
                     }
-                } else { //primer operando registro no importa lo q sea el segundo.. opero sobre el primero
-                    reg_A = getOP(t.getOperando1());
-                    reg_B = getOP(t.getOperando2());
-                    if(tipo_op2.equals("terceto")){//si ambos son terceto libero al segundo
+                } else { //primer operando registro o coleccion no importa lo q sea el segundo.. opero sobre el primero
+                    if(tipo_op1.equals("coleccion")){
+                        reg_A = reg1;
+                    }else{
+                        reg_A = getOP(t.getOperando1());
+                    }
+                    if(tipo_op2.equals("coleccion")){
+                        reg_B = reg2;
+                    }else{
+                        reg_B = getOP(t.getOperando2());;
+                    }
+                    if(tipo_op2.equals("terceto") || tipo_op2.equals("coleccion")){//si ambos son terceto o coleccion libero al segundo
                         ar.free(reg_B);
                     }
                 }
@@ -451,9 +478,13 @@ public final class AssemblerGen {
                         .append("\n");
 
                 t.setRegister(reg_A);
-
                 break;
             case "-":
+                if(tipo_op1.equals("coleccion"))
+                    reg1 = elemento_coleccion(t.getOperando1(), ar, size, instructions);
+                if (tipo_op2.equals("coleccion"))
+                    reg2 = elemento_coleccion(t.getOperando2(), ar, size, instructions);
+
                 if(tipo_op1.equals("variable")){ //primer operando variable
                     if(tipo_op2.equals("variable")) { //segundo operando variable
                         reg_A = ar.getRegBC(size);
@@ -463,20 +494,33 @@ public final class AssemblerGen {
                                 .append(getOP(t.getOperando1()))
                                 .append("\n");
                         reg_B = getOP(t.getOperando2());
-                    }else { //segundo operando registro...  ocupo nuevo reg, genero codigo sobre ese reg y libero el otro
+                    }else { //segundo operando registro o coleccion...  ocupo nuevo reg, genero codigo sobre ese reg y libero el otro
                         reg_A = ar.getRegBC(size);
                         instructions.append("MOV ")
                                 .append(reg_A)
                                 .append(", ")
                                 .append(getOP(t.getOperando1()))
                                 .append("\n");
-                        reg_B = getOP(t.getOperando2());
+                        if(tipo_op2.equals("coleccion")){
+                            reg_B = reg2;
+                        }else{
+                            reg_B = getOP(t.getOperando2());
+                        }
                         ar.free(reg_B);
                     }
-                } else { //primer operando registro no importa lo q sea el segundo.. opero sobre el primero
-                    reg_A = getOP(t.getOperando1());
-                    reg_B = getOP(t.getOperando2());
-                    if(tipo_op2.equals("terceto")){//si ambos son terceto libero al segundo
+                } else { //primer operando registro o coleccion  no importa lo q sea el segundo.. opero sobre el primero
+                    if(tipo_op1.equals("coleccion")){
+                        reg_A = reg1;
+                    }else{
+                        reg_A = getOP(t.getOperando1());
+                    }
+
+                    if(tipo_op2.equals("coleccion")){
+                        reg_B = reg2;
+                    }else{
+                        reg_B = getOP(t.getOperando2());
+                    }
+                    if(tipo_op2.equals("terceto") || tipo_op2.equals("coleccion")){//si ambos son terceto o coleccion libero al segundo
                         ar.free(reg_B);
                     }
                 }
@@ -490,6 +534,11 @@ public final class AssemblerGen {
 
                 break;
             case "/":
+                if(tipo_op1.equals("coleccion"))
+                    reg1 = elemento_coleccion(t.getOperando1(), ar, size, instructions);
+                if (tipo_op2.equals("coleccion"))
+                    reg2 = elemento_coleccion(t.getOperando2(), ar, size, instructions);
+
                 if(tipo_op1.equals("variable")){ //primer operando variable
                     if(tipo_op2.equals("variable")) { //segundo operando variable
                         reg_A = ar.getRegBC(size);
@@ -499,20 +548,33 @@ public final class AssemblerGen {
                                 .append(getOP(t.getOperando1()))
                                 .append("\n");
                         reg_B = getOP(t.getOperando2());
-                    }else { //segundo operando registro...  ocupo nuevo reg, genero codigo sobre ese reg y libero el otro
+                    }else { //segundo operando registro o coleccion...  ocupo nuevo reg, genero codigo sobre ese reg y libero el otro
                         reg_A = ar.getRegBC(size);
                         instructions.append("MOV ")
                                 .append(reg_A)
                                 .append(", ")
                                 .append(getOP(t.getOperando1()))
                                 .append("\n");
-                        reg_B = getOP(t.getOperando2());
+                        if(tipo_op2.equals("coleccion")){
+                            reg_B = reg2;
+                        }else{
+                            reg_B = getOP(t.getOperando2());
+                        }
                         ar.free(reg_B);
                     }
-                } else { //primer operando registro no importa lo q sea el segundo.. opero sobre el primero
-                    reg_A = getOP(t.getOperando1());
-                    reg_B = getOP(t.getOperando2());
-                    if(tipo_op2.equals("terceto")){//si ambos son terceto libero al segundo
+                } else { //primer operando registro o coleccion  no importa lo q sea el segundo.. opero sobre el primero
+                    if(tipo_op1.equals("coleccion")){
+                        reg_A = reg1;
+                    }else{
+                        reg_A = getOP(t.getOperando1());
+                    }
+
+                    if(tipo_op2.equals("coleccion")){
+                        reg_B = reg2;
+                    }else{
+                        reg_B = getOP(t.getOperando2());
+                    }
+                    if(tipo_op2.equals("terceto") || tipo_op2.equals("coleccion")){//si ambos son terceto o coleccion libero al segundo
                         ar.free(reg_B);
                     }
                 }
@@ -526,6 +588,11 @@ public final class AssemblerGen {
 
                 break;
             case "*":
+                if(tipo_op1.equals("coleccion"))
+                    reg1 = elemento_coleccion(t.getOperando1(), ar, size, instructions);
+                if (tipo_op2.equals("coleccion"))
+                    reg2 = elemento_coleccion(t.getOperando2(), ar, size, instructions);
+
                 if(tipo_op1.equals("variable")){ //primer operando variable
                     if(tipo_op2.equals("variable")) { //segundo operando variable
                         reg_A = ar.getRegAD(size);
@@ -535,25 +602,37 @@ public final class AssemblerGen {
                                 .append(getOP(t.getOperando1()))
                                 .append("\n");
                         reg_B = getOP(t.getOperando2());
-                    }else { //segundo operando registro... opero sobre el segundo operando
-                        reg_A = getOP(t.getOperando2());
+                    }else { //segundo operando registro o coleccion... opero sobre el segundo operando
+                        if(tipo_op2.equals("coleccion")){
+                            reg_A = reg2;
+                        }else{
+                            reg_A = getOP(t.getOperando2());
+                        }
+
                         reg_B = getOP(t.getOperando1());
                     }
-                } else { //primer operando registro no importa lo q sea el segundo.. opero sobre el primero
-                    reg_A = getOP(t.getOperando1());
-                    reg_B = getOP(t.getOperando2());
-                    if(tipo_op2.equals("terceto")){//si ambos son terceto libero al segundo
+                } else { //primer operando registro o coleccion no importa lo q sea el segundo.. opero sobre el primero
+                    if(tipo_op1.equals("coleccion")){
+                        reg_A = reg1;
+                    }else{
+                        reg_A = getOP(t.getOperando1());
+                    }
+                    if(tipo_op2.equals("coleccion")){
+                        reg_B = reg2;
+                    }else{
+                        reg_B = getOP(t.getOperando2());;
+                    }
+                    if(tipo_op2.equals("terceto") || tipo_op2.equals("coleccion")){//si ambos son terceto o coleccion libero al segundo
                         ar.free(reg_B);
                     }
                 }
                 instructions.append("IMUL ")
-                    .append(reg_A)
-                    .append(", ")
-                    .append(reg_B)
-                    .append("\n");
+                        .append(reg_A)
+                        .append(", ")
+                        .append(reg_B)
+                        .append("\n");
 
                 t.setRegister(reg_A);
-
                 break;
             case "BI":
                 String nroLabel = t.getOperando1().substring(1, t.getOperando1().length() - 1);
@@ -597,6 +676,11 @@ public final class AssemblerGen {
             case ">=":
             case "<>":
             case "==":
+                if(tipo_op1.equals("coleccion"))
+                    reg1 = elemento_coleccion(t.getOperando1(), ar, size, instructions);
+                if (tipo_op2.equals("coleccion"))
+                    reg2 = elemento_coleccion(t.getOperando2(), ar, size, instructions);
+
                 if(tipo_op1.equals("variable") && tipo_op2.equals("variable")){ //si ambos operandos estan en mem traer uno a reg
                     reg_A = ar.getRegBC(size);
                     instructions.append("MOV ")
@@ -607,12 +691,20 @@ public final class AssemblerGen {
                     ar.free(reg_A);
                     reg_B = getOP(t.getOperando2());
                 } else{ //si uno no esta en mem opero, y libero si corresponde
-                    reg_A = getOP(t.getOperando1());
-                    reg_B = getOP(t.getOperando2());
-                    if(tipo_op1.equals("terceto")){
+                    if(tipo_op1.equals("coleccion")){
+                        reg_A = reg1;
+                    }else{
+                        reg_A = getOP(t.getOperando1());
+                    }
+                    if(tipo_op2.equals("coleccion")){
+                        reg_B = reg2;
+                    }else{
+                        reg_B = getOP(t.getOperando2());;
+                    }
+                    if(tipo_op1.equals("terceto") || tipo_op1.equals("coleccion")){
                         ar.free(reg_A);
                     }
-                    if(tipo_op2.equals("terceto")){
+                    if(tipo_op2.equals("terceto")|| tipo_op1.equals("coleccion")){
                         ar.free(reg_B);
                     }
                 }
@@ -620,9 +712,10 @@ public final class AssemblerGen {
                             .append("\n");
                 break;
             case ":=":
+                if (tipo_op2.equals("coleccion"))
+                    reg2 = elemento_coleccion(t.getOperando2(), ar, size, instructions);
 
                 if(tipo_op2.equals("variable")) { //valor a asignar en variable
-                  if (!SymbolTable.getLex(getOP(t.getOperando1())).getAttr("use").equals("COLECCION")) {
                     reg_B = ar.getRegBC(size);
                     instructions
                         .append("MOV ")
@@ -630,47 +723,16 @@ public final class AssemblerGen {
                         .append(", ")
                         .append(getOP(t.getOperando2()))
                         .append("\n");
-                    reg_A = getOP(t.getOperando1());
-                    ar.free(reg_B);
-                  }
-                  else {
-                      instructions.append("MOV @coleccion, ")
-                              .append(getOP(t.getOperando1()))
-                              .append("\n")
-                              .append("MOV @indice, ")
-                              .append(t.getOperando1(), t.getOperando1().indexOf("["), t.getOperando1().lastIndexOf("]"))
-                              .append("\n")
-                              .append("MOV @tipo, ")
-                              .append(size/8)
-                              .append("\n");
-                      instructions.append("call _offset\n");
-
-                      reg_B = ar.getRegBC(16);
-
-                      instructions.append("MOV ")
-                              .append(reg_B)
-                              .append(", @offset");
-
-                      instructions.append("MOV ")
-                              .append("[")
-                              .append(reg_B)
-                              .append("], ")
-                              .append(getOP(t.getOperando2()));
-                  }
-
-                }else{//valor a asignar en registro
-                    reg_A =  getOP(t.getOperando1());
-                    reg_B =  getOP(t.getOperando2());
-                    ar.free(reg_B);
+                }else{  //valor a asignar en registro o coleccion
+                    if(tipo_op2.equals("coleccion")){
+                        reg_B = reg2;
+                    }else{
+                        reg_B = getOP(t.getOperando2());;
+                    }
                 }
-
-                if (!SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("COLECCION")) {
-                    instructions.append("MOV ")
-                            .append(reg_A)
-                            .append(", ")
-                            .append(reg_B)
-                            .append("\n");
-                } else {
+                //lado derecho variable o coleccion
+                if(tipo_op1.equals("coleccion")){ // elemento de una coleccion (coleccion[indice])
+                    //calcular offset y asignar
                     reg_A = ar.getRegAD(32);
                     instructions.append("LEA ")
                             .append(reg_A)
@@ -679,15 +741,50 @@ public final class AssemblerGen {
                             .append("\n")
                             .append("MOV @coleccion, ")
                             .append(reg_A)
+                            .append("\n")
                             .append("MOV @tipo, ")
                             .append(size / 8)
-                            .append("\n")
-                            .append("MOV @indice, 1");
-
-                    instructions.append("CALL _rowing");
+                            .append("\n");
+                    instructions.append("CALL _offset \n");
+                    instructions.append("MOV ")
+                                .append(reg_A)
+                                .append(", @offset")
+                                .append("\n");
+                    instructions.append("MOV ")
+                                .append("[")
+                                .append(reg_A)
+                                .append("], ")
+                                .append(reg_B)
+                                .append("\n");
+                }else{ // variable o rowing de coleccion
+                    if (!SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("COLECCION")) {//variable
+                        instructions.append("MOV ")
+                                .append(getOP(t.getOperando1()))
+                                .append(", ")
+                                .append(reg_B)
+                                .append("\n");
+                    }else{//rowing
+                        if (size == 16){
+                            instructions.append("MOV @valor_asignacion_16, "+reg_B+"\n");
+                        }else{
+                            instructions.append("MOV @valor_asignacion_32, "+reg_B+"\n");
+                        }
+                        reg_A = ar.getRegAD(32);
+                        instructions.append("LEA ")
+                                .append(reg_A)
+                                .append(", ")
+                                .append("[" + getOP(t.getOperando1()) + "]")
+                                .append("\n")
+                                .append("MOV @coleccion, ")
+                                .append(reg_A)
+                                .append("\n")
+                                .append("MOV @tipo, ")
+                                .append(size / 8)
+                                .append("\n");
+                        instructions.append("CALL _rowing\n");
+                    }
                 }
-
-
+                ar.free(reg_B);
                 break;
             case "PRINT":
                 Token token = SymbolTable.getLex(t.getOperando1());
@@ -695,8 +792,7 @@ public final class AssemblerGen {
                     if(!token.getAttr("use").equals("COLECCION")){
                         instructions.append("invoke printf, cfm$(\"%. %d\\n\"), "+ getOP(t.getOperando1()))
                                     .append("\n");
-                    }else {//TODO print coleccion
-
+                    }else {//TODO print coleccion for each
                     }
                 }else
                 {
@@ -713,17 +809,23 @@ public final class AssemblerGen {
                 }
                 break;
             case "_CONV":
+                if (tipo_op1.equals("coleccion"))
+                    reg1 = elemento_coleccion(t.getOperando1(), ar, 16, instructions);
                 if(tipo_op1.equals("variable")){ // si es variable la traigo a reg
-                    reg_A = ar.getRegBC(16); //TODO creo q CWDE solo funciona si el registro es AX
+                    reg_A = ar.getRegBC(16);
                     instructions.append("MOV ")
                             .append(reg_A)
                             .append(", ")
                             .append(getOP(t.getOperando1()))
                             .append("\n");
                 }else{
-                    reg_A = getOP(t.getOperando1());
+                    if(tipo_op1.equals("coleccion")){
+                        reg_A = reg1;
+                    }else{
+                        reg_A = getOP(t.getOperando1());
+                    }
                 }
-                //Chequeo perida de informacion
+                //Chequeo perdida de informacion
                 instructions.append("CMP ")
                         .append(reg_A)
                         .append(", ")
@@ -741,44 +843,55 @@ public final class AssemblerGen {
                         .append("MOV ")
                         .append(reg_B.substring(1))
                         .append(", ")
-                        .append(reg_A);
+                        .append(reg_A)
+                        .append("\n");
 
                 t.setRegister(reg_B);
                 break;
 
             case "call":
+                reg_A = ar.getRegAD(size);
                 switch (t.getOperando1()) {
                     case "_first":
-                        instructions.append("MOV @coleccion, ")
-                                .append(getOP(t.getOperando2()))
-                                .append("\n");
-
-                        instructions.append("MOV @tipo, ")
-                                .append(size / 8)
-                                .append("\n");
-
-                        instructions.append("call _first\n");
+                        instructions.append("LEA ")
+                            .append(reg_A)
+                            .append(", ")
+                            .append("[" + getOP(t.getOperando2()) + "]")
+                            .append("\n")
+                            .append("MOV @coleccion, ")
+                            .append(reg_A)
+                            .append("\n")
+                            .append("MOV @tipo, ")
+                            .append(size / 8)
+                            .append("\n");
+                        instructions.append("CALL _first\n");
                         break;
                     case "_length":
-                        instructions.append("MOV @coleccion, ")
-                                .append(getOP(t.getOperando2()))
+                        instructions.append("LEA ")
+                                .append(reg_A)
+                                .append(", ")
+                                .append("[" + getOP(t.getOperando2()) + "]")
+                                .append("\n")
+                                .append("MOV @coleccion, ")
+                                .append(reg_A)
                                 .append("\n");
-                        instructions.append("call _length\n");
+                        instructions.append("CALL _length\n");
                         break;
                     case "_last":
-                        instructions.append("MOV @coleccion, ")
-                                .append(getOP(t.getOperando2()))
-                                .append("\n");
-
-                        instructions.append("MOV @tipo, ")
+                        instructions.append("LEA ")
+                                .append(reg_A)
+                                .append(", ")
+                                .append("[" + getOP(t.getOperando2()) + "]")
+                                .append("\n")
+                                .append("MOV @coleccion, ")
+                                .append(reg_A)
+                                .append("\n")
+                                .append("MOV @tipo, ")
                                 .append(size / 8)
                                 .append("\n");
-
-                        instructions.append("call _last\n");
+                        instructions.append("CALL _last\n");
                         break;
                 }
-
-                reg_A = ar.getRegAD(size);
 
                 if (size == 16) {
                     instructions.append("MOV ")
@@ -799,10 +912,40 @@ public final class AssemblerGen {
         return instructions.toString();
     }
 
+    private static String elemento_coleccion(String op, AdminRegistros ar, int size, StringBuilder instructions){
+        String reg_A = ar.getRegAD(32);
+        instructions.append("LEA ")
+                .append(reg_A)
+                .append(", ")
+                .append("[" + getOP(op) + "]")
+                .append("\n")
+                .append("MOV @coleccion, ")
+                .append(reg_A)
+                .append("\n")
+                .append("MOV @tipo, ")
+                .append(size / 8)
+                .append("\n")
+                .append("MOV @indice, "+op.substring(op.lastIndexOf("[")+1,op.lastIndexOf("]")))
+                .append("\n");
+
+        instructions.append("CALL _element").append("\n");
+
+        if (size == 16){
+            reg_A = reg_A.substring(1);
+            instructions.append("MOV "+reg_A+", @resultado16\n");
+        }else{
+            instructions.append("MOV "+reg_A+", @resultado32\n");
+        }
+        return reg_A;
+    }
+
     private static String use(String op) {
         if (op != null) {
             if (op.startsWith("["))
                 return "terceto";
+            else if(op.endsWith("]")){
+                return "coleccion";
+            }
             return "variable"; // return SymbolTable.getLex(op).getAttr("use");
         }
         return "";
