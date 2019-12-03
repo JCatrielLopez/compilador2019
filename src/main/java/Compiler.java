@@ -86,10 +86,11 @@ class Compiler {
       }
 
       if (cmd.hasOption("c")) {
-        String source_name = FilenameUtils.removeExtension(FilenameUtils.getName(source_path));
+        String source_name = FilenameUtils.removeExtension(source_path);
+        String name = FilenameUtils.removeExtension(FilenameUtils.getName(source_path));
         String tercetos_path = source_name + ".t";
-        String assembler_path = source_name + ".asm";
-        String obj_path = source_name + ".obj";
+        String assembler_path = name + ".asm";
+        String obj_path = name + ".obj";
 
         // Guardo los tercetos en archivo.t
         FileOutputStream tercetos_file = new FileOutputStream(tercetos_path);
@@ -97,10 +98,13 @@ class Compiler {
         tercetos_file.write(AdminTercetos.print().getBytes());
 
         // Genero las instrucciones assembly
-        AssemblerGen.translate(assembler_path);
+        AssemblerGen.translate(source_name + ".asm");
 
         // Genero el archivo exe
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd", absolutePath, " && \\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
+        System.out.println(absolutePath);
+        System.out.println(assembler_path);
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", " \\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
+        builder.directory(new File(absolutePath));
         builder.redirectErrorStream(true);
 
         Process p = builder.start();
@@ -113,7 +117,8 @@ class Compiler {
           line = r.readLine();
         }
 
-        builder.command("cmd.exe", "/c", "cd", absolutePath, "&& \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE", obj_path);
+        builder.command("cmd.exe", "/c", " \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE", obj_path);
+        builder.directory(new File(absolutePath));
         p = builder.start();
         r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
