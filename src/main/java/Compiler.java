@@ -98,7 +98,7 @@ class Compiler {
         AssemblerGen.translate(assembler_path);
 
         // Genero el archivo exe
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd", path, "\\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd", path, " && \\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
         builder.redirectErrorStream(true);
 
         Process p = builder.start();
@@ -111,7 +111,7 @@ class Compiler {
           line = r.readLine();
         }
 
-        builder.command("cmd.exe", "/c", "cd", path, "\\masm32\\bin\\Link /SUBSYSTEM:CONSOLE", obj_path);
+        builder.command("cmd.exe", "/c", "cd", path, "&& \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE", obj_path);
         p = builder.start();
         r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 

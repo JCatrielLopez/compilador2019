@@ -161,12 +161,12 @@ MOV @indice, 2
 ;invoke printf, cfm$("%. %d\n"), @resultado_16
 ;invoke printf, cfm$("%. %d\n"), @resultado_32
 
-;CALL _offset
-;MOV AX, 99
-;MOV EDX, @offset
-;MOV [EDX], AX
-;CALL _element
-;invoke printf, cfm$("%. %d\n"), @resultado_16
+CALL _offset
+MOV AX, 99 ;regB
+MOV EDX, @offset
+MOV [EDX], AX
+CALL _element
+invoke printf, cfm$("%. %d\n"), @resultado_16
 
 
 ;MOV @valor_asignacion_32, -1
