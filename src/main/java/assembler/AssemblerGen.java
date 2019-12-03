@@ -539,9 +539,21 @@ public final class AssemblerGen {
                 if (tipo_op2.equals("coleccion"))
                     reg2 = elemento_coleccion(t.getOperando2(), ar, size, instructions);
 
+//                //llevo a variables auxiliares EAX y EDX (por si estaban ocupados)
+//                instructions.append("MOV @tempEAX, EAX")
+//                            .append("\n")
+//                            .append("MOV @tempEDX, EDX")
+//                            .append("\n")
+//                            .append("MOV EAX, 0")
+//                            .append("\n")
+//                            .append("MOV EDX, 0")
+//                            .append("\n");
+//                ar.free("EAX");
+//                ar.free("EDX");
+
                 if(tipo_op1.equals("variable")){ //primer operando variable
                     if(tipo_op2.equals("variable")) { //segundo operando variable
-                        reg_A = ar.getRegBC(size);
+                        reg_A = ar.getRegAD(size);
                         instructions.append("MOV ")
                                 .append(reg_A)
                                 .append(", ")
@@ -730,7 +742,7 @@ public final class AssemblerGen {
                         reg_B = getOP(t.getOperando2());;
                     }
                 }
-                //lado derecho variable o coleccion
+                //lado izquierdo variable o coleccion
                 if(tipo_op1.equals("coleccion")){ // elemento de una coleccion (coleccion[indice])
                     //calcular offset y asignar
                     reg_A = ar.getRegAD(32);
@@ -756,6 +768,7 @@ public final class AssemblerGen {
                                 .append("], ")
                                 .append(reg_B)
                                 .append("\n");
+                    ar.free(reg_A);
                 }else{ // variable o rowing de coleccion
                     if (!SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("COLECCION")) {//variable
                         instructions.append("MOV ")
@@ -782,6 +795,7 @@ public final class AssemblerGen {
                                 .append(size / 8)
                                 .append("\n");
                         instructions.append("CALL _rowing\n");
+                        ar.free(reg_A);
                     }
                 }
                 ar.free(reg_B);
@@ -851,7 +865,7 @@ public final class AssemblerGen {
                 break;
 
             case "call":
-                reg_A = ar.getRegAD(size);
+                reg_A = ar.getRegAD(32);
                 switch (t.getOperando1()) {
                     case "_first":
                         instructions.append("LEA ")
@@ -894,16 +908,11 @@ public final class AssemblerGen {
                         break;
                 }
 
-                if (size == 16) {
-                    instructions.append("MOV ")
-                            .append("@resultado_16, ")
-                            .append(reg_A)
-                            .append("\n");
-                } else {
-                    instructions.append("MOV ")
-                            .append("@resultado_32, ")
-                            .append(reg_A)
-                            .append("\n");
+                if (size == 16){
+                    reg_A = reg_A.substring(1);
+                    instructions.append("MOV "+reg_A+", @resultado_16\n");
+                }else{
+                    instructions.append("MOV "+reg_A+", @resultado_32\n");
                 }
 
                 t.setRegister(reg_A);
@@ -933,9 +942,9 @@ public final class AssemblerGen {
 
         if (size == 16){
             reg_A = reg_A.substring(1);
-            instructions.append("MOV "+reg_A+", @resultado16\n");
+            instructions.append("MOV "+reg_A+", @resultado_16\n");
         }else{
-            instructions.append("MOV "+reg_A+", @resultado32\n");
+            instructions.append("MOV "+reg_A+", @resultado_32\n");
         }
         return reg_A;
     }

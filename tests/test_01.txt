@@ -3,7 +3,7 @@ ulong c[3];
 int x, y, z;
 
 
-cegin
+begin
 
     a[0] := 1;
     a[1] := 2;
