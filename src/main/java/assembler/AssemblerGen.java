@@ -824,8 +824,7 @@ public final class AssemblerGen {
                 Token token = SymbolTable.getLex(t.getOperando1());
                 if(!token.getDescription().equals("CADENA")){
                     if(!token.getAttr("use").equals("COLECCION")){
-                        instructions.append("invoke printf, cfm$(\"%. %d")
-                                    .append(System.lineSeparator())
+                        instructions.append("invoke printf, cfm$(\"%. %d\\n")
                                     .append("\"), "+ getOP(t.getOperando1()))
                                     .append(System.lineSeparator());
                     }else {//TODO print coleccion for each
@@ -887,7 +886,6 @@ public final class AssemblerGen {
                 break;
 
             case "call":
-                instructions.append(";"+t.toString()+"  size:"+size+"").append(System.lineSeparator());
                 reg_A = ar.getRegAD(32);
                 switch (t.getOperando1()) {
                     case "_first":
