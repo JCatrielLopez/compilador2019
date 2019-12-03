@@ -704,7 +704,7 @@ public final class AssemblerGen {
                     if(tipo_op1.equals("terceto") || tipo_op1.equals("coleccion")){
                         ar.free(reg_A);
                     }
-                    if(tipo_op2.equals("terceto")|| tipo_op1.equals("coleccion")){
+                    if(tipo_op2.equals("terceto") || tipo_op1.equals("coleccion")){
                         ar.free(reg_B);
                     }
                 }
@@ -846,6 +846,7 @@ public final class AssemblerGen {
                         .append(reg_A)
                         .append("\n");
 
+                ar.free(reg_A);
                 t.setRegister(reg_B);
                 break;
 
