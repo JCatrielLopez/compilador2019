@@ -139,11 +139,11 @@ public final class AssemblerGen {
         OutputStreamWriter writer = new OutputStreamWriter(fileOutput);
 
         writer.append(".386");
-        writer.append("\n");
+        writer.append(System.lineSeparator());
         writer.append("include \\masm32\\include\\masm32rt.inc");
-        writer.append("\n");
+        writer.append(System.lineSeparator());
         writer.append("dll_dllcrt0 PROTO C");
-        writer.append("\n");
+        writer.append(System.lineSeparator());
         writer.append("printf PROTO C :VARARG");
         writer.append("\n\n");
 
@@ -157,41 +157,41 @@ public final class AssemblerGen {
             declaration = declare(s);
             if (!declaration.equals("")) {
                 writer.append(declare(s));
-                writer.append("\n");
+                writer.append(System.lineSeparator());
             }
         }
 
 
         //variables auxiliares
-        writer.append("\n");
+        writer.append(System.lineSeparator());
         writer.append(";Variables predefinidas. \n");
         writer.append("@resultado_16 dw ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@resultado_32 dd ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@coleccion dd ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@indice dw ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@tipo dd ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@offset dd ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@valor_asignacion_16 dw ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@valor_asignacion_32 dd ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@tempEAX dd ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@tempEBX dd ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@tempECX dd ?")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("@tempEDX dd ?")
-            .append("\n");
+            .append(System.lineSeparator());
 
         writer.append("ConvError db \"Error, perdida de informacion en conversion.\", 0");
-        writer.append("\n");
+        writer.append(System.lineSeparator());
         writer.append("IndiceError db \"Error, indice fuera de los limites de la coleccion.\", 0");
         writer.append("\n\n");
 
@@ -201,153 +201,153 @@ public final class AssemblerGen {
         writer.append("\n\n");
 
         writer.append("error_negativo:");
-        writer.append("\n");
+        writer.append(System.lineSeparator());
         writer.append("invoke MessageBox, NULL, addr ConvError, addr ConvError, MB_OK");
-        writer.append("\n");
+        writer.append(System.lineSeparator());
         writer.append("invoke ExitProcess, 0");
         writer.append("\n\n");
 
         writer.append("error_indice:");
-        writer.append("\n");
+        writer.append(System.lineSeparator());
         writer.append("invoke MessageBox, NULL, addr IndiceError, addr IndiceError, MB_OK");
-        writer.append("\n");
+        writer.append(System.lineSeparator());
         writer.append("invoke ExitProcess, 0");
         writer.append("\n\n");
 
         writer.append("_length:")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("MOV @tempEAX, EAX")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("MOV @tempEBX, EBX")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("MOV EAX, @coleccion")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("MOV BX, [EAX]")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("MOV @resultado_16, BX")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("MOV EAX, @tempEAX")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("MOV EBX, @tempEBX")
-            .append("\n")
+            .append(System.lineSeparator())
             .append("RET")
             .append("\n\n");
 
         writer.append("_first:")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @tempEAX, EAX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @tempEBX, EBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EAX, @coleccion")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("ADD EAX, @tipo")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EBX, [EAX]")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @resultado_16, BX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @resultado_32, EBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EAX, @tempEAX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EBX, @tempEBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("RET")
                 .append("\n\n");
 
         writer.append("_last:")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @tempEAX, EAX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @tempEBX, EBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EAX, @coleccion")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EBX, 0")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV BX, [EAX]")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("IMUL EBX, @tipo")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("ADD EAX, EBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EBX, [EAX]")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @resultado_16, BX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @resultado_32, EBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EAX, @tempEAX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EBX, @tempEBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("RET")
                 .append("\n\n");
 
         writer.append("_element:")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @tempEAX, EAX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @tempEBX, EBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("CALL _offset")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EAX, @offset")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EBX, [EAX]")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @resultado_16, BX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @resultado_32, EBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EAX, @tempEAX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EBX, @tempEBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("RET")
                 .append("\n\n");
 
         writer.append("_offset:")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @tempEAX, EAX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @tempEBX, EBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @tempEDX, EDX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EAX, @coleccion")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EDX, 0")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV DX, @indice")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("CMP DX, 0  ")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("JL error_indice")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("ADD DX, 1")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EBX, 0")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV BX, [EAX]")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("CMP DX, BX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("JG error_indice")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("IMUL EDX, @tipo")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("ADD EAX, EDX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @offset, EAX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EAX, @tempEAX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EBX, @tempEBX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV EDX, @tempEDX")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("RET")
                 .append("\n\n");
 
@@ -391,7 +391,7 @@ public final class AssemblerGen {
         for (String lex : SymbolTable.keys()) {
             if(SymbolTable.getLex(lex).getAttr("use")!= null && SymbolTable.getLex(lex).getAttr("use").equals("COLECCION")){
                 writer.append("MOV ["+ lex + "], "+SymbolTable.getLex(lex).getAttr("size"));
-                writer.append("\n");
+                writer.append(System.lineSeparator());
             }
         }
         writer.append(";Fin de seteo de tamaños. \n\n");
@@ -445,7 +445,7 @@ public final class AssemblerGen {
                                 .append(reg_A)
                                 .append(", ")
                                 .append(getOP(t.getOperando1()))
-                                .append("\n");
+                                .append(System.lineSeparator());
                         reg_B = getOP(t.getOperando2());
                     }else { //segundo operando registro o coleccion... opero sobre el segundo operando
                         if(tipo_op2.equals("coleccion")){
@@ -475,7 +475,7 @@ public final class AssemblerGen {
                         .append(reg_A)
                         .append(", ")
                         .append(reg_B)
-                        .append("\n");
+                        .append(System.lineSeparator());
 
                 t.setRegister(reg_A);
                 break;
@@ -492,7 +492,7 @@ public final class AssemblerGen {
                                 .append(reg_A)
                                 .append(", ")
                                 .append(getOP(t.getOperando1()))
-                                .append("\n");
+                                .append(System.lineSeparator());
                         reg_B = getOP(t.getOperando2());
                     }else { //segundo operando registro o coleccion...  ocupo nuevo reg, genero codigo sobre ese reg y libero el otro
                         reg_A = ar.getRegBC(size);
@@ -500,7 +500,7 @@ public final class AssemblerGen {
                                 .append(reg_A)
                                 .append(", ")
                                 .append(getOP(t.getOperando1()))
-                                .append("\n");
+                                .append(System.lineSeparator());
                         if(tipo_op2.equals("coleccion")){
                             reg_B = reg2;
                         }else{
@@ -528,7 +528,7 @@ public final class AssemblerGen {
                         .append(reg_A)
                         .append(", ")
                         .append(reg_B)
-                        .append("\n");
+                        .append(System.lineSeparator());
 
                 t.setRegister(reg_A);
 
@@ -546,7 +546,7 @@ public final class AssemblerGen {
                                 .append(reg_A)
                                 .append(", ")
                                 .append(getOP(t.getOperando1()))
-                                .append("\n");
+                                .append(System.lineSeparator());
                         reg_B = getOP(t.getOperando2());
                     }else { //segundo operando registro o coleccion...  ocupo nuevo reg, genero codigo sobre ese reg y libero el otro
                         reg_A = ar.getRegBC(size);
@@ -554,7 +554,7 @@ public final class AssemblerGen {
                                 .append(reg_A)
                                 .append(", ")
                                 .append(getOP(t.getOperando1()))
-                                .append("\n");
+                                .append(System.lineSeparator());
                         if(tipo_op2.equals("coleccion")){
                             reg_B = reg2;
                         }else{
@@ -582,7 +582,7 @@ public final class AssemblerGen {
                         .append(reg_A)
                         .append(", ")
                         .append(reg_B)
-                        .append("\n");
+                        .append(System.lineSeparator());
 
                 t.setRegister(reg_A);
 
@@ -600,7 +600,7 @@ public final class AssemblerGen {
                                 .append(reg_A)
                                 .append(", ")
                                 .append(getOP(t.getOperando1()))
-                                .append("\n");
+                                .append(System.lineSeparator());
                         reg_B = getOP(t.getOperando2());
                     }else { //segundo operando registro o coleccion... opero sobre el segundo operando
                         if(tipo_op2.equals("coleccion")){
@@ -630,14 +630,14 @@ public final class AssemblerGen {
                         .append(reg_A)
                         .append(", ")
                         .append(reg_B)
-                        .append("\n");
+                        .append(System.lineSeparator());
 
                 t.setRegister(reg_A);
                 break;
             case "BI":
                 String nroLabel = t.getOperando1().substring(1, t.getOperando1().length() - 1);
                 instructions.append("JMP Label" + nroLabel)
-                            .append("\n");
+                            .append(System.lineSeparator());
                 break;
             case "BF":
                 Terceto anterior = AdminTercetos.get(t.getOperando1());
@@ -664,11 +664,11 @@ public final class AssemblerGen {
                         instructions.append("JE " + target);
                         break;
                 }
-                instructions.append("\n");
+                instructions.append(System.lineSeparator());
                 break;
             case "Label":
                 instructions.append("Label" + t.getOperando1().substring(1, t.getOperando1().length() - 1) + ":")
-                            .append("\n");
+                            .append(System.lineSeparator());
                 break;
             case "<":
             case ">":
@@ -687,7 +687,7 @@ public final class AssemblerGen {
                             .append(reg_A)
                             .append(", ")
                             .append(getOP(t.getOperando1()))
-                            .append("\n");
+                            .append(System.lineSeparator());
                     ar.free(reg_A);
                     reg_B = getOP(t.getOperando2());
                 } else{ //si uno no esta en mem opero, y libero si corresponde
@@ -709,7 +709,7 @@ public final class AssemblerGen {
                     }
                 }
                 instructions.append("CMP " + reg_A + ", " + reg_B)
-                            .append("\n");
+                            .append(System.lineSeparator());
                 break;
             case ":=":
                 if (tipo_op2.equals("coleccion"))
@@ -722,7 +722,7 @@ public final class AssemblerGen {
                         .append(reg_B)
                         .append(", ")
                         .append(getOP(t.getOperando2()))
-                        .append("\n");
+                        .append(System.lineSeparator());
                 }else{  //valor a asignar en registro o coleccion
                     if(tipo_op2.equals("coleccion")){
                         reg_B = reg2;
@@ -739,31 +739,31 @@ public final class AssemblerGen {
                             .append(reg_A)
                             .append(", ")
                             .append("[" + getOP(t.getOperando1()) + "]")
-                            .append("\n")
+                            .append(System.lineSeparator())
                             .append("MOV @coleccion, ")
                             .append(reg_A)
-                            .append("\n")
+                            .append(System.lineSeparator())
                             .append("MOV @tipo, ")
                             .append(size / 8)
-                            .append("\n");
+                            .append(System.lineSeparator());
                     instructions.append("CALL _offset \n");
                     instructions.append("MOV ")
                                 .append(reg_A)
                                 .append(", @offset")
-                                .append("\n");
+                                .append(System.lineSeparator());
                     instructions.append("MOV ")
                                 .append("[")
                                 .append(reg_A)
                                 .append("], ")
                                 .append(reg_B)
-                                .append("\n");
+                                .append(System.lineSeparator());
                 }else{ // variable o rowing de coleccion
                     if (!SymbolTable.getLex(t.getOperando1()).getAttr("use").equals("COLECCION")) {//variable
                         instructions.append("MOV ")
                                 .append(getOP(t.getOperando1()))
                                 .append(", ")
                                 .append(reg_B)
-                                .append("\n");
+                                .append(System.lineSeparator());
                     }else{//rowing
                         if (size == 16){
                             instructions.append("MOV @valor_asignacion_16, "+reg_B+"\n");
@@ -775,13 +775,13 @@ public final class AssemblerGen {
                                 .append(reg_A)
                                 .append(", ")
                                 .append("[" + getOP(t.getOperando1()) + "]")
-                                .append("\n")
+                                .append(System.lineSeparator())
                                 .append("MOV @coleccion, ")
                                 .append(reg_A)
-                                .append("\n")
+                                .append(System.lineSeparator())
                                 .append("MOV @tipo, ")
                                 .append(size / 8)
-                                .append("\n");
+                                .append(System.lineSeparator());
                         instructions.append("CALL _rowing\n");
                     }
                 }
@@ -792,7 +792,7 @@ public final class AssemblerGen {
                 if(!token.getDescription().equals("CADENA")){
                     if(!token.getAttr("use").equals("COLECCION")){
                         instructions.append("invoke printf, cfm$(\"%. %d\\n\"), "+ getOP(t.getOperando1()))
-                                    .append("\n");
+                                    .append(System.lineSeparator());
                     }else {//TODO print coleccion for each
                     }
                 }else
@@ -805,7 +805,7 @@ public final class AssemblerGen {
                             .append(operando)
 
                             .append(", MB_OK")
-                            .append("\n");
+                            .append(System.lineSeparator());
 
                 }
                 break;
@@ -818,7 +818,7 @@ public final class AssemblerGen {
                             .append(reg_A)
                             .append(", ")
                             .append(getOP(t.getOperando1()))
-                            .append("\n");
+                            .append(System.lineSeparator());
                 }else{
                     if(tipo_op1.equals("coleccion")){
                         reg_A = reg1;
@@ -831,21 +831,21 @@ public final class AssemblerGen {
                         .append(reg_A)
                         .append(", ")
                         .append("0")
-                        .append("\n");
+                        .append(System.lineSeparator());
                 instructions.append("JL error_negativo")
-                        .append("\n");
+                        .append(System.lineSeparator());
                 //si no es negativo realizo la conversion
 
                 reg_B = ar.getRegAD(32);
                 instructions.append("MOV ")
                         .append(reg_B)
                         .append(", 0")
-                        .append("\n")
+                        .append(System.lineSeparator())
                         .append("MOV ")
                         .append(reg_B.substring(1))
                         .append(", ")
                         .append(reg_A)
-                        .append("\n");
+                        .append(System.lineSeparator());
 
                 ar.free(reg_A);
                 t.setRegister(reg_B);
@@ -859,13 +859,13 @@ public final class AssemblerGen {
                             .append(reg_A)
                             .append(", ")
                             .append("[" + getOP(t.getOperando2()) + "]")
-                            .append("\n")
+                            .append(System.lineSeparator())
                             .append("MOV @coleccion, ")
                             .append(reg_A)
-                            .append("\n")
+                            .append(System.lineSeparator())
                             .append("MOV @tipo, ")
                             .append(size / 8)
-                            .append("\n");
+                            .append(System.lineSeparator());
                         instructions.append("CALL _first\n");
                         break;
                     case "_length":
@@ -873,10 +873,10 @@ public final class AssemblerGen {
                                 .append(reg_A)
                                 .append(", ")
                                 .append("[" + getOP(t.getOperando2()) + "]")
-                                .append("\n")
+                                .append(System.lineSeparator())
                                 .append("MOV @coleccion, ")
                                 .append(reg_A)
-                                .append("\n");
+                                .append(System.lineSeparator());
                         instructions.append("CALL _length\n");
                         break;
                     case "_last":
@@ -884,13 +884,13 @@ public final class AssemblerGen {
                                 .append(reg_A)
                                 .append(", ")
                                 .append("[" + getOP(t.getOperando2()) + "]")
-                                .append("\n")
+                                .append(System.lineSeparator())
                                 .append("MOV @coleccion, ")
                                 .append(reg_A)
-                                .append("\n")
+                                .append(System.lineSeparator())
                                 .append("MOV @tipo, ")
                                 .append(size / 8)
-                                .append("\n");
+                                .append(System.lineSeparator());
                         instructions.append("CALL _last\n");
                         break;
                 }
@@ -899,12 +899,12 @@ public final class AssemblerGen {
                     instructions.append("MOV ")
                             .append("@resultado_16, ")
                             .append(reg_A)
-                            .append("\n");
+                            .append(System.lineSeparator());
                 } else {
                     instructions.append("MOV ")
                             .append("@resultado_32, ")
                             .append(reg_A)
-                            .append("\n");
+                            .append(System.lineSeparator());
                 }
 
                 t.setRegister(reg_A);
@@ -920,17 +920,17 @@ public final class AssemblerGen {
                 .append(reg_A)
                 .append(", ")
                 .append("[" + getOP(op) + "]")
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @coleccion, ")
                 .append(reg_A)
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @tipo, ")
                 .append(size / 8)
-                .append("\n")
+                .append(System.lineSeparator())
                 .append("MOV @indice, "+op.substring(op.lastIndexOf("[")+1,op.lastIndexOf("]")))
-                .append("\n");
+                .append(System.lineSeparator());
 
-        instructions.append("CALL _element").append("\n");
+        instructions.append("CALL _element").append(System.lineSeparator());
 
         if (size == 16){
             reg_A = reg_A.substring(1);
