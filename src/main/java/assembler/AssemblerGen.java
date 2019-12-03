@@ -465,7 +465,7 @@ public final class AssemblerGen {
                     if(tipo_op2.equals("coleccion")){
                         reg_B = reg2;
                     }else{
-                        reg_B = getOP(t.getOperando2());;
+                        reg_B = getOP(t.getOperando2());
                     }
                     if(tipo_op2.equals("terceto") || tipo_op2.equals("coleccion")){//si ambos son terceto o coleccion libero al segundo
                         ar.free(reg_B);
@@ -632,7 +632,7 @@ public final class AssemblerGen {
                     if(tipo_op2.equals("coleccion")){
                         reg_B = reg2;
                     }else{
-                        reg_B = getOP(t.getOperando2());;
+                        reg_B = getOP(t.getOperando2());
                     }
                     if(tipo_op2.equals("terceto") || tipo_op2.equals("coleccion")){//si ambos son terceto o coleccion libero al segundo
                         ar.free(reg_B);
@@ -711,7 +711,7 @@ public final class AssemblerGen {
                     if(tipo_op2.equals("coleccion")){
                         reg_B = reg2;
                     }else{
-                        reg_B = getOP(t.getOperando2());;
+                        reg_B = getOP(t.getOperando2());
                     }
                     if(tipo_op1.equals("terceto") || tipo_op1.equals("coleccion")){
                         ar.free(reg_A);
@@ -739,9 +739,10 @@ public final class AssemblerGen {
                     if(tipo_op2.equals("coleccion")){
                         reg_B = reg2;
                     }else{
-                        reg_B = getOP(t.getOperando2());;
+                        reg_B = getOP(t.getOperando2());
                     }
                 }
+
                 //lado izquierdo variable o coleccion
                 if(tipo_op1.equals("coleccion")){ // elemento de una coleccion (coleccion[indice])
                     //calcular offset y asignar
