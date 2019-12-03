@@ -62,9 +62,5 @@ public class AdminRegistros {
             register = "E" + register;
         return register;
     }
-
-    public void imp() {
-        for (String s: registers.keySet())
-            System.out.println("Registro "+s+": "+registers.get(s));
-    }
+    
 }
