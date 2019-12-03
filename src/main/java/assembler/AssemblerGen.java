@@ -465,7 +465,7 @@ public final class AssemblerGen {
                     if(tipo_op2.equals("coleccion")){
                         reg_B = reg2;
                     }else{
-                        reg_B = getOP(t.getOperando2());;
+                        reg_B = getOP(t.getOperando2());
                     }
                     if(tipo_op2.equals("terceto") || tipo_op2.equals("coleccion")){//si ambos son terceto o coleccion libero al segundo
                         ar.free(reg_B);
@@ -620,7 +620,7 @@ public final class AssemblerGen {
                     if(tipo_op2.equals("coleccion")){
                         reg_B = reg2;
                     }else{
-                        reg_B = getOP(t.getOperando2());;
+                        reg_B = getOP(t.getOperando2());
                     }
                     if(tipo_op2.equals("terceto") || tipo_op2.equals("coleccion")){//si ambos son terceto o coleccion libero al segundo
                         ar.free(reg_B);
@@ -699,7 +699,7 @@ public final class AssemblerGen {
                     if(tipo_op2.equals("coleccion")){
                         reg_B = reg2;
                     }else{
-                        reg_B = getOP(t.getOperando2());;
+                        reg_B = getOP(t.getOperando2());
                     }
                     if(tipo_op1.equals("terceto") || tipo_op1.equals("coleccion")){
                         ar.free(reg_A);
@@ -727,9 +727,10 @@ public final class AssemblerGen {
                     if(tipo_op2.equals("coleccion")){
                         reg_B = reg2;
                     }else{
-                        reg_B = getOP(t.getOperando2());;
+                        reg_B = getOP(t.getOperando2());
                     }
                 }
+                    
                 //lado derecho variable o coleccion
                 if(tipo_op1.equals("coleccion")){ // elemento de una coleccion (coleccion[indice])
                     //calcular offset y asignar
@@ -932,9 +933,9 @@ public final class AssemblerGen {
 
         if (size == 16){
             reg_A = reg_A.substring(1);
-            instructions.append("MOV "+reg_A+", @resultado16\n");
+            instructions.append("MOV "+reg_A+", @resultado_16\n");
         }else{
-            instructions.append("MOV "+reg_A+", @resultado32\n");
+            instructions.append("MOV "+reg_A+", @resultado_32\n");
         }
         return reg_A;
     }
