@@ -352,12 +352,12 @@ public final class AssemblerGen {
                 .append("\n\n");
 
 
-        writer.append("_rowing:")
+        writer.append("_rowing:\n")
                 .append("MOV @tempEAX, EAX\n")
                 .append("MOV @tempEBX, EBX\n")
                 .append("MOV @tempECX, ECX\n")
                 .append("CALL _length\n")
-                .append("MOV AX, @resultado_16")
+                .append("MOV AX, @resultado_16\n")
                 .append("SUB AX, 1\n")
                 .append("MOV EBX, @coleccion\n")
                 .append("MOV @indice, AX\n")
@@ -381,7 +381,7 @@ public final class AssemblerGen {
                 .append("MOV EAX, @tempEAX\n")
                 .append("MOV EBX, @tempEBX\n")
                 .append("MOV ECX, @tempECX\n")
-                .append("RET\n");
+                .append("RET\n\n");
 
         writer.append("start:");
         writer.append("\n\n");

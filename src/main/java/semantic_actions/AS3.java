@@ -33,15 +33,16 @@ public class AS3 implements SemanticAction {
             type = "INT";
         }
         Token token = new Token(SymbolTable.getID("cte"), Long.toString(cte), "CONSTANT");
+        token.addAttr("type",type);
         SymbolTable.add(token);
 
-        token.addAttr("type",type);
 
-        if (token.getAttr("contador") == null) {
-            token.addAttr("contador", "1");
+        Token t = SymbolTable.getLex(Long.toString(cte));
+        if (t.getAttr("contador") == null) {
+            t.addAttr("contador", "1");
         } else {
-            int contador = Integer.parseInt(token.getAttr("contador")) + 1;
-            token.addAttr("contador", String.valueOf(contador));
+            int contador = Integer.parseInt(t.getAttr("contador")) + 1;
+            t.addAttr("contador", String.valueOf(contador));
         }
 
         return token;
