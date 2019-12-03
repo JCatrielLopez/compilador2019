@@ -35,6 +35,7 @@ class Compiler {
 
     FileInputStream source_file;
     String source_path;
+    String absolutePath;
     if (cmd.hasOption("i")) {
       source_path = cmd.getOptionValue("i");
       File tempFile = new File(source_path);
@@ -42,6 +43,8 @@ class Compiler {
         throw new IOException("No existe el archivo " + source_path);
       else
         source_file = new FileInputStream(source_path);
+        absolutePath = new File(source_path).getAbsolutePath();
+        absolutePath = absolutePath.substring(0,absolutePath.lastIndexOf(File.separator));
     } else
       throw new ParseException("Falta el argumento -i.");
 
@@ -84,7 +87,6 @@ class Compiler {
 
       if (cmd.hasOption("c")) {
         String source_name = FilenameUtils.removeExtension(source_path);
-        String path = FilenameUtils.getFullPath(source_path);
         String tercetos_path = source_name + ".t";
         String assembler_path = source_name + ".asm";
         String obj_path = source_name + ".obj";
@@ -98,7 +100,7 @@ class Compiler {
         AssemblerGen.translate(assembler_path);
 
         // Genero el archivo exe
-        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd", path, " && \\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
+        ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd", absolutePath, " && \\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
         builder.redirectErrorStream(true);
 
         Process p = builder.start();
@@ -111,7 +113,7 @@ class Compiler {
           line = r.readLine();
         }
 
-        builder.command("cmd.exe", "/c", "cd", path, "&& \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE", obj_path);
+        builder.command("cmd.exe", "/c", "cd", absolutePath, "&& \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE", obj_path);
         p = builder.start();
         r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
