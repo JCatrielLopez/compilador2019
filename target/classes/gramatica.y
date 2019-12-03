@@ -84,14 +84,19 @@ lista_variables			: lista_variables ',' ID {addVariable($3.sval, "VARIABLE");}
 
 coleccion			: ID '[' cte ']' {
 							Token coleccion = SymbolTable.getLex($1.sval);
-							if (coleccion.getAttr("use") == null){
-							    coleccion.addAttr("size", $3.sval);
-							    coleccion.addAttr("Elements", new ArrayList<>());
-							}
-							else
-							    Error.add(
-								    String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR La variable " + $1.sval + " ya se encuentra declarada.")
-							    );
+							String tipo_cte = tipos.pop();
+							if(tipo_cte.equals("INT")){
+								if (coleccion.getAttr("use") == null){
+									if (Integer.parseInt($3.sval) >= 0){
+										coleccion.addAttr("size", $3.sval);
+									}else
+										Error.add(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR tamaño del arreglo no puede ser negativo."));
+								}
+								else
+							    		Error.add(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR La variable " + $1.sval + " ya se encuentra declarada."));
+							}else
+								Error.add(String.format("%5s %s %s", al.getLineNumber(), "|", "ERROR tamaño del arreglo debe ser un entero."));
+
 						}
                                 |   ID '[' ']'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el tamaño de la declaracion."));}
                                 |   ID '[' error ']'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la declaracion del tamaño de la coleccion."));}
@@ -121,8 +126,8 @@ sentencia_impresion		: PRINT '(' CADENA ')' ';' {AdminTercetos.add(new Terceto("
 sentencia_control		: while condicion_while DO bloque_sentencias ';' {	String terceto_inc = AdminTercetos.pop();
 											AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 2)+"]");
 											terceto_inc = AdminTercetos.pop();
-											AdminTercetos.add(new Terceto("BI", terceto_inc, "null"));
-											AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
+											AdminTercetos.add(new Terceto("BI", terceto_inc, null));
+											AdminTercetos.add(new Terceto ("Label", "["+(AdminTercetos.cantTercetos()+1)+"]", null));
 											if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia While."));
 										}
                                 | error condicion_while DO bloque_sentencias ';'  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta la palabra clave WHILE."));}
@@ -133,7 +138,7 @@ sentencia_control		: while condicion_while DO bloque_sentencias ';' {	String ter
 				| while condicion_while DO bloque_sentencias error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta el literal ';'."));}
 ;
 
-while 				: WHILE {AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
+while 				: WHILE {AdminTercetos.add(new Terceto ("Label","["+(AdminTercetos.cantTercetos()+1)+"]", null));
 					 AdminTercetos.push(AdminTercetos.last().getId());}
 ;
 
@@ -142,7 +147,7 @@ condicion_while 		: condicion {AdminTercetos.add(new Terceto("BF", $1.sval, null
 
 sentencia_seleccion		: IF condicion_if bloque_then END_IF ';' {	String terceto_inc = AdminTercetos.pop();
 										AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 1)+"]");
-										AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
+										AdminTercetos.add(new Terceto ("Label","["+(AdminTercetos.cantTercetos()+1)+"]", null));
 										if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If.."));}
                                 | IF condicion_if bloque_then else bloque_else END_IF ';' {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se encontro una sentencia If-Else."));}
                                 | error condicion_if bloque_then END_IF ';' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR al comienzo de la sentencia If."));}
@@ -170,12 +175,12 @@ else				: ELSE {String terceto_inc = AdminTercetos.pop();
 					AdminTercetos.get(terceto_inc).setOperando2("["+String.valueOf(AdminTercetos.cantTercetos() + 2)+"]");
 					AdminTercetos.add(new Terceto("BI", null, null));
 					AdminTercetos.push(AdminTercetos.last().getId());
-					AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));}
+					AdminTercetos.add(new Terceto ("Label","["+(AdminTercetos.cantTercetos()+1)+"]", null));}
 ;
 
 bloque_else			: bloque_sentencias {	String terceto_inc = AdminTercetos.pop();
 							AdminTercetos.get(terceto_inc).setOperando1("["+String.valueOf(AdminTercetos.cantTercetos() + 1)+"]");
-							AdminTercetos.add(new Terceto ("Label"+(AdminTercetos.cantTercetos()+1), null, null));
+							AdminTercetos.add(new Terceto ("Label","["+(AdminTercetos.cantTercetos()+1)+"]", null));
 						    }
 ;
 
@@ -186,11 +191,7 @@ condicion			: '(' comparacion ')' {$$ = $2;}
                                 | '(' ')' {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en la condicion."));}
 ;
 
-comparacion			: expresion comparador expresion {
-                                                        String t_id = crearTercetoOperacion($2.sval, $1.sval, $3.sval);
-                                                        Terceto t = AdminTercetos.get(t_id);
-                                                        $$ = new ParserVal(t);
-                                                     }
+comparacion			: expresion comparador expresion {$$ = new ParserVal(crearTercetoOperacion($2.sval, $1.sval, $3.sval));}
                                 | error comparador expresion  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado izquierdo de la comparacion."));}
                                 | expresion error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta comparador."));}
                                 | expresion comparador error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en el lado derecho de la comparacion."));}
@@ -205,11 +206,13 @@ comparador		        : '<' { $$ = new ParserVal("<");}
 ;
 
 sentencia_asignacion 		: id ASIGN expresion ';' {
-							    String tipo_id = SymbolTable.getLex($1.sval).getAttr("type");
 							    boolean conversion = false;
 							    String tipo_exp="";
+							    String tipo_id="";
 							    if (!tipos.isEmpty())
 							    	tipo_exp = tipos.pop();
+							    if (!tipos.isEmpty())
+							    	tipo_id = tipos.pop();
 							    if(tipo_id == "INT"){
 							    	if(tipo_exp == "ULONG"){
 							    		Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR tipos incompatibles."));
@@ -262,7 +265,9 @@ factor 				: id
 								}else{
 									tipos.push(SymbolTable.getLex($1.sval).getAttr("type"));
 								}
-								AdminTercetos.add(new Terceto("call", $3.sval, $1.sval));
+								Terceto t = new Terceto("call", $3.sval, $1.sval);
+								AdminTercetos.add(t);
+								$$ = new ParserVal(t.getId());
 							}else{
 								Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR " + $1.sval + " no es una coleccion."));
 							}
