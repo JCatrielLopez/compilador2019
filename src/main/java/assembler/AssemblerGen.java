@@ -774,7 +774,9 @@ public final class AssemblerGen {
                             .append(System.lineSeparator())
                             .append("MOV ").append(TIPO).append(", ")
                             .append(size / 8)
-                            .append("\n");
+                            .append("\n")
+                            .append("MOV ").append(INDICE).append(", "+t.getOperando1().substring(t.getOperando1().lastIndexOf("[")+1,t.getOperando1().lastIndexOf("]")))
+                            .append(System.lineSeparator());
                     instructions.append("CALL _offset \n");
                     instructions.append("MOV ")
                                 .append(reg_A)
@@ -883,6 +885,7 @@ public final class AssemblerGen {
                 break;
 
             case "call":
+                instructions.append(";"+t.toString()+"  size:"+size+"\n");
                 reg_A = ar.getRegAD(32);
                 switch (t.getOperando1()) {
                     case "_first":
@@ -934,7 +937,6 @@ public final class AssemblerGen {
                       .append(RESULTADO_16)
                       .append(System.lineSeparator());
                 }else{
-                    
                     instructions.append("MOV ")
                       .append(reg_A)
                       .append(", ")

@@ -37,9 +37,9 @@ import java.util.Stack;
 %%
 
 
-programa 	                : bloque_declarativo {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se definio bien el programa."));}
-			        | bloque_ejecutable {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se definio bien el programa con sent. ejecutables"));}
-			        | bloque_declarativo bloque_ejecutable {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se definio bien el programa con sent. ejecutables y declarativas."));}
+programa 	                : bloque_declarativo {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa compuesto por bloque declarativo."));}
+			        | bloque_ejecutable {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa compuesto por bloque ejecutable."));}
+			        | bloque_declarativo bloque_ejecutable {if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa compuesto por bloques ejecutables y declarativas."));}
                                 | error  {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR en programa"));}
 ;
 
@@ -266,6 +266,9 @@ factor 				: id
 									tipos.push(SymbolTable.getLex($1.sval).getAttr("type"));
 								}
 								Terceto t = new Terceto("call", $3.sval, $1.sval);
+								String tipo = tipos.pop();
+								t.setType(tipo);
+								tipos.push(tipo);
 								AdminTercetos.add(t);
 								$$ = new ParserVal(t.getId());
 							}else{

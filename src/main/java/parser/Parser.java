@@ -918,15 +918,15 @@ boolean doaction;
 //########## USER-SUPPLIED ACTIONS ##########
 case 1:
 //#line 40 "gramatica.y"
-{if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se definio bien el programa."));}
+{if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa compuesto por bloque declarativo."));}
 break;
 case 2:
 //#line 41 "gramatica.y"
-{if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se definio bien el programa con sent. ejecutables"));}
+{if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa compuesto por bloque ejecutable."));}
 break;
 case 3:
 //#line 42 "gramatica.y"
-{if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Se definio bien el programa con sent. ejecutables y declarativas."));}
+{if (this.verbose) Printer.print(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "Programa compuesto por bloques ejecutables y declarativas."));}
 break;
 case 4:
 //#line 43 "gramatica.y"
@@ -1354,6 +1354,9 @@ case 110:
 									tipos.push(SymbolTable.getLex(val_peek(2).sval).getAttr("type"));
 								}
 								Terceto t = new Terceto("call", val_peek(0).sval, val_peek(2).sval);
+                                String tipo = tipos.pop();
+                                t.setType(tipo);
+                                tipos.push(tipo);
 								AdminTercetos.add(t);
 								yyval = new ParserVal(t.getId());
 							}else{

@@ -100,6 +100,8 @@ class Compiler {
         AssemblerGen.translate(assembler_path);
 
         // Genero el archivo exe
+        System.out.println(absolutePath);
+        System.out.println(assembler_path);
         ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd", absolutePath, " && \\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
         builder.redirectErrorStream(true);
 
