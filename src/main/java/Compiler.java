@@ -86,7 +86,7 @@ class Compiler {
       }
 
       if (cmd.hasOption("c")) {
-        String source_name = FilenameUtils.removeExtension(source_path);
+        String source_name = FilenameUtils.removeExtension(FilenameUtils.getName(source_path));
         String tercetos_path = source_name + ".t";
         String assembler_path = source_name + ".asm";
         String obj_path = source_name + ".obj";
@@ -100,8 +100,6 @@ class Compiler {
         AssemblerGen.translate(assembler_path);
 
         // Genero el archivo exe
-        System.out.println(absolutePath);
-        System.out.println(assembler_path);
         ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", "cd", absolutePath, " && \\masm32\\bin\\ml /c /Zd /coff ", assembler_path);
         builder.redirectErrorStream(true);
 
