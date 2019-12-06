@@ -36,12 +36,22 @@ public class AdminRegistros {
             this.registers.put(register, true);
     }
 
-    public String getRegAD(Integer bits) {
+    public String getRegA(Integer bits) {
         String register = null;
 
         if(registers.get("AX")){
             register = "AX";
-        }else if (registers.get("DX")){
+        }
+        registers.put(register, false);
+        if (bits == 32)
+            register = "E" + register;
+        return register;
+    }
+
+    public String getRegD(Integer bits) {
+        String register = null;
+
+        if (registers.get("DX")){
             register = "DX";
         }
         registers.put(register, false);
@@ -62,5 +72,8 @@ public class AdminRegistros {
             register = "E" + register;
         return register;
     }
-    
+
+    public boolean isFree(String register){
+        return registers.get(register);
+    }
 }
