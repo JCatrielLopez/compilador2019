@@ -4,9 +4,12 @@ import java.util.ArrayList;
 public class Error {
 
     private static ArrayList<String> errores = new ArrayList<>();
+    private static boolean error = false;
 
     public static void add(String msg) {
         errores.add(msg);
+        if (msg.startsWith("ERROR"))
+            error = true;
     }
 
     public static void print() {
@@ -15,11 +18,7 @@ public class Error {
         }
     }
 
-    public static boolean isEmpty(){
-        return errores.isEmpty();
-    }
-
-    public static void remove(String msg) {
-        errores.remove(msg);
+    public static boolean containsError(){
+        return error;
     }
 }

@@ -65,7 +65,7 @@ class Compiler {
     Parser parser = new Parser(al, cmd.hasOption("as"));
     parser.run();
 
-    if (!Error.isEmpty()) {
+    if (!Error.containsError()) {
       System.out.println("-----------------------------------------------------------------------");
       System.out.println("-------------------------ERRORS AND WARNINGS---------------------------");
       System.out.println("-----------------------------------------------------------------------");
