@@ -2,7 +2,7 @@ package assembler;
 
 import globals.SymbolTable;
 import lexer.Token;
-
+import assembler.AdminRegistros;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
@@ -828,17 +828,14 @@ public final class AssemblerGen {
                 if(!token.getDescription().equals("CADENA")){
                     if(!token.getAttr("use").equals("COLECCION")){
                         if(token.getAttr("type") == "ULONG"){
-                            instructions.append("invoke printf, cfm$(\"%. %u\\n")
+                            instructions.append("invoke printf, cfm$(\"%u\\n")
                                     .append("\"), "+ getOP(t.getOperando1()))
                                     .append(System.lineSeparator());
                         }else{
-                            instructions.append("invoke printf, cfm$(\"%. %d\\n")
+                            instructions.append("invoke printf, cfm$(\"%hd\\n")
                                     .append("\"), "+ getOP(t.getOperando1()))
                                     .append(System.lineSeparator());
                         }
-//                        instructions.append("invoke printf, cfm$(\"%. %d\\n")
-//                                .append("\"), "+ getOP(t.getOperando1()))
-//                                .append(System.lineSeparator());
                     }else {//TODO print coleccion for each
                     }
                 }else

@@ -14,7 +14,7 @@ public class AdminRegistros {
         return AdminRegistros.instance;
     }
 
-    // DINAMICOS
+    // DINAMICOS 
     // registers = {register: [True, False]}
     //                         True: El registro esta liberado.
     //                         False: El registro esta ocupado.
