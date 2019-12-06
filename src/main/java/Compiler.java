@@ -115,7 +115,7 @@ class Compiler {
           line = r.readLine();
         }
 
-        builder.command("cmd.exe", "/c", " \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE", obj_path);
+        builder.command("cmd.exe", "/c", " \\masm32\\bin\\Link /SUBSYSTEM:CONSOLE ", obj_path);
         builder.directory(new File(absolutePath));
         p = builder.start();
         r = new BufferedReader(new InputStreamReader(p.getInputStream()));
