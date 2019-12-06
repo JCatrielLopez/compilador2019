@@ -1,0 +1,8 @@
+int a[5];
+ulong c[3];
+int x, y, z;
+
+begin
+    c[0] := 3;
+    x := c.length();
+end;
