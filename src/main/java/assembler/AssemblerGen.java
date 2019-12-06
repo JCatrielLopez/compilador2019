@@ -2,7 +2,7 @@ package assembler;
 
 import globals.SymbolTable;
 import lexer.Token;
-
+import assembler.AdminRegistros;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
