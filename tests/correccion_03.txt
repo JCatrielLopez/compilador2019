@@ -1,0 +1,25 @@
+int b;
+
+begin
+
+    b := 4 + 2;
+
+    print(b);
+
+    b := 4 - 2;
+
+    print(b);
+
+    b := 4 * 2;
+
+    print(b);
+
+    b := 4 / 2;
+
+    print(b);
+
+    b := 4 / 0;
+
+    print(b);
+
+end;

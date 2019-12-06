@@ -1,0 +1,19 @@
+int a[5];
+ulong c[3];
+int x, y, z;
+
+begin
+    a[0] := 1;
+    a[1] := 2;
+    a[2] := 3;
+    c[0] := 10;
+    c[0] := 20;
+    c[0] := 30;
+    x := a[0];
+    print(c);
+    x := a.first();
+    print(x);
+    x := c.length();
+    c[2] := 5;
+    c[3] := x;
+end;

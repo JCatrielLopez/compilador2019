@@ -1,0 +1,12 @@
+ulong a,b,c,d;
+
+begin
+    a := 4;
+    c := 2;
+    b := 1 + c*a;
+    print(b);
+    b := a*c - 1;
+    print(b);
+    b := 1 * c*a;
+    print(b);
+end;

@@ -1,0 +1,31 @@
+int b;
+
+begin
+
+    b := 0;
+
+    if(2 < 3)
+        print(%2 < 3%);
+    else
+        print(%2 >= 3%);
+    end_if;
+
+    if(-2 < -3)
+        print(%-2 < -3%);
+    else
+        print(%-2 >= -3%);
+    end_if;
+
+    if(-2 < 3)
+        print(%-2 < 3%);
+    else
+        print(%-2 >= 3%);
+    end_if;
+
+    if(2 < -3)
+        print(%2 < -3%);
+    else
+        print(%2 >= -3%);
+    end_if;
+
+end;
