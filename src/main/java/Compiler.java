@@ -64,17 +64,15 @@ class Compiler {
 
     Parser parser = new Parser(al, cmd.hasOption("as"));
     parser.run();
-
+    System.out.println("-----------------------------------------------------------------------");
+    System.out.println("-------------------------ERRORS AND WARNINGS---------------------------");
+    System.out.println("-----------------------------------------------------------------------");
+    System.out.println(
+            String.format(
+                    "%5s %s %3s %s %s %-50s %s %s", "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
+    System.out.println("-----------------------------------------------------------------------");
+    Error.print();
     if (!Error.containsError()) {
-      System.out.println("-----------------------------------------------------------------------");
-      System.out.println("-------------------------ERRORS AND WARNINGS---------------------------");
-      System.out.println("-----------------------------------------------------------------------");
-      System.out.println(
-              String.format(
-                      "%5s %s %3s %s %s %-50s %s %s", "Linea ", "|", "Desde", "|", " ", "Info", " ", "|"));
-      System.out.println("-----------------------------------------------------------------------");
-      Error.print();
-    } else {
       if (cmd.hasOption("t")) {
         System.out.println(
                 "-----------------------------------------------------------------------");

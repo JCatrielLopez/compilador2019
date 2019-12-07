@@ -8,7 +8,7 @@ public class Error {
 
     public static void add(String msg) {
         errores.add(msg);
-        if (msg.startsWith("ERROR"))
+        if (msg.contains("ERROR"))
             error = true;
     }
 
