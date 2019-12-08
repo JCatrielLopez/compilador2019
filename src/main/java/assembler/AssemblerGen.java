@@ -2,7 +2,7 @@ package assembler;
 
 import globals.SymbolTable;
 import lexer.Token;
-import assembler.AdminRegistros;
+
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
@@ -546,6 +546,18 @@ public final class AssemblerGen {
                         .append(", ")
                         .append(reg_B)
                         .append(System.lineSeparator());
+
+                // Si estoy trabajando con ULONG y es menor a cero, es una resta invalida!
+                if (size == 32) {
+                    instructions.append("CMP ")
+                            .append(reg_A)
+                            .append(", ")
+                            .append("0")
+                            .append(System.lineSeparator());
+                    instructions.append("JL error_negativo")
+                            .append(System.lineSeparator());
+                }
+
 
                 t.setRegister(reg_A);
 
