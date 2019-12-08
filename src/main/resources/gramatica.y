@@ -221,7 +221,7 @@ sentencia_asignacion 		: id ASIGN expresion ';' {
 								if (tipo_exp == "INT") {
 									conversion = true;
 									Terceto t = new Terceto("_CONV", $3.sval);
-									t.setType("ULONG"); //TODO Verificar si es necesario setear el tipo aca.
+									t.setType("ULONG");
 									AdminTercetos.add(t);
 							 	}
 							    }
