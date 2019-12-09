@@ -1,6 +1,6 @@
 package lexer;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class Token {
@@ -8,7 +8,7 @@ public class Token {
     private final int id;
     private String lex;
     private final String description;
-    private final Hashtable<String, Object> attributes = new Hashtable<>();
+    private final HashMap<String, Object> attributes = new HashMap<>();
 
     public Token(int id, String lex, String description) {
         this.id = id;
