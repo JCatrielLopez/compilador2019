@@ -242,7 +242,7 @@ sentencia_asignacion 		: id ASIGN expresion ';' {
 ;
 
 expresion			: expresion '+' termino { $$ = new ParserVal(crearTercetoOperacion("+", $1.sval, $3.sval)); }
-                                | expresion '-' termino { $$ = new ParserVal(crearTercetoOperacion("-", $1.sval, $3.sval)); }
+                                | expresion '-' termino { $$ = new ParserVal(crearTercetoOperacion("-", $1.sval, $3.sval));}
 				| termino
                                 | expresion '+' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '+'"));}
                                 | expresion '-' error {Error.add(String.format("%5s %s %3s %s %s", al.getLineNumber(), "|", "AS", "|", "ERROR Falta un termino en la operacion '-'"));}
