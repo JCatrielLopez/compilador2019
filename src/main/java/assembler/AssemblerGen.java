@@ -2,7 +2,7 @@ package assembler;
 
 import globals.SymbolTable;
 import lexer.Token;
-import assembler.AdminRegistros;
+
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
@@ -205,6 +205,8 @@ public final class AssemblerGen {
 
         writer.append("ConvError db \"Error, perdida de informacion en conversion.\", 0");
         writer.append(System.lineSeparator());
+        writer.append("RangeError db \"Error, valor negativo en la resta de ULONG.\", 0");
+        writer.append(System.lineSeparator());
         writer.append("IndiceError db \"Error, indice fuera de los limites de la coleccion.\", 0");
         writer.append(System.lineSeparator()).append(System.lineSeparator());
 
@@ -216,6 +218,13 @@ public final class AssemblerGen {
         writer.append("error_negativo:");
         writer.append(System.lineSeparator());
         writer.append("invoke MessageBox, NULL, addr ConvError, addr ConvError, MB_OK");
+        writer.append(System.lineSeparator());
+        writer.append("invoke ExitProcess, 0");
+        writer.append(System.lineSeparator()).append(System.lineSeparator());
+
+        writer.append("error_rango:");
+        writer.append(System.lineSeparator());
+        writer.append("invoke MessageBox, NULL, addr RangeError, addr RangeError, MB_OK");
         writer.append(System.lineSeparator());
         writer.append("invoke ExitProcess, 0");
         writer.append(System.lineSeparator()).append(System.lineSeparator());
@@ -546,6 +555,18 @@ public final class AssemblerGen {
                         .append(", ")
                         .append(reg_B)
                         .append(System.lineSeparator());
+
+                // Si estoy trabajando con ULONG y es menor a cero, es una resta invalida!
+                if (size == 32) {
+                    instructions.append("CMP ")
+                            .append(reg_A)
+                            .append(", ")
+                            .append("0")
+                            .append(System.lineSeparator());
+                    instructions.append("JL error_rango")
+                            .append(System.lineSeparator());
+                }
+
 
                 t.setRegister(reg_A);
 
